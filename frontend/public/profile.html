@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Aisha Beauty</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #FFD700; --black: #000000; --dark: #333; --light: #f5f5f5; --white: #fff; --gray: #999; --border: #e5e5e5; }
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: var(--light); }
+        .profile-container { max-width: 900px; margin: 30px auto; background: var(--white); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .profile-header { background: linear-gradient(135deg, #000 0%, #333 100%); color: var(--primary); padding: 40px; text-align: center; position: relative; }
+        .profile-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700); }
+        .profile-header h1 { margin: 0 0 10px 0; font-size: 28px; }
+        .profile-header .user-email { color: #ccc; font-size: 14px; }
+        .profile-content { padding: 30px; }
+        .profile-section { margin-bottom: 35px; }
+        .profile-section h2 { color: var(--black); font-size: 20px; margin-bottom: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .profile-section h2 i { color: var(--primary); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--dark); font-weight: 600; font-size: 14px; }
+        .form-group label i { color: var(--primary); margin-right: 6px; }
+        .form-group input { width: 100%; padding: 14px 16px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: all 0.3s; background: #fafafa; }
+        .form-group input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15); }
+        .form-group input:disabled { background: #f0f0f0; color: #888; cursor: not-allowed; }
+        .btn { display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, var(--black) 0%, #333 100%); color: var(--primary); border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-sm { padding: 10px 20px; font-size: 13px; }
+        .btn-logout { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: var(--white); }
+        .btn-logout:hover { background: linear-gradient(135deg, #c82333 0%, #dc3545 100%); }
+        .btn-cancel { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: var(--white); padding: 8px 16px; }
+        
+        /* Orders Section */
+        .orders-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .order-card { border-bottom: 1px solid var(--border); padding: 20px; transition: background 0.3s; }
+        .order-card:last-child { border-bottom: none; }
+        .order-card:hover { background: #fafafa; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .order-id { font-weight: bold; color: var(--black); font-size: 16px; }
+        .order-date { color: var(--gray); font-size: 13px; }
+        .order-status { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-shipped { background: #e2e3ff; color: #383d41; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .order-items-preview { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .order-item-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+        .order-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .order-total { font-size: 18px; font-weight: bold; color: var(--black); }
+        .order-total span { color: var(--primary); font-size: 20px; }
+        .order-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        /* Order Details Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: #fff; width: 90%; max-width: 600px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .modal-header { background: linear-gradient(135deg, #000 0%, #333 100%); color: var(--primary); padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 18px; }
+        .modal-close { color: var(--primary); font-size: 28px; cursor: pointer; background: none; border: none; }
+        .modal-close:hover { color: #fff; }
+        .modal-body { padding: 25px; max-height: 400px; overflow-y: auto; }
+        .modal-footer { padding: 15px 25px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+        
+        /* Empty State */
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--gray); }
+        .empty-state i { font-size: 60px; color: #ddd; margin-bottom: 20px; }
+        .empty-state h3 { margin: 0 0 10px; color: var(--dark); }
+        .empty-state p { margin: 0 0 20px; }
+        .empty-state .btn { background: var(--primary); color: var(--black); }
+        
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: #fff; padding: 15px 25px; border-radius: 8px; z-index: 3000; display: none; animation: slideIn 0.3s ease; }
+        .toast.show { display: block; }
+        .toast.error { background: #dc3545; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        /* Login Section */
+        .login-box { background: #fff; padding: 40px; border-radius: 12px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .login-box h2 { text-align: center; margin: 0 0 25px; color: var(--black); }
+        
+        @media (max-width: 768px) {
+            .profile-container { margin: 15px; }
+            .profile-content { padding: 20px; }
+            .order-header { flex-direction: column; align-items: flex-start; }
+            .order-footer { flex-direction: column; align-items: flex-start; }
+            .flex-inputs { flex-direction: column; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="#">Sell on Aisha Beauty</a>
+        <a href="#">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <div class="lang-switcher">
+          <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
+        </div>
+        <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="#" onclick="openAuthModal()" id="user-icon-top">
+          <i class="fas fa-user"></i> <span data-i18n="login">Login</span>
+        </a>
+        <a href="/profile" id="user-menu-top" style="display: none;" class="user-logged-in">
+          <i class="fas fa-user-circle"></i> <span id="user-name-top"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header">
+    <div class="container">
+      <div class="header-main">
+        <div class="logo-section">
+          <a href="/" class="logo">
+            <img src="images/LOGO.png" alt="Aisha Beauty" height="60">
+          </a>
+        </div>
+
+        <div class="search-section">
+          <div class="search-box">
+            <div class="search-dropdown">
+              <span id="search-category">Products</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <input type="text" id="search-input" placeholder="Search products...">
+            <button class="search-btn" onclick="performSearch()">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a href="#" class="action-item">
+            <i class="fas fa-heart"></i>
+            <span>Wishlist</span>
+          </a>
+          <a href="#" class="action-item" onclick="viewCartProducts()">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span id="cart-count" class="cart-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <div class="nav-main">
+        <div class="categories-menu">
+          <button class="categories-btn">
+            <i class="fas fa-bars"></i>
+            <span>Categories</span>
+          </button>
+          <div class="categories-dropdown">
+            <a href="shop.html?category=men"><i class="fas fa-male"></i> Men's Fashion</a>
+            <a href="shop.html?category=women"><i class="fas fa-female"></i> Women's Fashion</a>
+            <a href="shop.html?category=kids"><i class="fas fa-child"></i> Kids Fashion</a>
+            <a href="shop.html?category=accessories"><i class="fas fa-gem"></i> Accessories</a>
+          </div>
+        </div>
+        <ul class="nav-links-main">
+          <li><a href="/">Home</a></li>
+          <li><a href="/shop">Shop</a></li>
+          <li><a href="/categories">Categories</a></li>
+          <li><a href="/new-arrivals">New Arrivals</a></li>
+          <li><a href="/sale">Sale</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Profile Container -->
+  <div class="profile-container" id="profileContainer" style="display: none;">
+      <div class="profile-header">
+          <h1><i class="fas fa-user-circle"></i> My Account</h1>
+          <p class="user-email" id="user-email"></p>
+      </div>
+      
+      <div class="profile-content">
+          <!-- Personal Information -->
+          <div class="profile-section">
+              <h2><i class="fas fa-user"></i> Personal Information</h2>
+              <form id="profile-form">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                      <div class="form-group">
+                          <label><i class="fas fa-user"></i> Full Name</label>
+                          <input type="text" id="profile-name" placeholder="Your name">
+                      </div>
+                      <div class="form-group">
+                          <label><i class="fas fa-envelope"></i> Email</label>
+                          <input type="email" id="profile-email" disabled>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label><i class="fas fa-phone"></i> Phone</label>
+                      <input type="tel" id="profile-phone" placeholder="Your phone number">
+                  </div>
+                  <div class="form-group">
+                      <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                      <input type="text" id="profile-address" placeholder="Your street address">
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                      <div class="form-group">
+                          <label><i class="fas fa-city"></i> City</label>
+                          <input type="text" id="profile-city" placeholder="City">
+                      </div>
+                      <div class="form-group">
+                          <label><i class="fas fa-map"></i> State</label>
+                          <input type="text" id="profile-state" placeholder="State">
+                      </div>
+                      <div class="form-group">
+                          <label><i class="fas fa-mail-bulk"></i> ZIP Code</label>
+                          <input type="text" id="profile-zip" placeholder="ZIP">
+                      </div>
+                  </div>
+                  <button type="submit" class="btn" id="save-btn">
+                      <i class="fas fa-save"></i> Save Changes
+                  </button>
+              </form>
+          </div>
+          
+          <!-- My Orders -->
+          <div class="profile-section">
+              <h2><i class="fas fa-shopping-bag"></i> My Orders</h2>
+              <div id="orders-container">
+                  <div class="empty-state" id="orders-empty">
+                      <i class="fas fa-shopping-bag"></i>
+                      <h3>No Orders Yet</h3>
+                      <p>Start shopping to see your orders here!</p>
+                      <a href="/shop" class="btn"><i class="fas fa-shopping-cart"></i> Start Shopping</a>
+                  </div>
+                  <div id="orders-list" class="orders-container" style="display: none;"></div>
+              </div>
+          </div>
+          
+          <!-- Logout -->
+          <div class="profile-section" style="text-align: center; padding-top: 20px; border-top: 1px solid var(--border);">
+              <button class="btn btn-logout" onclick="logout()">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Login Container -->
+  <div class="profile-container" id="loginContainer" style="display: none;">
+      <div class="profile-header">
+          <h1><i class="fas fa-user-circle"></i> My Account</h1>
+      </div>
+      <div class="login-box">
+          <h2><i class="fas fa-lock"></i> Login to Your Account</h2>
+          <form id="login-form">
+              <div class="form-group">
+                  <label><i class="fas fa-envelope"></i> Email</label>
+                  <input type="email" id="login-email" placeholder="Your email" required>
+              </div>
+              <div class="form-group">
+                  <label><i class="fas fa-lock"></i> Password</label>
+                  <input type="password" id="login-password" placeholder="Your password" required>
+              </div>
+              <button type="submit" class="btn" style="width: 100%;">
+                  <i class="fas fa-sign-in-alt"></i> Login
+              </button>
+              <p style="text-align: center; margin-top: 15px; color: #666;">
+                  <a href="#" onclick="showForgotPassword(); return false;" style="color: var(--primary);">Forgot Password?</a>
+              </p>
+          </form>
+      </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div id="orderModal" class="modal">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h3><i class="fas fa-shopping-bag"></i> Order Details</h3>
+              <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+          </div>
+          <div class="modal-body" id="order-details"></div>
+          <div class="modal-footer" id="order-footer"></div>
+      </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="js/language.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+      let currentOrders = [];
+      
+      document.addEventListener('DOMContentLoaded', function() {
+          checkAuthAndLoadProfile();
+          document.getElementById('login-form').addEventListener('submit', handleLogin);
+          document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
+      });
+      
+      async function checkAuthAndLoadProfile() {
+          console.log('Checking auth...');
+          const token = localStorage.getItem('customerToken');
+          const userStr = localStorage.getItem('customerUser');
+          const user = userStr ? JSON.parse(userStr) : null;
+          
+          console.log('Token:', token ? 'exists' : 'none');
+          console.log('User:', user);
+          
+          if (!token || !user) {
+              console.log('No auth - showing login');
+              showLoginSection();
+              return;
+          }
+          
+          try {
+              console.log('Fetching user from API...');
+              const response = await fetch(`${API_BASE}/auth/me`, {
+                  headers: { 'Authorization': `Bearer ${token}` }
+              });
+              
+              console.log('Response status:', response.status);
+              
+              if (!response.ok) {
+                  console.log('Auth failed - showing login');
+                  showLoginSection();
+                  return;
+              }
+              
+              const userData = await response.json();
+              console.log('User data:', userData);
+              showProfileSection(userData);
+              loadOrders();
+          } catch (error) {
+              console.error('Auth error:', error);
+              if (user && user.email) {
+                  console.log('Using cached user');
+                  showProfileSection(user);
+                  loadOrders();
+              } else {
+                  console.log('No cached user - showing login');
+                  showLoginSection();
+              }
+          }
+      }
+      
+      function showLoginSection() {
+          document.getElementById('profileContainer').style.display = 'none';
+          document.getElementById('loginContainer').style.display = 'block';
+      }
+      
+      function showProfileSection(user) {
+          document.getElementById('loginContainer').style.display = 'none';
+          document.getElementById('profileContainer').style.display = 'block';
+          
+          document.getElementById('user-email').textContent = user.email;
+          document.getElementById('profile-name').value = user.name || '';
+          document.getElementById('profile-email').value = user.email;
+          document.getElementById('profile-phone').value = user.phone || '';
+          document.getElementById('profile-address').value = user.address || '';
+          document.getElementById('profile-city').value = user.city || '';
+          document.getElementById('profile-state').value = user.state || '';
+          document.getElementById('profile-zip').value = user.zip || '';
+          
+          localStorage.setItem('customerUser', JSON.stringify(user));
+      }
+      
+      async function handleLogin(e) {
+          e.preventDefault();
+          const email = document.getElementById('login-email').value;
+          const password = document.getElementById('login-password').value;
+          
+          console.log('Login attempt:', email);
+          
+          try {
+              const response = await fetch(`${API_BASE}/auth/customer-login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, password })
+              });
+              
+              const data = await response.json();
+              console.log('Login response:', data);
+              
+              if (data.token) {
+                  localStorage.setItem('customerToken', data.token);
+                  localStorage.setItem('customerUser', JSON.stringify(data.user));
+                  document.getElementById('login-form').reset();
+                  showProfileSection(data.user);
+                  loadOrders();
+                  showToast('Welcome back!');
+              } else {
+                  showToast(data.message || 'Login failed', true);
+              }
+          } catch (error) {
+              console.error('Login error:', error);
+              showToast('Connection error. Please try again.', true);
+          }
+      }
+      
+      async function handleProfileUpdate(e) {
+          e.preventDefault();
+          const token = localStorage.getItem('customerToken');
+          if (!token) {
+              showLoginSection();
+              return;
+          }
+          
+          const saveBtn = document.getElementById('save-btn');
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+          
+          const updatedUser = {
+              name: document.getElementById('profile-name').value,
+              phone: document.getElementById('profile-phone').value,
+              address: document.getElementById('profile-address').value,
+              city: document.getElementById('profile-city').value,
+              state: document.getElementById('profile-state').value,
+              zip: document.getElementById('profile-zip').value
+          };
+          
+          try {
+              const response = await fetch(`${API_BASE}/auth/profile`, {
+                  method: 'PUT',
+                  headers: { 
+                      'Content-Type': 'application/json', 
+                      'Authorization': `Bearer ${token}` 
+                  },
+                  body: JSON.stringify(updatedUser)
+              });
+              
+              if (response.ok) {
+                  const data = await response.json();
+                  localStorage.setItem('customerUser', JSON.stringify(data));
+                  showToast('Profile updated successfully!');
+              } else {
+                  showToast('Failed to update profile', true);
+              }
+          } catch (error) {
+              showToast('Connection error. Please try again.', true);
+          } finally {
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+          }
+      }
+      
+      async function loadOrders() {
+          const token = localStorage.getItem('customerToken');
+          if (!token) return;
+          
+          try {
+              const response = await fetch(`${API_BASE}/orders`, {
+                  headers: { 'Authorization': `Bearer ${token}` }
+              });
+              
+              if (!response.ok) throw new Error('Failed to load orders');
+              
+              currentOrders = await response.json();
+              displayOrders(currentOrders);
+          } catch (error) {
+              document.getElementById('orders-empty').innerHTML = `
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <h3>Error Loading Orders</h3>
+                  <p>Please try again later.</p>
+              `;
+          }
+      }
+      
+      function displayOrders(orders) {
+          const emptyState = document.getElementById('orders-empty');
+          const ordersList = document.getElementById('orders-list');
+          
+          if (!orders || orders.length === 0) {
+              emptyState.style.display = 'block';
+              ordersList.style.display = 'none';
+              return;
+          }
+          
+          emptyState.style.display = 'none';
+          ordersList.style.display = 'block';
+          
+          ordersList.innerHTML = orders.map(order => {
+              const images = order.items?.slice(0, 4).map(item => 
+                  item.image || 'images/1.jpg'
+              ) || [];
+              
+              return `
+                  <div class="order-card">
+                      <div class="order-header">
+                          <div>
+                              <span class="order-id">Order #${order._id?.slice(-6) || order.orderId || 'N/A'}</span>
+                              <span class="order-date">${new Date(order.createdAt || order.orderDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                          </div>
+                          <span class="order-status status-${order.status}">${order.status}</span>
+                      </div>
+                      <div class="order-items-preview">
+                          ${images.map(img => `<img src="${img}" class="order-item-thumb">`).join('')}
+                          ${order.items?.length > 4 ? `<span style="align-self: center; color: #666;">+${order.items.length - 4} more</span>` : ''}
+                      </div>
+                      <div class="order-footer">
+                          <span class="order-total">Total: <span>$${(order.total || order.totalAmount || 0).toFixed(2)}</span></span>
+                          <div class="order-actions">
+                              <button class="btn btn-sm" onclick="viewOrderDetails('${order._id}')">
+                                  <i class="fas fa-eye"></i> View Details
+                              </button>
+                              ${order.status === 'pending' ? `
+                                  <button class="btn btn-sm btn-cancel" onclick="cancelOrder('${order._id}')">
+                                      <i class="fas fa-times"></i> Cancel
+                                  </button>
+                              ` : ''}
+                          </div>
+                      </div>
+                  </div>
+              `;
+          }).join('');
+      }
+      
+      async function viewOrderDetails(orderId) {
+          const order = currentOrders.find(o => o._id === orderId);
+          if (!order) return;
+          
+          const itemsHtml = order.items?.map(item => `
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                  <div style="display: flex; gap: 15px; align-items: center;">
+                      <img src="${item.image || 'images/1.jpg'}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                      <div>
+                          <strong>${item.name || 'Product'}</strong>
+                          <div style="color: #666; font-size: 13px;">Qty: ${item.quantity || item.qty || 1}</div>
+                      </div>
+                  </div>
+                  <strong>$${((item.price || 0) * (item.quantity || item.qty || 1)).toFixed(2)}</strong>
+              </div>
+          `).join('') || '<p>No items</p>';
+          
+          document.getElementById('order-details').innerHTML = `
+              <div style="margin-bottom: 20px;">
+                  <p><strong>Order ID:</strong> ${order._id || order.orderId}</p>
+                  <p><strong>Date:</strong> ${new Date(order.createdAt || order.orderDate).toLocaleString()}</p>
+                  <p><strong>Status:</strong> <span class="order-status status-${order.status}">${order.status}</span></p>
+                  <p><strong>Items:</strong> ${order.items?.length || 0}</p>
+              </div>
+              <h4 style="margin-bottom: 15px;"><i class="fas fa-box"></i> Items</h4>
+              ${itemsHtml}
+              <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--primary); text-align: right;">
+                  <strong style="font-size: 18px;">Total: $${(order.total || order.totalAmount || 0).toFixed(2)}</strong>
+              </div>
+          `;
+          
+          const footer = document.getElementById('order-footer');
+          if (order.status === 'pending') {
+              footer.innerHTML = `
+                  <button class="btn btn-cancel" onclick="cancelOrder('${orderId}'); closeOrderModal();">
+                      <i class="fas fa-times"></i> Cancel Order
+                  </button>
+                  <button class="btn" onclick="closeOrderModal()">Close</button>
+              `;
+          } else {
+              footer.innerHTML = `<button class="btn" onclick="closeOrderModal()">Close</button>`;
+          }
+          
+          document.getElementById('orderModal').classList.add('show');
+      }
+      
+      function closeOrderModal() {
+          document.getElementById('orderModal').classList.remove('show');
+      }
+      
+      async function cancelOrder(orderId) {
+          if (!confirm('Are you sure you want to cancel this order?')) return;
+          
+          const token = localStorage.getItem('customerToken');
+          try {
+              const response = await fetch(`${API_BASE}/orders/${orderId}`, {
+                  method: 'PATCH',
+                  headers: { 
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({ status: 'cancelled' })
+              });
+              
+              if (response.ok) {
+                  showToast('Order cancelled successfully!');
+                  loadOrders();
+              } else {
+                  showToast('Failed to cancel order', true);
+              }
+          } catch (error) {
+              showToast('Error cancelling order', true);
+          }
+      }
+      
+      function logout() {
+          localStorage.removeItem('customerToken');
+          localStorage.removeItem('customerUser');
+          showLoginSection();
+          showToast('Logged out successfully!');
+      }
+      
+      function showToast(message, isError = false) {
+          const toast = document.getElementById('toast');
+          toast.textContent = message;
+          toast.className = 'toast' + (isError ? ' error' : '');
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+      
+      // Close modal on outside click
+      document.getElementById('orderModal').addEventListener('click', function(e) {
+          if (e.target === this) closeOrderModal();
+      });
+  </script>
+</body>
+</html>

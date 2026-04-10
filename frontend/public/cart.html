@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CWM STORE | Shopping Cart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .navbar {
+            background: #1a1a2e;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            color: #FFD700;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .navbar .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .navbar .cart-icon i {
+            color: #FFD700;
+            font-size: 22px;
+        }
+
+        .navbar .cart-icon .badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: #FFD700;
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: #FFD700;
+            border-radius: 50%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .breadcrumb span {
+            color: #FFD700;
+            font-weight: 500;
+        }
+
+        .cart-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        .cart-items {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .cart-items table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-items thead th {
+            text-align: left;
+            padding: 15px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #eee;
+        }
+
+        .cart-items thead th:last-child {
+            text-align: center;
+        }
+
+        .cart-items tbody tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-items tbody td {
+            padding: 20px 10px;
+            vertical-align: middle;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .prod-img {
+            width: 70px;
+            height: 70px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .prod-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .prod-img i {
+            color: #ccc;
+            font-size: 24px;
+        }
+
+        .prod-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-control button {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #FFD700;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .qty-control button:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .qty-control input {
+            width: 45px;
+            height: 32px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .subtotal {
+            font-weight: 700;
+            color: #FFD700;
+            font-size: 16px;
+        }
+
+        .remove-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #ffe5e5;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #ff4444;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .remove-btn:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-primary {
+            padding: 12px 25px;
+            background: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: #e6c200;
+        }
+
+        .btn-outline {
+            padding: 12px 25px;
+            background: transparent;
+            color: #666;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .order-summary {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-summary h3 {
+            font-size: 18px;
+            color: #333;
+            margin: 0 0 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .summary-row span:last-child {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            margin-top: 10px;
+            border-top: 2px solid #eee;
+        }
+
+        .total-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .total-amount {
+            font-size: 22px;
+            font-weight: 700;
+            color: #FFD700;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 14px;
+            background: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pay-btn:hover {
+            background: #e6c200;
+            transform: translateY(-2px);
+        }
+
+        .pay-btn span {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .pay-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 80px 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-cart i {
+            font-size: 80px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-cart p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* Checkout Form Modal */
+        .checkout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .checkout-modal.show {
+            display: flex;
+        }
+
+        .checkout-form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .checkout-form h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #FFD700;
+        }
+
+        .checkout-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .checkout-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel {
+            background: #eee;
+            color: #333;
+            border: none;
+        }
+
+        .btn-cancel:hover {
+            background: #ddd;
+        }
+
+        .btn-submit {
+            background: #FFD700;
+            color: #000;
+            border: none;
+        }
+
+        .btn-submit:hover {
+            background: #e6c200;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: #000;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-msg {
+            color: #ff4444;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 992px) {
+            .cart-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+
+            .cart-items table thead {
+                display: none;
+            }
+
+            .cart-items table tbody tr {
+                display: block;
+                padding: 15px 0;
+            }
+
+            .cart-items table tbody td {
+                display: flex;
+                justify-content: space-between;
+                padding: 8px 0;
+            }
+
+            .cart-items table tbody td:first-child {
+                order: -1;
+                margin-bottom: 10px;
+            }
+
+            .product-info {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .cart-actions {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-outline {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">CWM STORE</div>
+        <div class="nav-icons">
+            <div class="cart-icon" onclick="viewCartProducts()">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="badge" id="cart-badge">0</span>
+            </div>
+            <div class="user-avatar" id="userAvatar"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <nav class="breadcrumb">Home > <span>Cart</span></nav>
+
+        <div id="cartContent"></div>
+    </main>
+
+    <!-- Checkout Form Modal -->
+    <div class="checkout-modal" id="checkoutModal">
+        <div class="checkout-form">
+            <h2><i class="fa-solid fa-credit-card"></i> Checkout</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="customerName" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="customerEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="customerPhone" placeholder="Enter your phone" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="customerAddress" placeholder="Enter your address">
+                </div>
+                <div class="checkout-actions">
+                    <button type="button" class="btn-cancel" onclick="closeCheckoutModal()">Cancel</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span id="btnText">Proceed to Payment</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://backend-51wx.onrender.com/api';
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCart();
+            updateBadge();
+            
+            // Pre-fill user data if logged in
+            const user = JSON.parse(localStorage.getItem('customerUser'));
+            if (user) {
+                document.getElementById('customerName').value = user.name || '';
+                document.getElementById('customerEmail').value = user.email || '';
+                document.getElementById('customerPhone').value = user.phone || '';
+                document.getElementById('customerAddress').value = user.address || '';
+            }
+        });
+
+        function updateBadge() {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-badge').textContent = count;
+        }
+
+        function viewCartProducts() {
+            window.location.href = 'shop.html';
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartContent');
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added any items to your cart yet.</p>
+                        <a href="/shop" class="btn-primary">Start Shopping</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let subtotal = 0;
+            const rowsHtml = cart.map(item => {
+                const itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+                return `
+                    <tr class="cart-row" data-price="${item.price}">
+                        <td class="product-info">
+                            <div class="prod-img">
+                                ${item.image ? `<img src="${item.image}" alt="${item.name}" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fa-solid fa-image\\'></i>'">` : '<i class="fa-solid fa-image"></i>'}
+                            </div>
+                            <span class="prod-name">${item.name}</span>
+                        </td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>
+                            <div class="qty-control">
+                                <button class="minus" onclick="updateQuantity('${item.id}', -1)">-</button>
+                                <input type="text" value="${item.qty}" readonly>
+                                <button class="plus" onclick="updateQuantity('${item.id}', 1)">+</button>
+                            </div>
+                        </td>
+                        <td class="subtotal">$${itemTotal.toFixed(2)}</td>
+                        <td><button class="remove-btn" onclick="removeItem('${item.id}')"><i class="fa-solid fa-trash-can"></i></button></td>
+                    </tr>
+                `;
+            }).join('');
+
+            const total = subtotal;
+
+            container.innerHTML = `
+                <section class="cart-items">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-table-body">
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                    <div class="cart-actions">
+                        <a href="/shop" class="btn-primary"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
+                        <button class="btn-outline" onclick="clearCart()"><i class="fa-solid fa-trash"></i> Clear Cart</button>
+                    </div>
+                </section>
+
+                <aside class="order-summary">
+                    <h3>Order Details</h3>
+                    <div class="summary-row">
+                        <span>Sub Total</span>
+                        <span>$${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax</span>
+                        <span>$0</span>
+                    </div>
+                    <div class="summary-total">
+                        <span class="total-label">Total Amount</span>
+                        <span class="total-amount">$${total.toFixed(2)}</span>
+                    </div>
+                    <button class="pay-btn" onclick="openCheckoutModal()">
+                        <i class="fa-solid fa-lock"></i> Pay <span>$${total.toFixed(2)}</span>
+                    </button>
+                </aside>
+            `;
+        }
+
+        function openCheckoutModal() {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            document.getElementById('checkoutModal').classList.add('show');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('show');
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="spinner"></span> Processing...';
+            
+            const customer = {
+                name: document.getElementById('customerName').value,
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value,
+                address: document.getElementById('customerAddress').value
+            };
+
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            const items = cart.map(item => ({
+                productId: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.qty,
+                image: item.image
+            }));
+
+            try {
+                const response = await fetch(`${API_BASE}/checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ customer, items })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.url) {
+                        // Redirect to Stripe checkout
+                        window.location.href = data.url;
+                    } else {
+                        // Order created without Stripe
+                        alert('Order placed successfully! Order ID: ' + data.orderIdFormatted);
+                        localStorage.setItem('cart', JSON.stringify([]));
+                        window.location.href = 'order-success.html?orderId=' + data.orderId;
+                    }
+                } else {
+                    alert(data.message || 'Error processing order');
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Proceed to Payment';
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+                submitBtn.disabled = false;
+                btnText.textContent = 'Proceed to Payment';
+            }
+        });
+
+        function updateQuantity(id, delta) {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const item = cart.find(item => item.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty < 1) {
+                    removeItem(id);
+                } else {
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateBadge();
+                    renderCart();
+                }
+            }
+        }
+
+        function removeItem(id) {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateBadge();
+            renderCart();
+        }
+
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                localStorage.setItem('cart', JSON.stringify([]));
+                updateBadge();
+                renderCart();
+            }
+        }
+    </script>
+</body>
+</html>

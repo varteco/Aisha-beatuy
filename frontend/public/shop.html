@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - Aisha Beauty</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="#">Sell on Aisha Beauty</a>
+        <a href="#">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <div class="lang-switcher">
+          <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
+        </div>
+        <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="#" onclick="openAuthModal()" id="user-icon-top">
+          <i class="fas fa-user"></i> <span data-i18n="login">Login</span>
+        </a>
+        <a href="/profile" id="user-menu-top" style="display: none;" class="user-logged-in">
+          <i class="fas fa-user-circle"></i> <span id="user-name-top"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header">
+    <div class="container">
+      <div class="header-main">
+        <div class="logo-section">
+          <a href="/" class="logo">
+            <img src="images/LOGO.png" alt="Aisha Beauty" height="60">
+          </a>
+        </div>
+
+        <div class="search-section">
+          <div class="search-box">
+            <div class="search-dropdown">
+              <span id="search-category">Products</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <input type="text" id="search-input" placeholder="Search products...">
+            <button class="search-btn" onclick="performSearch()">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+          <div class="search-suggestions">
+            <span>Popular:</span>
+            <a href="shop.html?category=women">Women's Fashion</a>
+            <a href="shop.html?category=men">Men's Clothing</a>
+            <a href="shop.html?category=accessories">Accessories</a>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a href="#" class="action-item">
+            <i class="fas fa-heart"></i>
+            <span>Wishlist</span>
+          </a>
+          <a href="#" class="action-item cart-dropdown-trigger" onclick="viewCartProducts()">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span id="cart-count" class="cart-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" onclick="toggleMobileMenu()">&times;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/shop" class="active">Shop</a></li>
+      <li><a href="/categories">Categories</a></li>
+      <li><a href="/new-arrivals">New Arrivals</a></li>
+      <li><a href="/sale">Sale</a></li>
+    </ul>
+    <div class="mobile-nav-actions">
+      <a href="#" onclick="viewCartProducts(); toggleMobileMenu();"><i class="fas fa-shopping-cart"></i> Cart</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <div class="nav-main">
+        <div class="categories-menu">
+          <button class="categories-btn">
+            <i class="fas fa-bars"></i>
+            <span>Categories</span>
+          </button>
+          <div class="categories-dropdown">
+            <a href="shop.html?category=men"><i class="fas fa-male"></i> Men's Fashion <i
+                class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=women"><i class="fas fa-female"></i> Women's Fashion <i
+                class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=kids"><i class="fas fa-child"></i> Kids Fashion <i
+                class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=accessories"><i class="fas fa-gem"></i> Accessories <i
+                class="fas fa-chevron-right"></i></a>
+          </div>
+        </div>
+        <ul class="nav-links-main">
+          <li><a href="/" data-i18n="home">Home</a></li>
+          <li><a href="/shop" class="active" data-i18n="shop">Shop</a></li>
+          <li><a href="/categories" data-i18n="categories">Categories</a></li>
+          <li><a href="/new-arrivals" data-i18n="newArrivals">New Arrivals</a></li>
+          <li><a href="/sale" data-i18n="sale">Sale</a></li>
+          <li><a href="#">Bulk Orders</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-section">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Home</a>
+        <span>/</span>
+        <span id="breadcrumb-title">Shop</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Content -->
+  <section class="shop-content">
+    <div class="container">
+      <div class="shop-layout">
+        <!-- Sidebar Filters -->
+        <aside class="shop-sidebar">
+          <div class="filter-section">
+            <h3>Category</h3>
+            <ul class="filter-list">
+              <li><a href="#" class="filter-link active" data-category="all" onclick="filterByCategory('all', event)">All Products</a></li>
+              <li><a href="#" class="filter-link" data-category="men" onclick="filterByCategory('men', event)">Men's Fashion</a></li>
+              <li><a href="#" class="filter-link" data-category="women" onclick="filterByCategory('women', event)">Women's Fashion</a></li>
+              <li><a href="#" class="filter-link" data-category="kids" onclick="filterByCategory('kids', event)">Kids Fashion</a></li>
+              <li><a href="#" class="filter-link" data-category="accessories" onclick="filterByCategory('accessories', event)">Accessories</a></li>
+            </ul>
+          </div>
+
+          <div class="filter-section">
+            <h3>Price Range</h3>
+            <div class="price-inputs">
+              <input type="number" id="min-price" placeholder="Min">
+              <span>-</span>
+              <input type="number" id="max-price" placeholder="Max">
+              <button onclick="filterByPrice()">Go</button>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <h3>Availability</h3>
+            <label class="filter-checkbox">
+              <input type="checkbox" id="in-stock-only" onchange="filterByStock()">
+              <span>In Stock Only</span>
+            </label>
+          </div>
+        </aside>
+
+        <!-- Products Area -->
+        <div class="shop-main">
+          <div class="shop-toolbar">
+            <div class="results-count">
+              <span id="results-count">Showing all products</span>
+            </div>
+            <div class="sort-options">
+              <label>Sort by:</label>
+              <select id="sort-select" onchange="sortProducts()">
+                <option value="featured">Featured</option>
+                <option value="newest">Newest</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="products-grid-main" id="products-container">
+            <!-- Products will be loaded here -->
+          </div>
+
+          <div id="no-products" class="no-products" style="display: none;">
+            <i class="fas fa-search"></i>
+            <p>No products found matching your criteria.</p>
+            <a href="/shop" class="btn-banner">Clear Filters</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Aisha Beauty</h3>
+          <p>Your trusted destination for premium fashion and lifestyle products.</p>
+          <div class="footer-social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="quickLinks">Quick Links</h4>
+          <ul>
+            <li><a href="/" data-i18n="home">Home</a></li>
+            <li><a href="/shop" data-i18n="shop">Shop</a></li>
+            <li><a href="/categories" data-i18n="categories">Categories</a></li>
+            <li><a href="#" data-i18n="aboutUs">About Us</a></li>
+            <li><a href="#" data-i18n="contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Customer Service</h4>
+          <ul>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns & Exchanges</a></li>
+            <li><a href="#">Order Tracking</a></li>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Size Guide</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="contactInfo">Contact Info</h4>
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> <span data-i18n="address">123 Fashion Street, Style City</span>
+            </li>
+            <li><i class="fas fa-phone"></i> <span data-i18n="phone">+1 234 567 8900</span></li>
+            <li><i class="fas fa-envelope"></i> <span data-i18n="email">info@aishabeauty.com</span></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Newsletter</h4>
+          <p>Subscribe to get special offers and updates</p>
+          <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" placeholder="Enter your email">
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Aisha Beauty. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
+        <div class="footer-payments">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-amex"></i>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeAuthModal()">&times;</span>
+
+      <div class="auth-tabs">
+        <button id="loginTab" class="auth-tab tab-login" onclick="showLogin()">Login</button>
+        <button id="registerTab" class="auth-tab tab-register inactive" onclick="showRegister()">Register</button>
+      </div>
+
+      <div class="auth-form-wrapper">
+        
+        <div id="loginForm">
+          <h2>Welcome Back</h2>
+          <div class="auth-input-group">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="Enter your email">
+          </div>
+          <div class="auth-input-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter your password">
+          </div>
+          <button class="auth-submit-btn" onclick="handleLogin()">Login</button>
+          <p class="auth-forgot-text"><span onclick="showForgotPassword()">Forgot Password?</span></p>
+          <p class="auth-toggle-text">Don't have an account? <span onclick="showRegister()">Register</span></p>
+        </div>
+
+        <div id="registerForm" class="hidden">
+          <h2>Create Account</h2>
+          <div class="auth-input-group">
+            <label>Email</label>
+            <input type="email" id="signup-email" placeholder="Enter your email">
+          </div>
+          <div class="auth-input-group">
+            <label>Name</label>
+            <input type="text" id="signup-name" placeholder="Enter your name">
+          </div>
+          <div class="auth-input-group">
+            <label>Phone</label>
+            <input type="tel" id="signup-phone" placeholder="Enter your phone">
+          </div>
+          <div class="auth-input-group">
+            <label>Password</label>
+            <input type="password" id="signup-password" placeholder="Create a password">
+          </div>
+          <button class="auth-submit-btn" onclick="handleSignup()">Register</button>
+          <p class="auth-toggle-text">Already have an account? <span onclick="showLogin()">Login</span></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgot-password-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeForgotPassword()">&times;</span>
+      <h2>Reset Password</h2>
+      <p>Enter your email to receive a password reset link.</p>
+      <div class="auth-input-group">
+        <label>Email</label>
+        <input type="email" id="forgot-email" placeholder="Enter your email">
+      </div>
+      <button class="auth-submit-btn" onclick="handleForgotPassword()">Send Reset Link</button>
+      <p id="forgot-success" style="color: green; display: none;">Reset link sent to your email!</p>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cart-modal" class="modal">
+    <div class="modal-content cart-modal-content">
+      <span class="close" onclick="closeCart()">&times;</span>
+      <h2 data-i18n="shoppingCart">Shopping Cart</h2>
+      <div id="cart-items"></div>
+      <div class="cart-total">
+        <h3><span data-i18n="total">Total</span>: $<span id="cart-total">0.00</span></h3>
+        <button class="btn" onclick="checkout()" data-i18n="checkout">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/language.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/shop.js"></script>
+</body>
+
+</html>

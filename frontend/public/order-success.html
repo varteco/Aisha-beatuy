@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success - Aisha Beauty</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #FFD700; --black: #000000; --dark: #333; --light: #f5f5f5; --white: #fff; }
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: var(--light); }
+        .success-wrapper {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .success-container { text-align: center; background: var(--white); padding: 50px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
+        .checkmark { width: 80px; height: 80px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .checkmark i { color: white; font-size: 40px; }
+        h1 { color: var(--black); margin-bottom: 10px; }
+        p { color: var(--dark); margin-bottom: 30px; }
+        .order-id { background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .order-id strong { color: var(--primary); }
+        .btn { display: inline-block; padding: 14px 30px; background: var(--black); color: var(--primary); text-decoration: none; border-radius: 4px; font-weight: bold; }
+        .btn:hover { background: #222; }
+
+        @media (max-width: 576px) {
+            .success-container { padding: 30px 20px; }
+            .checkmark { width: 60px; height: 60px; }
+            .checkmark i { font-size: 30px; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="#">Sell on Aisha Beauty</a>
+        <a href="#">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <div class="lang-switcher">
+          <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
+        </div>
+        <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="#" onclick="openAuthModal()" id="user-icon-top">
+          <i class="fas fa-user"></i> <span data-i18n="login">Login</span>
+        </a>
+        <a href="/profile" id="user-menu-top" style="display: none;" class="user-logged-in">
+          <i class="fas fa-user-circle"></i> <span id="user-name-top"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header">
+    <div class="container">
+      <div class="header-main">
+        <div class="logo-section">
+          <a href="/" class="logo">
+            <img src="images/LOGO.png" alt="Aisha Beauty" height="60">
+          </a>
+        </div>
+
+        <div class="search-section">
+          <div class="search-box">
+            <div class="search-dropdown">
+              <span id="search-category">Products</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <input type="text" id="search-input" placeholder="Search products...">
+            <button class="search-btn" onclick="performSearch()">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+          <div class="search-suggestions">
+            <span>Popular:</span>
+            <a href="shop.html?category=women">Women's Fashion</a>
+            <a href="shop.html?category=men">Men's Clothing</a>
+            <a href="shop.html?category=accessories">Accessories</a>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a href="#" class="action-item">
+            <i class="fas fa-heart"></i>
+            <span>Wishlist</span>
+          </a>
+          <a href="#" class="action-item" onclick="viewCartProducts()">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span id="cart-count" class="cart-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" onclick="toggleMobileMenu()">&times;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/shop">Shop</a></li>
+      <li><a href="/categories">Categories</a></li>
+      <li><a href="/new-arrivals">New Arrivals</a></li>
+      <li><a href="/sale">Sale</a></li>
+    </ul>
+    <div class="mobile-nav-actions">
+      <a href="#" onclick="viewCartProducts(); toggleMobileMenu();"><i class="fas fa-shopping-cart"></i> Cart</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <div class="nav-main">
+        <div class="categories-menu">
+          <button class="categories-btn">
+            <i class="fas fa-bars"></i>
+            <span>Categories</span>
+          </button>
+          <div class="categories-dropdown">
+            <a href="shop.html?category=men"><i class="fas fa-male"></i> Men's Fashion <i class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=women"><i class="fas fa-female"></i> Women's Fashion <i class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=kids"><i class="fas fa-child"></i> Kids Fashion <i class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=accessories"><i class="fas fa-gem"></i> Accessories <i class="fas fa-chevron-right"></i></a>
+          </div>
+        </div>
+        <ul class="nav-links-main">
+          <li><a href="/">Home</a></li>
+          <li><a href="/shop">Shop</a></li>
+          <li><a href="/categories">Categories</a></li>
+          <li><a href="/new-arrivals">New Arrivals</a></li>
+          <li><a href="/sale">Sale</a></li>
+          <li><a href="#">Bulk Orders</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <div class="success-wrapper">
+        <div class="success-container">
+            <div class="checkmark"><i class="fas fa-check"></i></div>
+            <h1>Order Confirmed!</h1>
+            <p>Thank you for your purchase. Your order has been received and is being processed.</p>
+            <div class="order-id">
+                <p>Order ID: <strong id="orderId">Loading...</strong></p>
+            </div>
+            <a href="/shop" class="btn">Continue Shopping</a>
+        </div>
+    </div>
+
+    <script src="js/language.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+        document.getElementById('orderId').textContent = orderId || 'N/A';
+    </script>
+</body>
+</html>

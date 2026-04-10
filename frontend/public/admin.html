@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aisha Beauty - Admin Dashboard</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- Login Overlay -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-box">
+      <div class="login-logo">
+        <h2>Aisha <span>Admin</span></h2>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="login-email" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" required placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn-submit">Login</button>
+        <p id="login-error" class="login-error"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h2>Aisha <span>Admin</span></h2>
+      </div>
+      <nav class="admin-nav">
+        <ul>
+          <li><a href="#dashboard" class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <li><a href="#products" data-section="products"><i class="fas fa-tshirt"></i> Products</a></li>
+          <li><a href="#orders" data-section="orders"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+          <li><a href="#customers" data-section="customers"><i class="fas fa-users"></i> Customers</a></li>
+          <li><a href="#categories" data-section="categories"><i class="fas fa-tags"></i> Categories</a></li>
+          <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="#users" data-section="users" id="nav-users" style="display: none;"><i class="fas fa-user-cog"></i> Users</a></li>
+          <li><a href="#account" data-section="account"><i class="fas fa-user-circle"></i> My Account</a></li>
+          <li><a href="#settings" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
+          <li><a href="/"><i class="fas fa-store"></i> Back to Store</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="admin-header">
+        <div class="header-left">
+          <h1 id="page-title">Dashboard</h1>
+        </div>
+        <div class="header-right">
+          <div class="user-dropdown-container" id="user-profile" style="display: none;">
+            <span id="user-name">Admin</span>
+            <i class="fas fa-chevron-down"></i>
+            <div class="user-dropdown-menu">
+              <a href="#account" onclick="switchSection('account')"><i class="fas fa-user"></i> My Account</a>
+              <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="content-section active">
+        <!-- Stats Cards -->
+        <section class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Sales</h3>
+              <p class="stat-number">$0</p>
+              <span class="stat-change positive">+12%</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Customers</h3>
+              <p class="stat-number">0</p>
+              <span class="stat-change positive">+8%</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Products</h3>
+              <p class="stat-number">0</p>
+              <span class="stat-change positive">+5%</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Revenue</h3>
+              <p class="stat-number">$0</p>
+              <span class="stat-change positive">+15%</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Pending Orders</h3>
+              <p class="stat-number" id="pending-orders">0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon success">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Delivered Orders</h3>
+              <p class="stat-number" id="delivered-orders">0</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Product Photos Section -->
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Product Photos</h2>
+          </div>
+          <div class="product-photos-grid" id="dashboard-product-photos">
+          </div>
+        </section>
+
+        <!-- Recent Orders -->
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Recent Orders</h2>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-orders-table">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Products Section -->
+      <section id="products" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Product Management</h2>
+            <button class="btn-add" onclick="openProductModal()">
+              <i class="fas fa-plus"></i> Add Product
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Orders Section -->
+      <section id="orders" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Order Management</h2>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Email</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Customers Section -->
+      <section id="customers" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Customer Management</h2>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Total Orders</th>
+                  <th>Total Spent</th>
+                  <th>Last Order</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customers-table">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Categories Section -->
+      <section id="categories" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Category Management</h2>
+          </div>
+          <div class="category-tabs">
+            <button class="category-tab active" data-category="all">All Products</button>
+            <button class="category-tab" data-category="men">Men</button>
+            <button class="category-tab" data-category="women">Women</button>
+            <button class="category-tab" data-category="kids">Kids</button>
+            <button class="category-tab" data-category="accessories">Accessories</button>
+          </div>
+          <div class="category-products-grid" id="category-products-grid">
+          </div>
+          <div class="no-category-products" id="no-category-products" style="display: none;">
+            <p>No products in this category. Add products from the Products section.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- Analytics Section -->
+      <section id="analytics" class="content-section">
+        <section class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+              <h3>30-Day Revenue</h3>
+              <p class="stat-number" id="analytics-revenue">$0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-shopping-bag"></i>
+            </div>
+            <div class="stat-info">
+              <h3>30-Day Orders</h3>
+              <p class="stat-number" id="analytics-orders">0</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Order Status Distribution</h2>
+          </div>
+          <div class="status-grid" id="status-grid">
+          </div>
+        </section>
+
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Top Products</h2>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                </tr>
+              </thead>
+              <tbody id="top-products-table">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Account Section -->
+      <section id="account" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>My Account</h2>
+          </div>
+          <form id="account-form" class="settings-form">
+            <div class="form-section">
+              <h3>Profile Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input type="text" id="account-name">
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" id="account-email" disabled>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="account-phone">
+              </div>
+            </div>
+            <div class="form-section">
+              <h3>Change Password</h3>
+              <div class="form-group">
+                <label>Current Password</label>
+                <input type="password" id="current-password">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" id="new-password">
+                </div>
+                <div class="form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" id="confirm-password">
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-submit">Update Profile</button>
+            </div>
+          </form>
+        </section>
+      </section>
+
+      <!-- Users Section (Admin Only) -->
+      <section id="users" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>User Management</h2>
+            <button class="btn-add" onclick="openUserModal()">
+              <i class="fas fa-plus"></i> Add User
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Last Login</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-table">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Settings Section -->
+      <section id="settings" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Store Settings</h2>
+          </div>
+          <form id="settings-form" class="settings-form">
+            <div class="form-section">
+              <h3>Store Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Store Name</label>
+                  <input type="text" id="storeName" required>
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" id="storeEmail" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Phone</label>
+                  <input type="text" id="storePhone">
+                </div>
+                <div class="form-group">
+                  <label>Currency</label>
+                  <select id="currency">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Address</label>
+                <textarea id="storeAddress" rows="2"></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Pricing</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Tax Rate (%)</label>
+                  <input type="number" id="taxRate" step="0.1" min="0">
+                </div>
+                <div class="form-group">
+                  <label>Shipping Cost ($)</label>
+                  <input type="number" id="shippingCost" step="0.01" min="0">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Free Shipping Threshold ($)</label>
+                <input type="number" id="freeShippingThreshold" step="0.01" min="0">
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Notifications</h3>
+              <div class="checkbox-group">
+                <label>
+                  <input type="checkbox" id="orderEmail"> Email notifications for new orders
+                </label>
+                <label>
+                  <input type="checkbox" id="orderSMS"> SMS notifications for new orders
+                </label>
+                <label>
+                  <input type="checkbox" id="marketingEmail"> Receive marketing emails
+                </label>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-submit">Save Settings</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add/Edit Product Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Add New Product</h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="productForm">
+          <input type="hidden" id="productId">
+          <div class="form-group">
+            <label for="productName">Product Name</label>
+            <input type="text" id="productName" required>
+          </div>
+          <div class="form-group">
+            <label for="productDescription">Description</label>
+            <textarea id="productDescription" rows="3"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="productPrice">Price ($)</label>
+              <input type="number" id="productPrice" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label for="productStock">Stock</label>
+              <input type="number" id="productStock" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="productCategory">Category</label>
+            <select id="productCategory" required>
+              <option value="men">Men</option>
+              <option value="women">Women</option>
+              <option value="kids">Kids</option>
+              <option value="accessories">Accessories</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="productImages">Product Images (URLs - one per line)</label>
+            <textarea id="productImages" rows="3" placeholder="https://example.com/image1.jpg"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="productFeatured"> Mark as Featured Product
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="productNewArrival"> Mark as New Arrival
+            </label>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="productOnSale"> Put on Sale
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="productDiscount">Discount (%)</label>
+              <input type="number" id="productDiscount" min="0" max="90" value="0">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn-submit" id="product-submit-btn">Add Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Order Details</h3>
+        <span class="close" onclick="closeOrderModal()">&times;</span>
+      </div>
+      <div class="modal-body" id="order-details">
+      </div>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="user-modal-title">Add User</h3>
+        <span class="close" onclick="closeUserModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="userForm">
+          <input type="hidden" id="userId">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="userUsername" required>
+          </div>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="userName">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="userEmail" required>
+          </div>
+          <div class="form-group" id="password-group">
+            <label>Password</label>
+            <input type="password" id="userPassword">
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="userRole">
+              <option value="staff">Staff</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="closeUserModal()">Cancel</button>
+            <button type="submit" class="btn-submit" id="user-submit-btn">Add User</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+
+</html>

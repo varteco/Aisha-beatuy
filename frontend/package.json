@@ -1,0 +1,23 @@
+{
+  "name": "aisha-beauty-frontend",
+  "version": "1.0.0",
+  "description": "Aisha Beauty - Premium Fashion & Lifestyle E-commerce Platform",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8888 -o",
+    "dev": "npx http-server -p 8888 -c-1",
+    "serve": "npx http-server -p 8888"
+  },
+  "proxy": "http://localhost:5000",
+  "keywords": [
+    "ecommerce",
+    "fashion",
+    "responsive",
+    "beauty"
+  ],
+  "author": "Aisha Beauty",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
