@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Orders - Aisha Beauty</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { --primary: #FFD700; --black: #000000; --dark: #333; --light: #f5f5f5; --white: #fff; --gray: #666; --border: #ddd; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #eaeded; }
+    * { box-sizing: border-box; }
+
+    .orders-page { max-width: 1000px; margin: 0 auto; padding: 20px 20px 40px; }
+
+    .breadcrumb { font-size: 13px; color: #555; margin-bottom: 15px; }
+    .breadcrumb a { color: #0066c0; text-decoration: none; }
+    .breadcrumb a:hover { color: #c45500; text-decoration: underline; }
+    .breadcrumb span { color: #555; }
+
+    .page-title { font-size: 28px; font-weight: 700; color: #111; margin: 0 0 15px; }
+
+    .orders-search-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+    .orders-search-bar input { flex: 1; padding: 10px 12px; border: 1px solid #888; border-radius: 4px; font-size: 14px; }
+    .orders-search-bar button { padding: 8px 18px; background: #f0c14b; border: 1px solid #a88734; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; color: #111; }
+    .orders-search-bar button:hover { background: #e2b33a; }
+
+    .orders-tabs { display: flex; border-bottom: 1px solid #ccc; margin-bottom: 20px; }
+    .orders-tab { padding: 8px 20px; font-size: 14px; color: #555; cursor: pointer; border: 1px solid transparent; border-bottom: none; margin-bottom: -1px; border-radius: 4px 4px 0 0; background: none; }
+    .orders-tab:hover { color: #111; }
+    .orders-tab.active { color: #111; font-weight: 700; border-color: #ccc; background: #fff; }
+    .orders-tab .count { color: #555; font-weight: 400; margin-left: 4px; }
+
+    .order-card { background: #fff; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 16px; overflow: hidden; }
+    .order-card-header { background: #f0f2f2; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 13px; }
+    .order-header-left { display: flex; gap: 30px; flex-wrap: wrap; }
+    .order-header-item label { color: #555; display: block; font-size: 12px; }
+    .order-header-item span { color: #111; font-weight: 600; font-size: 13px; }
+    .order-header-links { display: flex; gap: 20px; }
+    .order-header-links a { color: #0066c0; text-decoration: none; font-size: 13px; }
+    .order-header-links a:hover { color: #c45500; text-decoration: underline; }
+
+    .order-card-body { padding: 16px 20px; }
+    .order-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-img { width: 80px; height: 80px; flex-shrink: 0; border-radius: 4px; overflow: hidden; background: #f5f5f5; display: flex; align-items: center; justify-content: center; }
+    .order-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .order-item-img i { font-size: 28px; color: #ccc; }
+    .order-item-details { flex: 1; min-width: 200px; }
+    .order-item-name { font-size: 17px; font-weight: 600; color: #111; margin-bottom: 4px; }
+    .order-item-name a { color: #111; text-decoration: none; }
+    .order-item-name a:hover { color: #c45500; }
+    .order-item-name-ar { font-size: 13px; color: #555; margin-bottom: 6px; line-height: 1.4; }
+    .order-item-qty { font-size: 13px; color: #555; margin-bottom: 4px; }
+    .order-item-status { font-size: 13px; color: #067d62; font-weight: 600; margin-bottom: 8px; }
+    .order-item-return { font-size: 13px; color: #555; margin-bottom: 10px; }
+    .order-item-return a { color: #0066c0; text-decoration: none; }
+    .order-item-return a:hover { text-decoration: underline; }
+    .order-item-price { font-size: 14px; font-weight: 600; color: #111; white-space: nowrap; }
+    .order-item-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .order-item-actions .btn-amz { padding: 7px 14px; background: #fff; border: 1px solid #d5d9d9; border-radius: 8px; font-size: 13px; cursor: pointer; color: #111; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+    .order-item-actions .btn-amz:hover { background: #f7fafa; border-color: #b3b3b3; }
+    .order-item-actions .btn-amz-primary { background: #ffd814; border-color: #fcd200; }
+    .order-item-actions .btn-amz-primary:hover { background: #f7ca00; }
+    .order-delivery-banner { background: #fbfaf2; border: 1px solid #e7e3c6; border-radius: 4px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+    .order-delivery-banner i { color: #067d62; font-size: 18px; margin-top: 2px; }
+    .order-delivery-banner strong { display: block; }
+    .order-delivery-banner span { color: #555; font-size: 13px; }
+    .order-delivery-banner a { color: #0066c0; text-decoration: none; font-size: 13px; }
+    .order-delivery-banner a:hover { text-decoration: underline; }
+
+    .empty-orders { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px; }
+    .empty-orders i { font-size: 56px; color: #ddd; margin-bottom: 16px; }
+    .empty-orders h2 { color: #111; margin: 0 0 8px; font-size: 22px; }
+    .empty-orders p { color: #666; margin: 0 0 20px; font-size: 14px; }
+    .empty-orders .btn-shop { display: inline-block; padding: 10px 24px; background: #ffd814; border: 1px solid #fcd200; border-radius: 20px; font-size: 14px; font-weight: 600; color: #111; text-decoration: none; }
+    .empty-orders .btn-shop:hover { background: #f7ca00; }
+
+    @media (max-width: 768px) {
+      .orders-page { padding: 12px; }
+      .order-card-header { flex-direction: column; align-items: flex-start; }
+      .order-header-left { gap: 12px; }
+      .order-item { flex-direction: column; }
+      .order-item-img { width: 100%; max-width: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="#">Sell on Aisha Beauty</a>
+        <a href="#">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <div class="lang-switcher">
+          <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
+        </div>
+        <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="/orders" id="nav-orders" class="nav-order-link" style="display:none;"><i class="fas fa-box"></i> Orders</a>
+        <a href="cart-login.html" id="user-icon-top">
+          <i class="fas fa-user"></i> <span data-i18n="login">Login</span>
+        </a>
+        <a href="/profile" id="user-menu-top" style="display: none;" class="user-logged-in">
+          <i class="fas fa-user-circle"></i> <span id="user-name-top"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="orders-page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> › <a href="/profile">Your Account</a> › <span>Your Orders</span>
+    </div>
+
+    <h1 class="page-title">Your Orders</h1>
+
+    <div class="orders-search-bar">
+      <input type="text" id="orderSearch" placeholder="Search all orders">
+      <button onclick="searchOrders()">Search Orders</button>
+    </div>
+
+    <div class="orders-tabs">
+      <button class="orders-tab active" data-tab="orders" onclick="switchTab('orders')">
+        Orders <span class="count" id="orders-count"></span>
+      </button>
+      <button class="orders-tab" data-tab="buy-again" onclick="switchTab('buy-again')">Buy Again</button>
+      <button class="orders-tab" data-tab="not-dispatched" onclick="switchTab('not-dispatched')">Not Yet Dispatched</button>
+    </div>
+
+    <div id="ordersList"></div>
+  </main>
+
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3 id="footer-store-name">Aisha Beauty</h3>
+          <p id="footer-tagline">Your trusted destination for premium fashion products.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/shop">Shop</a></li>
+            <li><a href="/orders">Your Orders</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Sudan, Khartum</span></li>
+            <li><i class="fas fa-phone"></i> <span id="footer-phone">+256 767 886 480</span></li>
+            <li><i class="fas fa-envelope"></i> <span id="footer-email">info@aishabeauty.com</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Aisha Beauty. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/language.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const API = 'http://localhost:5000/api';
+    let allOrders = [];
+    let currentTab = 'orders';
+
+    document.addEventListener('DOMContentLoaded', function () {
+      checkOrdersAuth();
+    });
+
+    function checkOrdersAuth() {
+      const token = localStorage.getItem('customerToken');
+      const user = JSON.parse(localStorage.getItem('customerUser') || 'null');
+
+      if (token && user) {
+        document.getElementById('nav-orders').style.display = 'inline-block';
+        loadOrders();
+        return;
+      }
+
+      document.getElementById('ordersList').innerHTML = `
+        <div class="empty-orders">
+          <i class="fas fa-sign-in-alt"></i>
+          <h2>Please log in to view your orders</h2>
+          <p>You need to be signed in to see your order history.</p>
+          <a href="cart-login.html" class="btn-shop">Login / Register</a>
+        </div>
+      `;
+    }
+
+    async function loadOrders() {
+      const token = localStorage.getItem('customerToken');
+      document.getElementById('ordersList').innerHTML = '<div style="text-align:center;padding:40px;color:#888;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Loading your orders...</p></div>';
+
+      try {
+        const res = await fetch(API + '/orders', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Failed');
+        allOrders = await res.json();
+        displayOrders(allOrders);
+      } catch (e) {
+        document.getElementById('ordersList').innerHTML = `
+          <div class="empty-orders">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Could not load orders</h2>
+            <p>Please try again later.</p>
+            <button class="btn-shop" onclick="loadOrders()">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function displayOrders(orders) {
+      const container = document.getElementById('ordersList');
+      const count = document.getElementById('orders-count');
+
+      let filtered = orders;
+      if (currentTab === 'not-dispatched') {
+        filtered = orders.filter(o => o.status === 'pending' || o.status === 'processing');
+      }
+
+      if (count) count.textContent = '(' + filtered.length + ')';
+
+      if (!filtered || filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-orders">
+            <i class="fas fa-box-open"></i>
+            <h2>No orders yet</h2>
+            <p>Start shopping to see your orders here!</p>
+            <a href="/shop" class="btn-shop">Start Shopping</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(order => {
+        const itemsHtml = (order.items || []).map(item => {
+          const img = item.image || 'images/1.jpg';
+          const price = (item.price || 0) * (item.quantity || 1);
+          const status = order.status === 'delivered'
+            ? `<div class="order-item-status"><i class="fas fa-check-circle"></i> Delivered ${new Date(order.updatedAt || order.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>`
+            : `<div class="order-item-status" style="color:#c45500;">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>`;
+
+          return `
+            <div class="order-item">
+              <div class="order-item-img">
+                <img src="${img}" alt="${item.name}" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-box\\'></i>'">
+              </div>
+              <div class="order-item-details">
+                <div class="order-item-name"><a href="#">${item.name}</a></div>
+                <div class="order-item-price">$${price.toFixed(2)}</div>
+                <div class="order-item-qty">Qty: ${item.quantity || 1}</div>
+                ${status}
+                <div class="order-item-return">Return items: Eligible through ${new Date(Date.now() + 18*86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                <div class="order-item-actions">
+                  <a href="/shop" class="btn-amz btn-amz-primary"><i class="fas fa-shopping-cart"></i> Buy it again</a>
+                  <a href="#" class="btn-amz" onclick="viewItem('${item.product || item._id || ''}')">View your item</a>
+                  <a href="/tracking.html?orderId=${order._id}" class="btn-amz">Track package</a>
+                  ${order.status === 'pending' ? `<a href="#" class="btn-amz" onclick="cancelOrder('${order._id}')">Cancel</a>` : ''}
+                  <a href="#" class="btn-amz">Return items</a>
+                  <a href="#" class="btn-amz">Leave seller feedback</a>
+                  <a href="#" class="btn-amz">Write a product review</a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const statusBg = order.status === 'delivered' ? '#f0f2f2' : '#fbfaf2';
+        const deliveryBanner = order.status === 'delivered' ? `
+          <div class="order-delivery-banner">
+            <i class="fas fa-check-circle"></i>
+            <div>
+              <strong>Delivered ${new Date(order.updatedAt || order.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
+              <span>Your package was delivered. It was handed directly to a resident.</span>
+            </div>
+          </div>
+        ` : '';
+
+        return `
+          <div class="order-card">
+            <div class="order-card-header" style="background:${statusBg};">
+              <div class="order-header-left">
+                <div class="order-header-item">
+                  <label>ORDER PLACED</label>
+                  <span>${new Date(order.orderDate || order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+                <div class="order-header-item">
+                  <label>TOTAL</label>
+                  <span>$${(order.totalAmount || order.total || 0).toFixed(2)}</span>
+                </div>
+                <div class="order-header-item">
+                  <label>SHIP TO</label>
+                  <span>${order.customer?.name || 'Customer'}</span>
+                </div>
+              </div>
+              <div class="order-header-links">
+                <span style="color:#555;font-size:13px;">Order # ${order.orderId || order._id?.slice(-10)}</span>
+                <a href="#" onclick="viewOrderDetails('${order._id}')">View order details</a>
+                <a href="#">Invoice</a>
+              </div>
+            </div>
+            <div class="order-card-body">
+              ${deliveryBanner}
+              ${itemsHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.orders-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.orders-tab[data-tab="${tab}"]`).classList.add('active');
+      displayOrders(allOrders);
+    }
+
+    function searchOrders() {
+      const q = document.getElementById('orderSearch').value.trim().toLowerCase();
+      if (!q) { displayOrders(allOrders); return; }
+      const filtered = allOrders.filter(o =>
+        (o.orderId && o.orderId.toLowerCase().includes(q)) ||
+        (o.items || []).some(i => i.name && i.name.toLowerCase().includes(q))
+      );
+      displayOrders(filtered);
+    }
+
+    function viewItem(productId) {
+      if (productId && productId.length === 24) {
+        window.location.href = '/shop.html?product=' + productId;
+      } else {
+        window.location.href = '/shop.html';
+      }
+    }
+
+    function viewOrderDetails(orderId) {
+      const order = allOrders.find(o => o._id === orderId);
+      if (!order) return;
+      alert('Order #' + (order.orderId || orderId.slice(-10)) + '\nStatus: ' + order.status + '\nTotal: $' + (order.totalAmount || order.total || 0).toFixed(2) + '\nItems: ' + (order.items?.length || 0));
+    }
+
+    async function cancelOrder(orderId) {
+      if (!confirm('Are you sure you want to cancel this order?')) return;
+      const token = localStorage.getItem('customerToken');
+      try {
+        const res = await fetch(API + '/orders/' + orderId, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ status: 'cancelled' })
+        });
+        if (res.ok) { alert('Order cancelled.'); loadOrders(); }
+        else { alert('Could not cancel.'); }
+      } catch (e) { alert('Error.'); }
+    }
+
+    function loadFooter() {
+      fetch(API + '/settings/public')
+        .then(r => r.json())
+        .then(s => {
+          const el = id => document.getElementById(id);
+          if (el('footer-store-name')) el('footer-store-name').textContent = s.storeName || 'Aisha Beauty';
+          if (el('footer-address')) el('footer-address').textContent = s.storeAddress || '';
+          if (el('footer-phone')) el('footer-phone').textContent = s.storePhone || '';
+          if (el('footer-email')) el('footer-email').textContent = s.storeEmail || '';
+        })
+        .catch(() => {});
+    }
+    document.addEventListener('DOMContentLoaded', loadFooter);
+  </script>
+</body>
+</html>

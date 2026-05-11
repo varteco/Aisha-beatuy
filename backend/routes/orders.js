@@ -150,4 +150,63 @@ router.patch('/:id', customerAuth, async (req, res) => {
   }
 });
 
+// Public order tracking - no auth required
+router.post('/track', async (req, res) => {
+  try {
+    const { orderId, email } = req.body;
+
+    if (!orderId && !email) {
+      return res.status(400).json({ message: 'Please provide an Order ID or Email address.' });
+    }
+
+    if (orderId) {
+      const order = await Order.findOne({ orderId });
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found. Please check your Order ID.' });
+      }
+      return res.json({
+        single: true,
+        orderId: order.orderId,
+        customerName: order.customer?.name || '',
+        customerEmail: order.customer?.email || '',
+        status: order.status,
+        totalAmount: order.totalAmount || order.total || 0,
+        tax: order.tax || 0,
+        shipping: order.shipping || 0,
+        items: order.items.map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        orderDate: order.orderDate,
+        updatedAt: order.updatedAt,
+        paymentMethod: order.paymentMethod
+      });
+    }
+
+    if (email) {
+      const orders = await Order.find({ 'customer.email': email }).sort({ orderDate: -1 });
+      if (orders.length === 0) {
+        return res.status(404).json({ message: 'No orders found for this email address.' });
+      }
+      return res.json({
+        single: false,
+        orders: orders.map(o => ({
+          orderId: o.orderId,
+          customerName: o.customer?.name || '',
+          status: o.status,
+          totalAmount: o.totalAmount || o.total || 0,
+          orderDate: o.orderDate,
+          updatedAt: o.updatedAt,
+          paymentMethod: o.paymentMethod,
+          itemCount: o.items?.length || 0
+        }))
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error tracking order', error: error.message });
+  }
+});
+
 module.exports = router;
+

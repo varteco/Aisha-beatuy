@@ -200,7 +200,8 @@
         </div>
         <a href="#"><i class="fas fa-envelope"></i> Messages</a>
         <a href="#"><i class="fas fa-bell"></i> Notifications</a>
-        <a href="#" onclick="openAuthModal()" id="user-icon-top">
+        <a href="/orders" id="nav-orders" style="display:none;"><i class="fas fa-box"></i> Orders</a>
+        <a href="cart-login.html" id="user-icon-top">
           <i class="fas fa-user"></i> <span data-i18n="login">Login</span>
         </a>
         <a href="/profile" id="user-menu-top" style="display: none;" class="user-logged-in">
@@ -307,85 +308,282 @@
             <div class="logo">
                 <img src="images/LOGO.png" alt="Logo">
             </div>
-            <h2>Login to Your Account</h2>
-            
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab" onclick="showLoginForm()">Login</button>
+                <button class="auth-tab" id="signupTab" onclick="showSignupForm()">Sign Up</button>
+            </div>
+
             <div class="error-message" id="errorMessage"></div>
-            
+
+            <!-- Login Form -->
             <form id="loginForm">
                 <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
                 </div>
-                
                 <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
                 </div>
-
-                <button type="submit" class="btn-submit" id="submitBtn">
-                    <span id="btnText">Login</span>
-                    <div class="spinner" id="spinner" style="display: none;"></div>
+                <button type="submit" class="btn-submit" id="loginBtn">
+                    <span id="loginBtnText">Login</span>
+                    <div class="spinner" id="loginSpinner" style="display: none;"></div>
                 </button>
             </form>
 
-            <p class="footer-text">
-                Don't have an account? <a href="#">Sign up now</a>
-            </p>
-            
+            <!-- Sign Up Form -->
+            <form id="signupForm" style="display: none;">
+                <div class="input-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your name" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupPhone">Phone Number</label>
+                    <input type="tel" id="signupPhone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn-submit" id="signupBtn">
+                    <span id="signupBtnText">Sign Up</span>
+                    <div class="spinner" id="signupSpinner" style="display: none;"></div>
+                </button>
+            </form>
+
             <a href="/" class="back-link">
                 <i class="fas fa-arrow-right"></i> Back to Home
             </a>
         </div>
     </div>
 
+    <style>
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.3s;
+        }
+        .auth-tab.active {
+            color: #000;
+            border-bottom: 2px solid #FFD700;
+            margin-bottom: -2px;
+        }
+        .auth-tab:hover {
+            color: #000;
+        }
+    </style>
+
     <script src="js/language.js"></script>
-    <script src="js/main.js"></script>
     <script>
         const API_BASE = 'http://localhost:5000/api';
 
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginTab').classList.add('active');
+            document.getElementById('signupTab').classList.remove('active');
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function showSignupForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+            document.getElementById('signupTab').classList.add('active');
+            document.getElementById('loginTab').classList.remove('active');
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const spinner = document.getElementById('spinner');
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('loginBtnText');
+            const spinner = document.getElementById('loginSpinner');
             const errorMessage = document.getElementById('errorMessage');
-            
-            submitBtn.disabled = true;
+
+            btn.disabled = true;
             btnText.style.display = 'none';
             spinner.style.display = 'block';
             errorMessage.style.display = 'none';
-            
+
             try {
-                const response = await fetch(`${API_BASE}/auth/login`, {
+                const response = await fetch(`${API_BASE}/auth/customer-login`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                
                 const data = await response.json();
-                
                 if (response.ok) {
                     localStorage.setItem('customerToken', data.token);
                     localStorage.setItem('customerUser', JSON.stringify(data.user));
                     window.location.href = 'cart.html';
                 } else {
-                    errorMessage.textContent = data.message || 'Login failed. Please check your credentials.';
+                    errorMessage.textContent = data.message || 'Login failed';
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
-                errorMessage.textContent = 'Network error. Please try again later.';
+                errorMessage.textContent = 'Network error. Please try again.';
                 errorMessage.style.display = 'block';
             } finally {
-                submitBtn.disabled = false;
+                btn.disabled = false;
+                btnText.style.display = 'block';
+                spinner.style.display = 'none';
+            }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const phone = document.getElementById('signupPhone').value;
+            const password = document.getElementById('signupPassword').value;
+            const btn = document.getElementById('signupBtn');
+            const btnText = document.getElementById('signupBtnText');
+            const spinner = document.getElementById('signupSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('customerToken', data.token);
+                    localStorage.setItem('customerUser', JSON.stringify(data.user));
+                    window.location.href = 'cart.html';
+                } else {
+                    errorMessage.textContent = data.message || 'Registration failed';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Network error. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                btn.disabled = false;
                 btnText.style.display = 'block';
                 spinner.style.display = 'none';
             }
         });
     </script>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3 id="footer-store-name">Aisha Beauty</h3>
+          <p id="footer-tagline">Your trusted destination for premium fashion and lifestyle products.</p>
+          <div class="footer-social" id="footer-social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="quickLinks">Quick Links</h4>
+          <ul>
+            <li><a href="/" data-i18n="home">Home</a></li>
+            <li><a href="/shop" data-i18n="shop">Shop</a></li>
+            <li><a href="/categories" data-i18n="categories">Categories</a></li>
+            <li><a href="/sale">Sale</a></li>
+            <li><a href="/new-arrivals">New Arrivals</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Customer Service</h4>
+          <ul>
+            <li><a href="/page?page=shipping-info">Shipping Info</a></li>
+            <li><a href="/page?page=returns-exchanges">Returns & Exchanges</a></li>
+            <li><a href="/page?page=order-tracking">Order Tracking</a></li>
+            <li><a href="/page?page=faqs">FAQs</a></li>
+            <li><a href="/page?page=size-guide">Size Guide</a></li>
+            <li><a href="/page?page=about-us">About Us</a></li>
+            <li><a href="/page?page=contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="contactInfo">Contact Info</h4>
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Sudan, Khartum</span></li>
+            <li><i class="fas fa-phone"></i> <span id="footer-phone">+256 767 886 480</span></li>
+            <li><i class="fas fa-envelope"></i> <span id="footer-email">info@aishabeauty.com</span></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Newsletter</h4>
+          <p>Subscribe to get special offers and updates</p>
+          <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" placeholder="Enter your email">
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
+        <div class="footer-payments">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-amex"></i>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function loadFooter() {
+      const API = 'http://localhost:5000/api';
+      fetch(API + '/settings/public')
+        .then(r => r.json())
+        .then(s => {
+          const el = id => document.getElementById(id);
+          if (el('footer-store-name')) el('footer-store-name').textContent = s.storeName || 'Aisha Beauty';
+          if (el('footer-tagline')) el('footer-tagline').textContent = 'Your trusted destination for premium fashion and lifestyle products.';
+          if (el('footer-company')) el('footer-company').textContent = s.storeName || 'Aisha Beauty';
+          if (el('footer-year')) el('footer-year').textContent = new Date().getFullYear();
+          if (el('footer-address')) el('footer-address').textContent = s.storeAddress || '';
+          if (el('footer-phone')) el('footer-phone').textContent = s.storePhone || '';
+          if (el('footer-email')) el('footer-email').textContent = s.storeEmail || '';
+          const sc = document.getElementById('footer-social');
+          if (sc) {
+            const platforms = [
+              { k: 'socialFacebook', i: 'fab fa-facebook-f' },
+              { k: 'socialTwitter', i: 'fab fa-twitter' },
+              { k: 'socialInstagram', i: 'fab fa-instagram' },
+              { k: 'socialYoutube', i: 'fab fa-youtube' }
+            ];
+            const links = platforms.filter(p => s[p.k]).map(p => '<a href="' + s[p.k] + '" target="_blank" rel="noopener"><i class="' + p.i + '"></i></a>').join('');
+            if (links) sc.innerHTML = links;
+          }
+        })
+        .catch(() => {});
+    }
+    document.addEventListener('DOMContentLoaded', loadFooter);
+  </script>
 </body>
 </html>

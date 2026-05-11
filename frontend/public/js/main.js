@@ -26,7 +26,27 @@ function showToast(message) {
     loadFlashSaleProducts();
     updateCartCount();
   });
-});
+
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('add-to-cart')) {
+      const btn = e.target;
+      const card = btn.closest('.product-card, .sale-product-card');
+      let size = null;
+      if (card) {
+        const selectedSizeBtn = card.querySelector('.size-btn.selected');
+        if (card.querySelector('.size-btn') && !selectedSizeBtn) {
+          showToast('Please select a size');
+          return;
+        }
+        if (selectedSizeBtn) size = selectedSizeBtn.dataset.size;
+      }
+      const id = btn.dataset.id;
+      const name = btn.dataset.name;
+      const price = parseFloat(btn.dataset.price);
+      const image = btn.dataset.image;
+      addToCart(id, name, price, image, size);
+    }
+  });
 
 function checkAuth() {
   if (authToken) {
@@ -56,6 +76,9 @@ function showLoggedInState() {
     userMenuTop.style.display = 'inline-block';
     if (userNameTop) userNameTop.textContent = currentUser.name || currentUser.email;
   }
+
+  const navOrders = document.getElementById('nav-orders');
+  if (navOrders) navOrders.style.display = 'inline-block';
 }
 
 function showLoggedOutState() {
@@ -68,6 +91,9 @@ function showLoggedOutState() {
   const userMenuTop = document.getElementById('user-menu-top');
   if (userIconTop) userIconTop.style.display = 'flex';
   if (userMenuTop) userMenuTop.style.display = 'none';
+
+  const navOrders = document.getElementById('nav-orders');
+  if (navOrders) navOrders.style.display = 'none';
 }
 
 // ==================== AUTH ====================
@@ -266,28 +292,57 @@ function logout() {
 
 function viewOrders() {
   if (!currentUser) {
-    openAuthModal();
+    window.location.href = 'cart-login.html';
     return;
   }
-  window.location.href = '/admin';
+  window.location.href = '/admin.html';
 }
 
 // ==================== PRODUCTS ====================
+let allHomeProducts = [];
+
 async function loadProducts() {
   try {
     const response = await fetch(`${API_BASE}/products`);
     const products = await response.json();
+    allHomeProducts = products;
     displayProducts(products);
   } catch (error) {
     console.error('Error loading products:', error);
   }
 }
 
+function homeFilterByCategory(category, btn) {
+  document.querySelectorAll('.home-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  applyHomeFilters();
+}
+
+function homeSearchProducts() {
+  applyHomeFilters();
+}
+
+function applyHomeFilters() {
+  const searchInput = document.getElementById('home-search-input');
+  const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  const activeBtn = document.querySelector('.home-filter-btn.active');
+  const category = activeBtn ? activeBtn.dataset.category : 'all';
+
+  let filtered = allHomeProducts;
+  if (category !== 'all') {
+    filtered = filtered.filter(p => p.category === category);
+  }
+  if (searchTerm) {
+    filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+  }
+  displayProducts(filtered);
+}
+
 async function loadFlashSaleProducts() {
   try {
     const response = await fetch(`${API_BASE}/products`);
     const products = await response.json();
-    const saleProducts = products.filter(p => p.onSale === true);
+    const saleProducts = products.filter(p => p.onSale === true && p.discount > 0);
     displayFlashSaleProducts(saleProducts);
   } catch (error) {
     console.error('Error loading flash sale products:', error);
@@ -314,6 +369,10 @@ function displayFlashSaleProducts(products) {
     const card = document.createElement('div');
     card.className = 'product-card sale-product-card';
     const imgUrl = product.images && product.images[0] ? product.images[0] : 'images/1.jpg';
+    const hasSizes = product.sizes && product.sizes.length > 0;
+    const sizesHtml = hasSizes
+      ? `<div class="product-sizes">${product.sizes.map(s => `<button type="button" class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`).join('')}</div>`
+      : '';
     card.innerHTML = `
       <img src="${imgUrl}" alt="${product.name}" class="product-img">
       <div class="sale-badge">-${discount}%</div>
@@ -324,6 +383,7 @@ function displayFlashSaleProducts(products) {
           <span class="original-price">$${originalPrice.toFixed(2)}</span>
           <span class="sale-price">$${salePrice.toFixed(2)}</span>
         </div>
+        ${sizesHtml}
         <button class="btn add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}">
           ${t('addToCart')}
         </button>
@@ -338,6 +398,11 @@ function displayProducts(products) {
   if (!container) return;
 
   container.innerHTML = '';
+
+  if (products.length === 0) {
+    container.innerHTML = '<div class="no-products-msg">No products found</div>';
+    return;
+  }
 
   products.forEach(product => {
     const card = document.createElement('div');
@@ -360,6 +425,10 @@ function displayProducts(products) {
       const originalPrice = product.price;
       const salePrice = originalPrice * (1 - discount / 100);
       card.className = 'product-card sale-product-card';
+      const hasSizes = product.sizes && product.sizes.length > 0;
+      const sizesHtml = hasSizes
+        ? `<div class="product-sizes">${product.sizes.map(s => `<button type="button" class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`).join('')}</div>`
+        : '';
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
         <div class="sale-badge">-${discount}%</div>
@@ -370,6 +439,7 @@ function displayProducts(products) {
             <span class="original-price">$${originalPrice.toFixed(2)}</span>
             <span class="sale-price">$${salePrice.toFixed(2)}</span>
           </div>
+          ${sizesHtml}
           <p class="stock-info ${stockClass}">${stockStatus}</p>
           <button class="btn add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}">
             ${t('addToCart')}
@@ -377,12 +447,17 @@ function displayProducts(products) {
         </div>
       `;
     } else {
+      const hasSizes = product.sizes && product.sizes.length > 0;
+      const sizesHtml = hasSizes
+        ? `<div class="product-sizes">${product.sizes.map(s => `<button type="button" class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`).join('')}</div>`
+        : '';
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || ''}</p>
           <div class="price">$${product.price.toFixed(2)}</div>
+          ${sizesHtml}
           <p class="stock-info ${stockClass}">${stockStatus}</p>
           <button class="btn add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}">
             ${t('addToCart')}
@@ -392,6 +467,14 @@ function displayProducts(products) {
     }
     container.appendChild(card);
   });
+}
+
+function selectSize(btn) {
+  const parent = btn.parentElement;
+  if (parent) {
+    parent.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+  }
+  btn.classList.add('selected');
 }
 
 // ==================== CART ====================
@@ -404,12 +487,13 @@ function closeCart() {
   document.getElementById('cart-modal').classList.remove('show');
 }
 
-function addToCart(id, name, price, image) {
-  const existingItem = cart.find(item => item.id === id);
+function addToCart(id, name, price, image, size) {
+  const key = size ? id + '_' + size : id;
+  const existingItem = cart.find(item => item.id === key);
   if (existingItem) {
     existingItem.qty++;
   } else {
-    cart.push({ id, name, price, image: image || 'images/1.jpg', qty: 1 });
+    cart.push({ id: key, name: name + (size ? ' (' + size + ')' : ''), price, image: image || 'images/1.jpg', qty: 1, size, productId: id });
   }
   localStorage.setItem('cart', JSON.stringify(cart));
   updateCartCount();
@@ -434,14 +518,14 @@ function displayCart() {
     return;
   }
   
-  let total = 0;
+  let subtotal = 0;
   container.innerHTML = cart.map(item => {
     const itemTotal = item.price * item.qty;
-    total += itemTotal;
+    subtotal += itemTotal;
     return `
       <div class="cart-item">
         <div class="cart-item-info">
-          <h4>${item.name}</h4>
+          <h4>${item.name}${item.size ? ` <span class="cart-item-size">(${item.size})</span>` : ''}</h4>
           <p>$${item.price.toFixed(2)}</p>
           <div class="cart-item-qty">
             <button onclick="changeQty('${item.id}', -1)">-</button>
@@ -455,7 +539,29 @@ function displayCart() {
     `;
   }).join('');
   
-  document.getElementById('cart-total').textContent = total.toFixed(2);
+  // Fetch settings for tax/shipping display
+  fetch(`${API_BASE}/settings/public`)
+    .then(r => r.json())
+    .then(s => {
+      const taxRate = parseFloat(s.taxRate) || 0;
+      const shippingCost = parseFloat(s.shippingCost) || 0;
+      const freeThreshold = parseFloat(s.freeShippingThreshold) || 0;
+      const tax = subtotal * (taxRate / 100);
+      const shipping = subtotal >= freeThreshold && freeThreshold > 0 ? 0 : shippingCost;
+      const total = subtotal + tax + shipping;
+      
+      const totalEl = document.getElementById('cart-total');
+      if (totalEl) {
+        let breakdown = `$${subtotal.toFixed(2)}`;
+        if (tax > 0) breakdown += ` + tax $${tax.toFixed(2)}`;
+        if (shipping > 0) breakdown += ` + shipping $${shipping.toFixed(2)}`;
+        breakdown += ` = $${total.toFixed(2)}`;
+        totalEl.textContent = breakdown;
+      }
+    })
+    .catch(() => {
+      document.getElementById('cart-total').textContent = '$' + subtotal.toFixed(2);
+    });
 }
 
 function changeQty(id, delta) {
@@ -488,23 +594,41 @@ async function checkout() {
   const token = localStorage.getItem('customerToken');
   if (!token) {
     alert('Please login to checkout');
-    window.location.href = '/cart-login';
+    window.location.href = '/cart-login.html';
     return;
   }
   
   closeCart();
   
-  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  
+  // Fetch store settings for tax & shipping
+  let taxRate = 0, shippingCost = 0, freeShippingThreshold = 0;
+  try {
+    const res = await fetch(`${API_BASE}/settings/public`);
+    const s = await res.json();
+    taxRate = parseFloat(s.taxRate) || 0;
+    shippingCost = parseFloat(s.shippingCost) || 0;
+    freeShippingThreshold = parseFloat(s.freeShippingThreshold) || 0;
+  } catch (e) {}
+  
+  const tax = subtotal * (taxRate / 100);
+  const shipping = subtotal >= freeShippingThreshold && freeShippingThreshold > 0 ? 0 : shippingCost;
+  const total = subtotal + tax + shipping;
   
   const orderData = {
     items: cart.map(item => ({
-      productId: item.id,
+      productId: item.productId || item.id,
       name: item.name,
       price: item.price,
       quantity: item.qty,
-      image: item.image
+      image: item.image,
+      size: item.size || ''
     })),
-    total: cartTotal
+    subtotal,
+    tax,
+    shipping,
+    total
   };
   
   try {
@@ -522,7 +646,7 @@ async function checkout() {
       localStorage.setItem('cart', JSON.stringify(cart));
       updateCartCount();
       alert('Order placed successfully! You can view it in your account.');
-      window.location.href = '/profile';
+      window.location.href = '/profile.html';
     } else {
       alert('Failed to place order. Please try again.');
     }
@@ -533,13 +657,13 @@ async function checkout() {
 }
 
 function viewCartProducts() {
-  window.location.href = '/cart';
+  window.location.href = '/cart.html';
 }
 
 function goToCheckout() {
   const authToken = localStorage.getItem('customerToken');
   if (!authToken) {
-    window.location.href = '/cart-login';
+    window.location.href = '/cart-login.html';
   } else {
     checkout();
   }
@@ -555,9 +679,9 @@ window.onclick = function(event) {
 function performSearch() {
   const searchInput = document.getElementById('search-input');
   if (searchInput && searchInput.value.trim()) {
-    window.location.href = `/shop?search=${encodeURIComponent(searchInput.value.trim())}`;
+    window.location.href = `/shop.html?search=${encodeURIComponent(searchInput.value.trim())}`;
   } else {
-    window.location.href = '/shop';
+    window.location.href = '/shop.html';
   }
 }
 
@@ -590,3 +714,56 @@ function toggleMobileMenu() {
     mobileNav.classList.toggle('active');
   }
 }
+
+// Load footer from settings
+function loadFooter() {
+  const storeNameEl = document.getElementById('footer-store-name');
+  const taglineEl = document.getElementById('footer-tagline');
+  const socialContainer = document.getElementById('footer-social');
+  const addressEl = document.getElementById('footer-address');
+  const phoneEl = document.getElementById('footer-phone');
+  const emailEl = document.getElementById('footer-email');
+  const yearEl = document.getElementById('footer-year');
+  const companyEl = document.getElementById('footer-company');
+
+  if (!storeNameEl && !addressEl) return;
+
+  fetch(`${API_BASE}/settings/public`)
+    .then(r => r.json())
+    .then(s => {
+      if (storeNameEl) storeNameEl.textContent = s.storeName || 'Aisha Beauty';
+      if (taglineEl) taglineEl.textContent = 'Your trusted destination for premium fashion and lifestyle products.';
+      if (companyEl) companyEl.textContent = s.storeName || 'Aisha Beauty';
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+      if (addressEl) addressEl.textContent = s.storeAddress || '';
+      if (phoneEl) phoneEl.textContent = s.storePhone || '';
+      if (emailEl) emailEl.textContent = s.storeEmail || '';
+
+      if (socialContainer) {
+        const platforms = [
+          { key: 'socialFacebook', icon: 'fab fa-facebook-f' },
+          { key: 'socialTwitter', icon: 'fab fa-twitter' },
+          { key: 'socialInstagram', icon: 'fab fa-instagram' },
+          { key: 'socialYoutube', icon: 'fab fa-youtube' }
+        ];
+        const links = platforms
+          .filter(p => s[p.key])
+          .map(p => `<a href="${s[p.key]}" target="_blank" rel="noopener"><i class="${p.icon}"></i></a>`)
+          .join('');
+        if (links) {
+          socialContainer.innerHTML = links;
+        } else {
+          socialContainer.innerHTML = `
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          `;
+        }
+      }
+    })
+    .catch(() => {});
+}
+
+// Run on every page
+document.addEventListener('DOMContentLoaded', loadFooter);

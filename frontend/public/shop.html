@@ -25,7 +25,8 @@
         </div>
         <a href="#"><i class="fas fa-envelope"></i> Messages</a>
         <a href="#"><i class="fas fa-bell"></i> Notifications</a>
-        <a href="#" onclick="openAuthModal()" id="user-icon-top">
+        <a href="/orders" id="nav-orders" style="display:none;"><i class="fas fa-box"></i> Orders</a>
+        <a href="cart-login.html" id="user-icon-top">
           <i class="fas fa-user"></i> <span data-i18n="login">Login</span>
         </a>
         <a href="/profile" id="user-menu-top" style="display: none;" class="user-logged-in">
@@ -61,6 +62,7 @@
             <a href="shop.html?category=women">Women's Fashion</a>
             <a href="shop.html?category=men">Men's Clothing</a>
             <a href="shop.html?category=accessories">Accessories</a>
+            <a href="shop.html?category=perfumes">Perfumes</a>
           </div>
         </div>
 
@@ -117,6 +119,8 @@
                 class="fas fa-chevron-right"></i></a>
             <a href="shop.html?category=accessories"><i class="fas fa-gem"></i> Accessories <i
                 class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=perfumes"><i class="fas fa-spray-can"></i> Perfumes <i
+                class="fas fa-chevron-right"></i></a>
           </div>
         </div>
         <ul class="nav-links-main">
@@ -156,6 +160,7 @@
               <li><a href="#" class="filter-link" data-category="women" onclick="filterByCategory('women', event)">Women's Fashion</a></li>
               <li><a href="#" class="filter-link" data-category="kids" onclick="filterByCategory('kids', event)">Kids Fashion</a></li>
               <li><a href="#" class="filter-link" data-category="accessories" onclick="filterByCategory('accessories', event)">Accessories</a></li>
+              <li><a href="#" class="filter-link" data-category="perfumes" onclick="filterByCategory('perfumes', event)">Perfumes</a></li>
             </ul>
           </div>
 
@@ -202,7 +207,7 @@
           <div id="no-products" class="no-products" style="display: none;">
             <i class="fas fa-search"></i>
             <p>No products found matching your criteria.</p>
-            <a href="/shop" class="btn-banner">Clear Filters</a>
+            <a href="shop.html" class="btn-banner">Clear Filters</a>
           </div>
         </div>
       </div>
@@ -214,9 +219,9 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-col">
-          <h3>Aisha Beauty</h3>
-          <p>Your trusted destination for premium fashion and lifestyle products.</p>
-          <div class="footer-social">
+          <h3 id="footer-store-name">Aisha Beauty</h3>
+          <p id="footer-tagline">Your trusted destination for premium fashion and lifestyle products.</p>
+          <div class="footer-social" id="footer-social">
             <a href="#"><i class="fab fa-facebook-f"></i></a>
             <a href="#"><i class="fab fa-twitter"></i></a>
             <a href="#"><i class="fab fa-instagram"></i></a>
@@ -229,27 +234,28 @@
             <li><a href="/" data-i18n="home">Home</a></li>
             <li><a href="/shop" data-i18n="shop">Shop</a></li>
             <li><a href="/categories" data-i18n="categories">Categories</a></li>
-            <li><a href="#" data-i18n="aboutUs">About Us</a></li>
-            <li><a href="#" data-i18n="contact">Contact</a></li>
+            <li><a href="/sale">Sale</a></li>
+            <li><a href="/new-arrivals">New Arrivals</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Customer Service</h4>
           <ul>
-            <li><a href="#">Shipping Info</a></li>
-            <li><a href="#">Returns & Exchanges</a></li>
-            <li><a href="#">Order Tracking</a></li>
-            <li><a href="#">FAQs</a></li>
-            <li><a href="#">Size Guide</a></li>
+            <li><a href="/page?page=shipping-info">Shipping Info</a></li>
+            <li><a href="/page?page=returns-exchanges">Returns & Exchanges</a></li>
+            <li><a href="/page?page=order-tracking">Order Tracking</a></li>
+            <li><a href="/page?page=faqs">FAQs</a></li>
+            <li><a href="/page?page=size-guide">Size Guide</a></li>
+            <li><a href="/page?page=about-us">About Us</a></li>
+            <li><a href="/page?page=contact">Contact</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4 data-i18n="contactInfo">Contact Info</h4>
           <ul class="contact-list">
-            <li><i class="fas fa-map-marker-alt"></i> <span data-i18n="address">123 Fashion Street, Style City</span>
-            </li>
-            <li><i class="fas fa-phone"></i> <span data-i18n="phone">+1 234 567 8900</span></li>
-            <li><i class="fas fa-envelope"></i> <span data-i18n="email">info@aishabeauty.com</span></li>
+            <li><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Sudan, Khartum</span></li>
+            <li><i class="fas fa-phone"></i> <span id="footer-phone">+256 767 886 480</span></li>
+            <li><i class="fas fa-envelope"></i> <span id="footer-email">info@aishabeauty.com</span></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -262,7 +268,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2024 Aisha Beauty. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
+        <p>&copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
         <div class="footer-payments">
           <i class="fab fa-cc-visa"></i>
           <i class="fab fa-cc-mastercard"></i>

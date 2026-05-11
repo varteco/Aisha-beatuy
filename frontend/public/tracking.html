@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Order - Aisha Beauty</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { --primary: #FFD700; --black: #000; --dark: #333; --light: #f5f5f5; --white: #fff; --gray: #666; --border: #ddd; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #eaeded; }
+    * { box-sizing: border-box; }
+
+    .tracking-page { max-width: 800px; margin: 0 auto; padding: 24px 20px 40px; }
+
+    .breadcrumb { font-size: 13px; color: #555; margin-bottom: 15px; }
+    .breadcrumb a { color: #0066c0; text-decoration: none; }
+    .breadcrumb a:hover { color: #c45500; text-decoration: underline; }
+    .breadcrumb span { color: #555; }
+
+    .page-title { font-size: 24px; font-weight: 700; color: #111; margin: 0 0 20px; }
+
+    .track-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+
+    .order-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .order-info-item label { font-size: 12px; color: #555; display: block; margin-bottom: 2px; }
+    .order-info-item span { font-size: 14px; color: #111; font-weight: 600; }
+
+    .progress-track { display: flex; justify-content: space-between; align-items: flex-start; margin: 30px 0; position: relative; padding: 0 10px; }
+    .progress-track::before { content: ''; position: absolute; top: 20px; left: 40px; right: 40px; height: 3px; background: #ddd; z-index: 0; }
+    .progress-step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; z-index: 1; }
+    .progress-dot { width: 40px; height: 40px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; margin-bottom: 8px; border: 3px solid #fff; box-shadow: 0 0 0 2px #ddd; }
+    .progress-step.completed .progress-dot { background: #067d62; box-shadow: 0 0 0 2px #067d62; }
+    .progress-step.active .progress-dot { background: #f0c14b; box-shadow: 0 0 0 2px #f0c14b; animation: pulse 1.5s infinite; }
+    .progress-step.active .progress-dot i { color: #111; }
+    .progress-label { font-size: 12px; color: #555; text-align: center; max-width: 80px; }
+    .progress-step.completed .progress-label { color: #067d62; font-weight: 600; }
+    .progress-step.active .progress-label { color: #111; font-weight: 600; }
+    .progress-date { font-size: 11px; color: #888; text-align: center; margin-top: 2px; }
+
+    @keyframes pulse { 0% { box-shadow: 0 0 0 2px #f0c14b; } 50% { box-shadow: 0 0 0 6px rgba(240,193,75,0.4); } 100% { box-shadow: 0 0 0 2px #f0c14b; } }
+
+    .timeline { margin-top: 20px; }
+    .timeline-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid #eee; }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-icon { width: 32px; height: 32px; border-radius: 50%; background: #f0f2f2; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #666; }
+    .timeline-icon.done { background: #d4edda; color: #067d62; }
+    .timeline-content { flex: 1; }
+    .timeline-title { font-size: 14px; font-weight: 600; color: #111; }
+    .timeline-desc { font-size: 13px; color: #555; margin-top: 2px; }
+    .timeline-time { font-size: 12px; color: #888; margin-top: 2px; }
+
+    .product-card-small { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid #eee; align-items: center; }
+    .product-card-small:last-child { border-bottom: none; }
+    .product-card-small img { width: 60px; height: 60px; border-radius: 4px; object-fit: cover; background: #f5f5f5; }
+    .product-card-small .info { flex: 1; }
+    .product-card-small .info .name { font-size: 14px; font-weight: 600; color: #111; }
+    .product-card-small .info .qty { font-size: 13px; color: #555; }
+    .product-card-small .info .price { font-size: 14px; font-weight: 600; color: #111; }
+
+    .load-error { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px; }
+    .load-error i { font-size: 48px; color: #ddd; margin-bottom: 12px; }
+    .load-error h2 { color: #111; margin: 0 0 8px; font-size: 20px; }
+    .load-error p { color: #666; margin: 0 0 16px; }
+
+    @media (max-width: 600px) {
+      .progress-track { flex-wrap: wrap; gap: 8px; }
+      .progress-track::before { display: none; }
+      .progress-step { flex-direction: row; gap: 10px; width: 100%; }
+      .progress-dot { width: 28px; height: 28px; font-size: 12px; margin-bottom: 0; }
+      .progress-label { text-align: left; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="#">Sell on Aisha Beauty</a>
+        <a href="#">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <div class="lang-switcher">
+          <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
+        </div>
+        <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="/orders" id="nav-orders" style="display:none;"><i class="fas fa-box"></i> Orders</a>
+        <a href="cart-login.html" id="user-icon-top">
+          <i class="fas fa-user"></i> <span>Login</span>
+        </a>
+        <a href="/profile" id="user-menu-top" style="display:none;" class="user-logged-in">
+          <i class="fas fa-user-circle"></i> <span id="user-name-top"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="tracking-page" id="trackingPage">
+    <div class="breadcrumb">
+      <a href="/">Home</a> › <a href="/orders">Your Orders</a> › <span>Track Package</span>
+    </div>
+    <h1 class="page-title">Track Package</h1>
+    <div id="trackingContent"><div class="load-error"><i class="fas fa-spinner fa-spin"></i><h2>Loading...</h2></div></div>
+  </main>
+
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3 id="footer-store-name">Aisha Beauty</h3>
+          <p id="footer-tagline">Your trusted destination for premium fashion products.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/shop">Shop</a></li>
+            <li><a href="/orders">Your Orders</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Sudan, Khartum</span></li>
+            <li><i class="fas fa-phone"></i> <span id="footer-phone">+256 767 886 480</span></li>
+            <li><i class="fas fa-envelope"></i> <span id="footer-email">info@aishabeauty.com</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Aisha Beauty. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/language.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const API = 'http://localhost:5000/api';
+    const STATUS_ORDER = ['pending', 'processing', 'shipped', 'delivered'];
+    const STATUS_LABELS = { pending: 'Order Placed', processing: 'Processing', shipped: 'Shipped', delivered: 'Delivered' };
+    const STATUS_ICONS = { pending: 'fa-clock', processing: 'fa-cog', shipped: 'fa-truck', delivered: 'fa-check-circle' };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get('orderId');
+      if (orderId) loadTracking(orderId);
+      else showError('No order ID provided.');
+    });
+
+    async function loadTracking(orderId) {
+      const token = localStorage.getItem('customerToken');
+      try {
+        const res = await fetch(`${API}/orders/${orderId}`, {
+          headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        if (!res.ok) throw new Error('Order not found');
+        const order = await res.json();
+        renderTracking(order);
+      } catch (e) {
+        showError('Order not found. Please check the order ID.');
+      }
+    }
+
+    function renderTracking(order) {
+      const currentIdx = STATUS_ORDER.indexOf(order.status);
+      const totalAmt = order.totalAmount || order.total || 0;
+
+      const progressHtml = STATUS_ORDER.map((s, i) => {
+        let cls = 'progress-step';
+        if (i < currentIdx) cls += ' completed';
+        else if (i === currentIdx) cls += ' active';
+        const date = i === currentIdx ? new Date(order.updatedAt || order.orderDate) : (i < currentIdx ? new Date(order.updatedAt || order.orderDate) : null);
+        return `
+          <div class="${cls}">
+            <div class="progress-dot"><i class="fas ${STATUS_ICONS[s]}"></i></div>
+            <div class="progress-label">${STATUS_LABELS[s]}</div>
+            ${date ? `<div class="progress-date">${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      const itemsHtml = (order.items || []).map(item => `
+        <div class="product-card-small">
+          <img src="${item.image || 'images/1.jpg'}" alt="${item.name}" onerror="this.src='images/1.jpg'">
+          <div class="info">
+            <div class="name">${item.name}</div>
+            <div class="qty">Qty: ${item.quantity || 1}</div>
+            <div class="price">$${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</div>
+          </div>
+        </div>
+      `).join('');
+
+      const timelineData = [
+        { title: 'Order Placed', desc: 'Your order has been placed successfully.', icon: 'fa-clock', done: currentIdx >= 0 },
+        { title: 'Payment Confirmed', desc: 'Payment has been confirmed.', icon: 'fa-credit-card', done: currentIdx >= 1 },
+        { title: 'Processing', desc: 'Your items are being prepared.', icon: 'fa-cog', done: currentIdx >= 1 },
+        { title: 'Shipped', desc: 'Your package has been shipped.', icon: 'fa-truck', done: currentIdx >= 2 },
+        { title: 'Out for Delivery', desc: 'Your package is out for delivery.', icon: 'fa-truck-fast', done: currentIdx >= 2 },
+        { title: 'Delivered', desc: currentIdx >= 3 ? 'Your package was delivered. It was handed directly to a resident.' : 'Package will arrive soon.', icon: 'fa-check-circle', done: currentIdx >= 3 }
+      ];
+
+      document.getElementById('trackingContent').innerHTML = `
+        <div class="track-card">
+          <div class="order-info-grid">
+            <div class="order-info-item">
+              <label>ORDER ID</label>
+              <span>${order.orderId || order._id?.slice(-10)}</span>
+            </div>
+            <div class="order-info-item">
+              <label>STATUS</label>
+              <span style="color:${currentIdx >= 3 ? '#067d62' : '#c45500'}">${STATUS_LABELS[order.status] || order.status}</span>
+            </div>
+            <div class="order-info-item">
+              <label>TOTAL</label>
+              <span>$${totalAmt.toFixed(2)}</span>
+            </div>
+            <div class="order-info-item">
+              <label>SHIPPING TO</label>
+              <span>${order.customer?.name || 'N/A'}</span>
+            </div>
+          </div>
+
+          <div class="progress-track">${progressHtml}</div>
+        </div>
+
+        <div class="track-card">
+          <h3 style="margin:0 0 16px;font-size:16px;"><i class="fas fa-box" style="color:#FFD700;"></i> Items in this Order</h3>
+          ${itemsHtml}
+        </div>
+
+        <div class="track-card">
+          <h3 style="margin:0 0 16px;font-size:16px;"><i class="fas fa-clock" style="color:#FFD700;"></i> Timeline</h3>
+          <div class="timeline">
+            ${timelineData.filter(t => t.done).map(t => `
+              <div class="timeline-item">
+                <div class="timeline-icon done"><i class="fas ${t.icon}"></i></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">${t.title}</div>
+                  <div class="timeline-desc">${t.desc}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function showError(msg) {
+      document.getElementById('trackingContent').innerHTML = `
+        <div class="load-error">
+          <i class="fas fa-exclamation-circle"></i>
+          <h2>Could not load tracking</h2>
+          <p>${msg}</p>
+          <a href="/orders" class="btn-shop" style="display:inline-block;padding:10px 24px;background:#ffd814;border:1px solid #fcd200;border-radius:20px;font-size:14px;font-weight:600;color:#111;text-decoration:none;">Back to Orders</a>
+        </div>
+      `;
+    }
+
+    function loadFooter() {
+      fetch(API + '/settings/public')
+        .then(r => r.json())
+        .then(s => {
+          const el = id => document.getElementById(id);
+          if (el('footer-store-name')) el('footer-store-name').textContent = s.storeName || 'Aisha Beauty';
+          if (el('footer-address')) el('footer-address').textContent = s.storeAddress || '';
+          if (el('footer-phone')) el('footer-phone').textContent = s.storePhone || '';
+          if (el('footer-email')) el('footer-email').textContent = s.storeEmail || '';
+        }).catch(() => {});
+    }
+    document.addEventListener('DOMContentLoaded', loadFooter);
+  </script>
+</body>
+</html>

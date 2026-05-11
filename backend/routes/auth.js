@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const SUPER_ADMIN_EMAIL = 'ininfoaishabeauty@gmail.com';
-const SUPER_ADMIN_PASSWORD = 'varteco@#$';
+const SUPER_ADMIN_PASSWORD = 'Varteco12345';
 
 // Auth middleware
 const auth = async (req, res, next) => {

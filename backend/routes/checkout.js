@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'aisha-beauty-secret-key-2024';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 router.post('/', async (req, res) => {
   try {
-    const { customer, items } = req.body;
+    const { customer, items, tax, shipping, paymentMethod } = req.body;
 
     if (!customer || !items || items.length === 0) {
       return res.status(400).json({ message: 'Missing required fields: customer, items' });
@@ -17,7 +19,17 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Please fill in all customer details' });
     }
 
-    let totalAmount = 0;
+    // Extract userId from auth token if present
+    let userId = null;
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        userId = decoded.userId;
+      } catch (e) {}
+    }
+
+    let subtotal = 0;
     const processedItems = [];
 
     for (const item of items) {
@@ -32,31 +44,40 @@ router.post('/', async (req, res) => {
 
       if (product) {
         const itemTotal = product.price * item.quantity;
-        totalAmount += itemTotal;
+        subtotal += itemTotal;
         processedItems.push({
           product: product._id,
           name: product.name,
           price: product.price,
           quantity: item.quantity,
+          image: product.images?.[0] || item.image || '',
         });
       } else {
         const itemTotal = (item.price || 0) * (item.quantity || 1);
-        totalAmount += itemTotal;
+        subtotal += itemTotal;
         processedItems.push({
           product: null,
           name: item.name || 'Unknown Product',
           price: item.price || 0,
           quantity: item.quantity || 1,
+          image: item.image || '',
         });
       }
     }
+
+    const taxAmount = parseFloat(tax) || 0;
+    const shippingAmount = parseFloat(shipping) || 0;
+    const totalAmount = subtotal + taxAmount + shippingAmount;
 
     const count = await Order.countDocuments();
     const orderId = 'ORD' + String(count + 1).padStart(6, '0');
 
     const order = new Order({
       orderId,
+      tax: taxAmount,
+      shipping: shippingAmount,
       customer: {
+        userId,
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
@@ -64,11 +85,23 @@ router.post('/', async (req, res) => {
       },
       items: processedItems,
       totalAmount,
-      paymentMethod: 'stripe',
+      paymentMethod: paymentMethod === 'cod' ? 'cod' : 'stripe',
       status: 'pending',
     });
 
     await order.save();
+
+    // If COD, return order immediately
+    if (paymentMethod === 'cod') {
+      return res.json({ 
+        success: true, 
+        orderId: order._id,
+        orderIdFormatted: orderId,
+        totalAmount,
+        paymentMethod: 'cod',
+        message: 'Order placed successfully! Pay on delivery.'
+      });
+    }
 
     // If Stripe is not configured, return order info so frontend can handle it
     if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_your_stripe_secret_key') {
@@ -93,7 +126,7 @@ router.post('/', async (req, res) => {
       })),
       mode: 'payment',
       success_url: `${process.env.CLIENT_URL}/order-success.html?orderId=${order._id}`,
-      cancel_url: `${process.env.CLIENT_URL}/pay.html?orderId=${order._id}`,
+      cancel_url: `${process.env.CLIENT_URL}/cart.html`,
       metadata: { orderId: order._id.toString() },
     });
 
