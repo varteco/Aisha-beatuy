@@ -1,4 +1,4 @@
-const API_BASE = 'https://backend-51wx.onrender.com/api';
+const API_BASE = 'http://localhost:5000/api';
 let currentUser = null;
 let authToken = localStorage.getItem('token');
 
@@ -279,6 +279,11 @@ function openProductModal(product = null) {
     document.getElementById('productNewArrival').checked = product.newArrival || false;
     document.getElementById('productOnSale').checked = product.onSale || false;
     document.getElementById('productDiscount').value = product.discount || 0;
+    if (product.sizes) {
+      document.querySelectorAll('.size-checkbox').forEach(cb => {
+        cb.checked = product.sizes.includes(cb.value);
+      });
+    }
   } else {
     title.textContent = 'Add New Product';
     submitBtn.textContent = 'Add Product';
@@ -295,6 +300,7 @@ function closeModal() {
   document.getElementById('productModal').style.display = 'none';
   document.getElementById('productForm').reset();
   document.getElementById('productId').value = '';
+  document.querySelectorAll('.size-checkbox').forEach(cb => cb.checked = false);
 }
 
 async function handleProductSubmit(e) {
@@ -311,6 +317,9 @@ async function handleProductSubmit(e) {
   // Auto-detect category based on product name and description
   const category = detectCategory(name, description, manualCategory);
 
+  const sizeCheckboxes = document.querySelectorAll('.size-checkbox:checked');
+  const sizes = Array.from(sizeCheckboxes).map(cb => cb.value);
+
   const productData = {
     name: name,
     description: description,
@@ -318,6 +327,7 @@ async function handleProductSubmit(e) {
     stock: parseInt(document.getElementById('productStock').value),
     category: category,
     images: images,
+    sizes: sizes,
     featured: document.getElementById('productFeatured').checked,
     newArrival: document.getElementById('productNewArrival').checked,
     onSale: document.getElementById('productOnSale').checked,
@@ -497,7 +507,7 @@ async function updateOrderStatus(orderId) {
   const newStatus = prompt('Enter new status:\npending, processing, shipped, delivered, cancelled');
   if (newStatus && ['pending', 'processing', 'shipped', 'delivered', 'cancelled'].includes(newStatus.toLowerCase())) {
     try {
-      const response = await authFetch(`${API_BASE}/orders/${orderId}`, {
+      const response = await authFetch(`${API_BASE}/admin/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus.toLowerCase() })
@@ -507,6 +517,9 @@ async function updateOrderStatus(orderId) {
         loadOrders();
         loadDashboard();
         alert('Order status updated successfully!');
+      } else {
+        const err = await response.json();
+        alert('Error: ' + (err.message || 'Failed to update status'));
       }
     } catch (error) {
       console.error('Error:', error);

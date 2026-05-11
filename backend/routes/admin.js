@@ -185,6 +185,26 @@ router.get('/analytics', auth, async (req, res) => {
   }
 });
 
+// Update order status (admin)
+router.patch('/orders/:id/status', auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating order status', error: error.message });
+  }
+});
+
 // Get settings
 router.get('/settings', auth, async (req, res) => {
   try {

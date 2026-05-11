@@ -46,6 +46,10 @@ const productSchema = new mongoose.Schema({
     min: 0,
     max: 90,
   },
+  sizes: {
+    type: [String],
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

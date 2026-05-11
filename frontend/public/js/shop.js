@@ -1,4 +1,4 @@
-const API_BASE = 'https://backend-51wx.onrender.com/api';
+const API_BASE = 'http://localhost:5000/api';
 let currentUser = null;
 let authToken = localStorage.getItem('customerToken');
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -163,12 +163,11 @@ function applyFilters() {
     });
   }
   
-  // Search filter
+  // Search filter - name only
   if (currentSearch) {
     const searchLower = currentSearch.toLowerCase();
     products = products.filter(p => 
-      p.name.toLowerCase().includes(searchLower) ||
-      (p.description && p.description.toLowerCase().includes(searchLower))
+      p.name.toLowerCase().includes(searchLower)
     );
   }
   
@@ -239,18 +238,42 @@ function displayProducts(products) {
     const card = document.createElement('div');
     card.className = 'product-card';
     const imgUrl = product.images && product.images[0] ? product.images[0] : 'images/1.jpg';
-    card.innerHTML = `
-      <img src="${imgUrl}" alt="${product.name}" class="product-img">
-      <div class="product-info">
-        <h3>${product.name}</h3>
-        <p>${product.description || 'Premium fashion item'}</p>
-        <div class="price">$${product.price.toFixed(2)}</div>
-        <p class="stock-info ${stockClass}">${stockStatus}</p>
-        <button class="add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}">
-          ${t('addToCart')}
-        </button>
-      </div>
-    `;
+
+    if (product.onSale && product.discount > 0) {
+      const discount = product.discount || 0;
+      const originalPrice = product.price;
+      const salePrice = originalPrice * (1 - discount / 100);
+      card.className = 'product-card sale-product-card';
+      card.innerHTML = `
+        <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <div class="sale-badge">-${discount}%</div>
+        <div class="product-info">
+          <h3>${product.name}</h3>
+          <p>${product.description || ''}</p>
+          <div class="price-container">
+            <span class="original-price">$${originalPrice.toFixed(2)}</span>
+            <span class="sale-price">$${salePrice.toFixed(2)}</span>
+          </div>
+          <p class="stock-info ${stockClass}">${stockStatus}</p>
+          <button class="add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}">
+            ${t('addToCart')}
+          </button>
+        </div>
+      `;
+    } else {
+      card.innerHTML = `
+        <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <div class="product-info">
+          <h3>${product.name}</h3>
+          <p>${product.description || ''}</p>
+          <div class="price">$${product.price.toFixed(2)}</div>
+          <p class="stock-info ${stockClass}">${stockStatus}</p>
+          <button class="add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}">
+            ${t('addToCart')}
+          </button>
+        </div>
+      `;
+    }
     container.appendChild(card);
   });
 }

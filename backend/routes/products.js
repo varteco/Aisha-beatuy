@@ -54,7 +54,7 @@ router.get('/:id', async (req, res) => {
 // Create product
 router.post('/', adminAuth, async (req, res) => {
   try {
-    const { name, description, price, category, stock, images, featured, newArrival, onSale, discount } = req.body;
+    const { name, description, price, category, stock, images, featured, newArrival, onSale, discount, sizes } = req.body;
 
     if (!name || !price || !category) {
       return res.status(400).json({ message: 'Missing required fields: name, price, category' });
@@ -71,6 +71,7 @@ router.post('/', adminAuth, async (req, res) => {
       newArrival: newArrival !== false,
       onSale: onSale || false,
       discount: discount || 0,
+      sizes: sizes || [],
     });
 
     await product.save();
@@ -83,7 +84,7 @@ router.post('/', adminAuth, async (req, res) => {
 // Update product
 router.put('/:id', adminAuth, async (req, res) => {
   try {
-    const { name, description, price, category, stock, images, featured, newArrival, onSale, discount } = req.body;
+    const { name, description, price, category, stock, images, featured, newArrival, onSale, discount, sizes } = req.body;
 
     const product = await Product.findByIdAndUpdate(
       req.params.id,
@@ -98,6 +99,7 @@ router.put('/:id', adminAuth, async (req, res) => {
         newArrival: newArrival || false,
         onSale: onSale || false,
         discount: discount || 0,
+        sizes: sizes || [],
         updatedAt: new Date(),
       },
       { new: true, runValidators: true }

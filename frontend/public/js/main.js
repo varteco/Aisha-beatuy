@@ -1,4 +1,4 @@
-const API_BASE = 'https://backend-51wx.onrender.com/api';
+const API_BASE = 'http://localhost:5000/api';
 let currentUser = null;
 let authToken = localStorage.getItem('customerToken');
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -20,20 +20,11 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  checkAuth();
-  loadProducts();
-  updateCartCount();
-  
-  document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('add-to-cart')) {
-      const btn = e.target;
-      const id = btn.dataset.id;
-      const name = btn.dataset.name;
-      const price = parseFloat(btn.dataset.price);
-      const image = btn.dataset.image;
-      addToCart(id, name, price, image);
-    }
+  document.addEventListener('DOMContentLoaded', function () {
+    checkAuth();
+    loadProducts();
+    loadFlashSaleProducts();
+    updateCartCount();
   });
 });
 
@@ -292,6 +283,56 @@ async function loadProducts() {
   }
 }
 
+async function loadFlashSaleProducts() {
+  try {
+    const response = await fetch(`${API_BASE}/products`);
+    const products = await response.json();
+    const saleProducts = products.filter(p => p.onSale === true);
+    displayFlashSaleProducts(saleProducts);
+  } catch (error) {
+    console.error('Error loading flash sale products:', error);
+  }
+}
+
+function displayFlashSaleProducts(products) {
+  const container = document.getElementById('flash-sale-container');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (products.length === 0) {
+    const flashSection = document.querySelector('.flash-sale');
+    if (flashSection) flashSection.style.display = 'none';
+    return;
+  }
+
+  products.forEach(product => {
+    const discount = product.discount || 0;
+    const originalPrice = product.price;
+    const salePrice = discount > 0 ? originalPrice * (1 - discount / 100) : originalPrice;
+
+    const card = document.createElement('div');
+    card.className = 'product-card sale-product-card';
+    const imgUrl = product.images && product.images[0] ? product.images[0] : 'images/1.jpg';
+    card.innerHTML = `
+      <img src="${imgUrl}" alt="${product.name}" class="product-img">
+      <div class="sale-badge">-${discount}%</div>
+      <div class="product-info">
+        <h3>${product.name}</h3>
+        <p>${product.description || ''}</p>
+        <div class="price-container">
+          <span class="original-price">$${originalPrice.toFixed(2)}</span>
+          <span class="sale-price">$${salePrice.toFixed(2)}</span>
+        </div>
+        <button class="btn add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}">
+          ${t('addToCart')}
+        </button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
 function displayProducts(products) {
   const container = document.getElementById('products-container');
   if (!container) return;
@@ -313,18 +354,42 @@ function displayProducts(products) {
       stockClass = 'out-of-stock';
     }
     const imgUrl = product.images && product.images[0] ? product.images[0] : 'images/1.jpg';
-    card.innerHTML = `
-      <img src="${imgUrl}" alt="${product.name}" class="product-img">
-      <div class="product-info">
-        <h3>${product.name}</h3>
-        <p>${product.description || 'Premium fashion item'}</p>
-        <div class="price">$${product.price.toFixed(2)}</div>
-        <p class="stock-info ${stockClass}">${stockStatus}</p>
-        <button class="btn add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}">
-          ${t('addToCart')}
-        </button>
-      </div>
-    `;
+
+    if (product.onSale && product.discount > 0) {
+      const discount = product.discount || 0;
+      const originalPrice = product.price;
+      const salePrice = originalPrice * (1 - discount / 100);
+      card.className = 'product-card sale-product-card';
+      card.innerHTML = `
+        <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <div class="sale-badge">-${discount}%</div>
+        <div class="product-info">
+          <h3>${product.name}</h3>
+          <p>${product.description || ''}</p>
+          <div class="price-container">
+            <span class="original-price">$${originalPrice.toFixed(2)}</span>
+            <span class="sale-price">$${salePrice.toFixed(2)}</span>
+          </div>
+          <p class="stock-info ${stockClass}">${stockStatus}</p>
+          <button class="btn add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}">
+            ${t('addToCart')}
+          </button>
+        </div>
+      `;
+    } else {
+      card.innerHTML = `
+        <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <div class="product-info">
+          <h3>${product.name}</h3>
+          <p>${product.description || ''}</p>
+          <div class="price">$${product.price.toFixed(2)}</div>
+          <p class="stock-info ${stockClass}">${stockStatus}</p>
+          <button class="btn add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}">
+            ${t('addToCart')}
+          </button>
+        </div>
+      `;
+    }
     container.appendChild(card);
   });
 }
