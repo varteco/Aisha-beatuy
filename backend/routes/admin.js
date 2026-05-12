@@ -75,6 +75,31 @@ router.get('/orders', auth, async (req, res) => {
   }
 });
 
+// Get single order (admin view)
+router.get('/orders/:id', auth, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).populate('items.product');
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching order', error: error.message });
+  }
+});
+
+// Delete customer orders by email
+router.delete('/customers/:email', auth, async (req, res) => {
+  try {
+    const { email } = req.params;
+    const result = await Order.deleteMany({ 'customer.email': email });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'No orders found for this customer' });
+    }
+    res.json({ message: `Deleted ${result.deletedCount} order(s) for ${email}` });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting customer', error: error.message });
+  }
+});
+
 // Get all customers
 router.get('/customers', auth, async (req, res) => {
   try {
@@ -191,19 +216,30 @@ router.get('/analytics', auth, async (req, res) => {
 router.patch('/orders/:id/status', auth, async (req, res) => {
   try {
     const { status } = req.body;
-    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
+    const validStatuses = ['pending', 'payment_confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+    if (!status || !validStatuses.includes(status.toLowerCase())) {
+      return res.status(400).json({ message: 'Invalid status: "' + (status || '') + '"' });
     }
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { status, updatedAt: new Date() },
+      { status: status.toLowerCase(), updatedAt: new Date() },
       { new: true }
     );
     if (!order) return res.status(404).json({ message: 'Order not found' });
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: 'Error updating order status', error: error.message });
+  }
+});
+
+// Delete order (admin only)
+router.delete('/orders/:id', auth, async (req, res) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting order', error: error.message });
   }
 });
 

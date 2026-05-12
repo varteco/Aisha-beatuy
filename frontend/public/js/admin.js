@@ -2,6 +2,20 @@ const API_BASE = '/api';
 let currentUser = null;
 let authToken = localStorage.getItem('token');
 
+function showToast(message) {
+  let toast = document.getElementById('toast-notification');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-notification';
+    toast.className = 'toast';
+    toast.innerHTML = '<div class="toast-icon"><i class="fas fa-check"></i></div><div class="toast-message"></div>';
+    document.body.appendChild(toast);
+  }
+  toast.querySelector('.toast-message').textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   checkAuth();
 
@@ -442,6 +456,16 @@ function displayOrdersTable(orders, tableId) {
   const table = document.getElementById(tableId);
   if (!table) return;
 
+  const statusLabels = {
+    pending: 'Order Placed',
+    payment_confirmed: 'Payment Confirmed',
+    processing: 'Processing',
+    shipped: 'Shipped',
+    out_for_delivery: 'Out for Delivery',
+    delivered: 'Delivered',
+    cancelled: 'Cancelled'
+  };
+
   table.innerHTML = '';
 
   orders.forEach(order => {
@@ -454,15 +478,18 @@ function displayOrdersTable(orders, tableId) {
       <td>$${(order.totalAmount || 0).toFixed(2)}</td>
       <td>
         <span class="status ${order.status}">
-          ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+          ${statusLabels[order.status] || order.status}
         </span>
       </td>
-      <td>
-        <button class="btn-action btn-view" onclick="viewOrder('${order._id}')">
+      <td class="actions-cell">
+        <button class="btn-action btn-view" onclick="viewOrder('${order._id}')" title="View">
           <i class="fas fa-eye"></i>
         </button>
-        <button class="btn-action btn-edit" onclick="updateOrderStatus('${order._id}')">
+        <button class="btn-action btn-edit" onclick="viewOrder('${order._id}')" title="Edit Status">
           <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-action btn-delete" onclick="deleteOrder('${order._id}')" title="Delete">
+          <i class="fas fa-trash"></i>
         </button>
       </td>
     `;
@@ -472,8 +499,26 @@ function displayOrdersTable(orders, tableId) {
 
 async function viewOrder(orderId) {
   try {
-    const response = await authFetch(`${API_BASE}/orders/${orderId}`);
+    const response = await authFetch(`${API_BASE}/admin/orders/${orderId}`);
+    if (!response.ok) {
+      alert('Order not found');
+      return;
+    }
     const order = await response.json();
+
+    const statusLabels = {
+      pending: 'Order Placed',
+      payment_confirmed: 'Payment Confirmed',
+      processing: 'Processing',
+      shipped: 'Shipped',
+      out_for_delivery: 'Out for Delivery',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled'
+    };
+
+    const statusOptions = Object.keys(statusLabels).map(s =>
+      `<option value="${s}" ${order.status === s ? 'selected' : ''}>${statusLabels[s]}</option>`
+    ).join('');
 
     const detailsHtml = `
       <div class="order-info">
@@ -483,9 +528,15 @@ async function viewOrder(orderId) {
         <p><strong>Phone:</strong> ${order.customer?.phone || '-'}</p>
         <p><strong>Address:</strong> ${order.customer?.address || '-'}</p>
         <p><strong>Total:</strong> $${order.totalAmount?.toFixed(2)}</p>
-        <p><strong>Status:</strong> ${order.status}</p>
         <p><strong>Payment:</strong> ${order.paymentMethod || 'N/A'}</p>
         <p><strong>Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
+      </div>
+      <div class="order-status-update">
+        <label><strong>Update Status:</strong></label>
+        <div class="status-selector">
+          <select id="order-status-select">${statusOptions}</select>
+          <button class="btn-submit" onclick="updateOrderStatus('${orderId}')">Update</button>
+        </div>
       </div>
       <h4>Items:</h4>
       <ul class="order-items">
@@ -508,29 +559,54 @@ function closeOrderModal() {
 }
 
 async function updateOrderStatus(orderId) {
-  const newStatus = prompt('Enter new status:\npending, processing, shipped, delivered, cancelled');
-  if (newStatus && ['pending', 'processing', 'shipped', 'delivered', 'cancelled'].includes(newStatus.toLowerCase())) {
-    try {
-      const response = await authFetch(`${API_BASE}/admin/orders/${orderId}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus.toLowerCase() })
-      });
+  const select = document.getElementById('order-status-select');
+  if (!select) return;
+  const newStatus = select.value;
+  try {
+    const response = await authFetch(`${API_BASE}/admin/orders/${orderId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
 
-      if (response.ok) {
-        loadOrders();
-        loadDashboard();
-        alert('Order status updated successfully!');
-      } else {
-        const err = await response.json();
-        alert('Error: ' + (err.message || 'Failed to update status'));
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error updating order status');
+    if (response.ok) {
+      loadOrders();
+      loadDashboard();
+      closeOrderModal();
+      showToast('Order status updated successfully!');
+    } else {
+      const err = await response.json();
+      alert('Error: ' + (err.message || 'Failed to update status'));
     }
-  } else if (newStatus) {
-    alert('Invalid status');
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error updating order status');
+  }
+}
+
+async function deleteOrder(orderId) {
+  if (!confirm('Are you sure you want to delete this order? This action cannot be undone.')) return;
+  try {
+    const response = await fetch(`${API_BASE}/admin/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    if (response.ok) {
+      loadOrders();
+      loadDashboard();
+      showToast('Order deleted successfully');
+    } else {
+      const text = await response.text();
+      try {
+        const err = JSON.parse(text);
+        alert(err.message || 'Failed to delete order');
+      } catch {
+        alert('Failed to delete order (status ' + response.status + ')');
+      }
+    }
+  } catch (error) {
+    console.error('Delete error:', error);
+    alert('Network error - could not delete order');
   }
 }
 
@@ -560,9 +636,12 @@ function displayCustomersTable(customers) {
       <td>${customer.totalOrders}</td>
       <td>$${customer.totalSpent.toFixed(2)}</td>
       <td>${new Date(customer.lastOrder).toLocaleDateString()}</td>
-      <td>
-        <button class="btn-action btn-view" onclick="viewCustomerOrders('${customer.email}')">
+      <td class="actions-cell">
+        <button class="btn-action btn-view" onclick="viewCustomerOrders('${customer.email}')" title="View Orders">
           <i class="fas fa-history"></i>
+        </button>
+        <button class="btn-action btn-delete" onclick="deleteCustomer('${customer.email}')" title="Delete Customer">
+          <i class="fas fa-trash"></i>
         </button>
       </td>
     `;
@@ -571,7 +650,33 @@ function displayCustomersTable(customers) {
 }
 
 function viewCustomerOrders(email) {
-  alert(`Order history for: ${email}`);
+  switchSection('orders');
+  const searchInput = document.querySelector('#orders .search-input');
+  if (searchInput) {
+    searchInput.value = email;
+    filterOrders();
+  }
+}
+
+async function deleteCustomer(email) {
+  if (!confirm(`Delete all orders for ${email}? This cannot be undone.`)) return;
+  try {
+    const response = await authFetch(`${API_BASE}/admin/customers/${encodeURIComponent(email)}`, {
+      method: 'DELETE'
+    });
+    if (response.ok) {
+      loadCustomers();
+      loadOrders();
+      loadDashboard();
+      showToast('Customer deleted successfully');
+    } else {
+      const err = await response.json();
+      alert('Error: ' + (err.message || 'Failed to delete customer'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error deleting customer');
+  }
 }
 
 // ==================== CATEGORIES ====================
@@ -686,12 +791,28 @@ function displayAnalytics(data) {
   const statusGrid = document.getElementById('status-grid');
   if (statusGrid) {
     const statusColors = {
-      pending: '#ffc107', processing: '#0dcaf0', shipped: '#6f42c1', delivered: '#198754', cancelled: '#dc3545'
+      pending: '#ffc107',
+      payment_confirmed: '#17a2b8',
+      processing: '#0dcaf0',
+      shipped: '#6f42c1',
+      out_for_delivery: '#e83e8c',
+      delivered: '#198754',
+      cancelled: '#dc3545'
+    };
+
+    const statusLabels = {
+      pending: 'Order Placed',
+      payment_confirmed: 'Payment Confirmed',
+      processing: 'Processing',
+      shipped: 'Shipped',
+      out_for_delivery: 'Out for Delivery',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled'
     };
 
     statusGrid.innerHTML = Object.entries(data.statusCounts || {}).map(([status, count]) => `
-      <div class="status-card" style="border-left: 4px solid ${statusColors[status]}">
-        <h4>${status.charAt(0).toUpperCase() + status.slice(1)}</h4>
+      <div class="status-card" style="border-left: 4px solid ${statusColors[status] || '#999'}">
+        <h4>${statusLabels[status] || status}</h4>
         <p class="status-count">${count}</p>
       </div>
     `).join('');

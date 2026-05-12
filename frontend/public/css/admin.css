@@ -222,12 +222,60 @@ body {
 
 .status.active { background: #d4edda; color: #155724; }
 .status.pending { background: #fff3cd; color: #856404; }
+.status.payment_confirmed { background: #cce5ff; color: #004085; }
 .status.processing { background: #cce5ff; color: #004085; }
 .status.shipped { background: #d6d8db; color: #383d41; }
+.status.out_for_delivery { background: #e8daef; color: #6c3483; }
 .status.delivered { background: #d4edda; color: #155724; }
 .status.cancelled { background: #f8d7da; color: #721c24; }
 .status.low { background: #fff3cd; color: #856404; }
 .status.out { background: #f8d7da; color: #721c24; }
+
+/* Order Status Selector */
+.order-status-update {
+  margin: 16px 0;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.order-status-update label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.status-selector {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.status-selector select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--white);
+}
+
+.status-selector .btn-submit {
+  padding: 10px 20px;
+  background: var(--black);
+  color: var(--primary);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-selector .btn-submit:hover {
+  background: var(--primary);
+  color: var(--black);
+}
 
 /* BUTTONS */
 .btn-action {
@@ -241,6 +289,16 @@ body {
 .btn-edit { background: gold; color: black; }
 .btn-delete { background: #dc3545; color: white; }
 .btn-view { background: black; color: gold; }
+
+.actions-cell {
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.actions-cell .btn-action {
+  margin-right: 0;
+}
 
 /* CATEGORY BADGES */
 .category-badge {
@@ -912,4 +970,45 @@ body {
     align-items: center;
     justify-content: space-between;
   }
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #fff;
+  border-left: 5px solid #28a745;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10000;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  background: #28a745;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+}
+
+.toast-message {
+  font-size: 14px;
+  color: #333;
+}
 }

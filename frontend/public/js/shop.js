@@ -64,7 +64,8 @@ function updateBreadcrumb(category) {
     men: "Men's Fashion",
     women: "Women's Fashion",
     kids: 'Kids Fashion',
-    accessories: 'Accessories'
+    accessories: 'Accessories',
+    perfumes: 'Perfumes'
   };
   
   if (category && category !== 'all') {
@@ -162,7 +163,8 @@ function applyFilters() {
       men: ['men', "men's fashion", "men's", 'male'],
       women: ['women', "women's fashion", "women's", 'female'],
       kids: ['kids', "kids fashion", 'children', 'child'],
-      accessories: ['accessories', 'accessory', 'jewelry', 'jewellery']
+      accessories: ['accessories', 'accessory', 'jewelry', 'jewellery'],
+      perfumes: ['perfumes', 'perfume', 'fragrance', 'scent']
     };
     
     const validCategories = categoryMap[currentCategory] || [currentCategory];

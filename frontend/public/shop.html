@@ -189,9 +189,11 @@
           <div class="filter-section">
             <h3>Price Range</h3>
             <div class="price-inputs">
-              <input type="number" id="min-price" placeholder="Min">
-              <span>-</span>
-              <input type="number" id="max-price" placeholder="Max">
+              <span class="price-currency">$</span>
+              <input type="number" id="min-price" placeholder="Min" min="0" step="0.01">
+              <span class="price-separator">-</span>
+              <span class="price-currency">$</span>
+              <input type="number" id="max-price" placeholder="Max" min="0" step="0.01">
               <button onclick="filterByPrice()">Go</button>
             </div>
           </div>
