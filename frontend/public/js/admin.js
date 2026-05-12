@@ -132,6 +132,7 @@ function switchSection(section) {
     categories: 'Category Management',
     analytics: 'Analytics',
     pages: 'Page Management',
+    customerService: 'Customer Service',
     users: 'User Management',
     account: 'My Account',
     settings: 'Store Settings'
@@ -146,6 +147,7 @@ function switchSection(section) {
     case 'categories': loadCategories(); break;
     case 'analytics': loadAnalytics(); break;
     case 'pages': loadPages(); break;
+    case 'customer-service': loadCustomerService(); break;
     case 'users': loadUsers(); break;
     case 'account': loadAccount(); break;
     case 'settings': loadSettings(); break;
@@ -1128,6 +1130,84 @@ async function seedDefaultPages() {
     console.error('Error:', error);
     alert('Error seeding pages');
   }
+}
+
+// ==================== CUSTOMER SERVICE ====================
+async function loadCustomerService() {
+  try {
+    const pagesRes = await authFetch(`${API_BASE}/admin/pages`);
+    const pages = await pagesRes.json();
+    displayCustomerServicePages(pages);
+  } catch (error) {
+    console.error('Error loading customer service pages:', error);
+  }
+}
+
+async function seedCustomerServicePages() {
+  if (!confirm('This will create default customer service pages (Customer Service, Shipping Info, Returns & Exchanges, About Us, Contact) if they do not exist. Continue?')) return;
+  try {
+    const response = await authFetch(`${API_BASE}/admin/seed-pages`, { method: 'POST' });
+    if (response.ok) {
+      showToast('Default pages created!');
+      loadCustomerService();
+    } else {
+      const err = await response.json();
+      alert('Error: ' + (err.message || 'Failed to seed pages'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error seeding pages');
+  }
+}
+
+function displayCustomerServicePages(pages) {
+  const container = document.getElementById('customer-service-pages-list');
+  if (!container) return;
+
+  const serviceSlugs = ['customer-service', 'shipping-info', 'returns-exchanges', 'about-us', 'contact'];
+  const servicePages = serviceSlugs.map(slug => pages.find(p => p.slug === slug)).filter(Boolean);
+
+  if (servicePages.length === 0) {
+    container.innerHTML = '<p style="color:#888;padding:20px;">No pages found. Click "Seed Default Pages" to create them.</p>';
+    return;
+  }
+
+  let html = '';
+  servicePages.forEach(page => {
+    const safeId = 'cs-page-content-' + page.slug.replace(/-/g, '_');
+    html += `
+      <div style="border:1px solid #e0e0e0;border-radius:8px;padding:16px;margin:0 20px 12px;background:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div>
+            <strong style="font-size:16px;">${page.title}</strong>
+            <span style="font-size:12px;color:#888;margin-left:10px;"><code>${page.slug}</code></span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="status ${page.published ? 'active' : 'out'}" style="font-size:11px;padding:2px 8px;">${page.published ? 'Published' : 'Draft'}</span>
+            <a href="/page?slug=${page.slug}" target="_blank" class="btn-action btn-view" style="font-size:12px;padding:4px 10px;text-decoration:none;">
+              <i class="fas fa-eye"></i>
+            </a>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <textarea id="${safeId}" rows="6" style="width:100%;font-family:monospace;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:vertical;">${(page.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}</textarea>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
+            <input type="checkbox" id="${safeId}-published" ${page.published ? 'checked' : ''}> Published
+          </label>
+          <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
+            <input type="checkbox" id="${safeId}-footer" ${page.showInFooter ? 'checked' : ''}> Show in Footer
+          </label>
+          <button class="btn-submit" onclick="saveCustomerPageContent('${page._id}', '${safeId}')" style="padding:6px 18px;font-size:13px;margin-left:auto;">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
 }
 
 function displayCustomerPages(pages) {

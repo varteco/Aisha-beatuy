@@ -393,6 +393,15 @@ router.post('/seed-pages', auth, async (req, res) => {
         showInFooter: true,
         footerColumn: 'customer-service',
         order: 7
+      },
+      {
+        title: 'Customer Service',
+        slug: 'customer-service',
+        content: '<h2>Customer Service</h2><p>Welcome to Aisha Beauty Customer Service. We are here to help you with any questions or concerns.</p><h3>How Can We Help?</h3><ul><li>Order inquiries and support</li><li>Product information</li><li>Shipping and delivery questions</li><li>Returns and exchanges</li><li>General feedback</li></ul><p>Contact our support team and we will get back to you within 24 hours.</p>',
+        published: true,
+        showInFooter: true,
+        footerColumn: 'customer-service',
+        order: 0
       }
     ];
 

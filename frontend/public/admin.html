@@ -58,6 +58,7 @@
           <li><a href="#categories" data-section="categories"><i class="fas fa-tags"></i> Categories</a></li>
           <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
           <li><a href="#pages" data-section="pages"><i class="fas fa-file-alt"></i> Pages</a></li>
+          <li><a href="#customer-service" data-section="customer-service"><i class="fas fa-headset"></i> Customer Service</a></li>
           <li><a href="#users" data-section="users" id="nav-users" style="display: none;"><i class="fas fa-user-cog"></i> Users</a></li>
           <li><a href="#account" data-section="account"><i class="fas fa-user-circle"></i> My Account</a></li>
           <li><a href="#settings" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
@@ -366,6 +367,24 @@
               </tbody>
             </table>
           </div>
+        </section>
+      </section>
+
+      <!-- Customer Service Section -->
+      <section id="customer-service" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Customer Service Pages</h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-add" onclick="seedCustomerServicePages()">
+                <i class="fas fa-download"></i> Seed Default Pages
+              </button>
+            </div>
+          </div>
+          <div id="customer-service-pages-list">
+            <p style="color:#888;padding:20px;">Loading pages...</p>
+          </div>
+          <p style="font-size:13px;color:#888;margin-top:10px;padding:0 20px 20px;">Edit page content below. Pages appear on your store at <code>/page?slug=page-name</code> and in the footer.</p>
         </section>
       </section>
 
