@@ -414,7 +414,12 @@ function detectCategory(name, description, manualCategory) {
 
 async function editProduct(productId) {
   try {
-    const response = await authFetch(`${API_BASE}/products/${productId}`);
+    const response = await fetch(`${API_BASE}/products/${productId}`);
+    if (!response.ok) {
+      alert('Product not found. It may have been deleted.');
+      loadProducts();
+      return;
+    }
     const product = await response.json();
     openProductModal(product);
   } catch (error) {
