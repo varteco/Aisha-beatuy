@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('settings-form')?.addEventListener('submit', handleSettingsSubmit);
   document.getElementById('account-form')?.addEventListener('submit', handleAccountSubmit);
   document.getElementById('userForm')?.addEventListener('submit', handleUserSubmit);
+  document.getElementById('pageForm')?.addEventListener('submit', handlePageSubmit);
 });
 
 async function checkAuth() {
@@ -116,6 +117,7 @@ function switchSection(section) {
     customers: 'Customer Management',
     categories: 'Category Management',
     analytics: 'Analytics',
+    pages: 'Page Management',
     users: 'User Management',
     account: 'My Account',
     settings: 'Store Settings'
@@ -129,6 +131,7 @@ function switchSection(section) {
     case 'customers': loadCustomers(); break;
     case 'categories': loadCategories(); break;
     case 'analytics': loadAnalytics(); break;
+    case 'pages': loadPages(); break;
     case 'users': loadUsers(); break;
     case 'account': loadAccount(); break;
     case 'settings': loadSettings(); break;
@@ -373,7 +376,8 @@ function detectCategory(name, description, manualCategory) {
     men: ['men', "men's", 'man', 'male', 'groom', 'suit', 'tie', 'dress shirt', 'polo', 'briefs', 'trunks', 'vest', 'blazer', 'jeans men', 'shirt men'],
     women: ['women', "women's", 'woman', 'female', 'lady', 'dress', 'blouse', 'skirt', 'gown', 'saree', 'hijab', 'lingerie', 'bra', 'panties', 'jeans women', 'leggings', 'crop top', 'tunic'],
     kids: ['kids', 'children', 'child', 'baby', 'boy', 'girl', 'infant', 'toddler', 'youth', 'little'],
-    accessories: ['accessory', 'accessories', 'jewelry', 'jewellery', 'watch', 'sunglasses', 'bag', 'purse', 'wallet', 'belt', 'hat', 'cap', 'scarf', 'ring', 'necklace', 'earring', 'bracelet', 'chain', 'pendant', 'brooch', 'hair accessory']
+    accessories: ['accessory', 'accessories', 'jewelry', 'jewellery', 'watch', 'sunglasses', 'bag', 'purse', 'wallet', 'belt', 'hat', 'cap', 'scarf', 'ring', 'necklace', 'earring', 'bracelet', 'chain', 'pendant', 'brooch', 'hair accessory'],
+    perfumes: ['perfume', 'perfumes', 'fragrance', 'cologne', 'scent', 'attar', 'oud', 'bakhoor', 'incense', 'spray', 'deodorant', 'body spray', 'essential oil', 'perfume oil']
   };
 
   // Check manual category first
@@ -970,11 +974,93 @@ async function handleAccountSubmit(e) {
 // ==================== SETTINGS ====================
 async function loadSettings() {
   try {
-    const response = await authFetch(`${API_BASE}/admin/settings`);
-    const settings = await response.json();
+    const [settingsRes, pagesRes] = await Promise.all([
+      authFetch(`${API_BASE}/admin/settings`),
+      authFetch(`${API_BASE}/admin/pages`)
+    ]);
+    const settings = await settingsRes.json();
+    const pages = await pagesRes.json();
     populateSettingsForm(settings);
+    displayCustomerPages(pages);
   } catch (error) {
     console.error('Error loading settings:', error);
+  }
+}
+
+function displayCustomerPages(pages) {
+  const container = document.getElementById('customer-pages-list');
+  if (!container) return;
+
+  const customerSlugs = ['shipping-info', 'returns-exchanges', 'order-tracking', 'faqs', 'size-guide', 'about-us', 'contact'];
+  const customerPages = customerSlugs.map(slug => pages.find(p => p.slug === slug)).filter(Boolean);
+
+  if (customerPages.length === 0) {
+    container.innerHTML = '<p style="color:#888;padding:20px;">No pages found. Run seed or create pages from the Pages section.</p>';
+    return;
+  }
+
+  let html = '';
+  customerPages.forEach(page => {
+    const safeId = 'page-content-' + page.slug.replace(/-/g, '_');
+    html += `
+      <div style="border:1px solid #e0e0e0;border-radius:8px;padding:16px;margin:0 20px 12px;background:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div>
+            <strong style="font-size:16px;">${page.title}</strong>
+            <span style="font-size:12px;color:#888;margin-left:10px;"><code>${page.slug}</code></span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="status ${page.published ? 'active' : 'out'}" style="font-size:11px;padding:2px 8px;">${page.published ? 'Published' : 'Draft'}</span>
+            <a href="/page?slug=${page.slug}" target="_blank" class="btn-action btn-view" style="font-size:12px;padding:4px 10px;text-decoration:none;">
+              <i class="fas fa-eye"></i>
+            </a>
+            <button class="btn-action btn-delete" onclick="deletePage('${page._id}')" style="font-size:12px;padding:4px 10px;">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <textarea id="${safeId}" rows="6" style="width:100%;font-family:monospace;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:vertical;">${(page.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}</textarea>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
+            <input type="checkbox" id="${safeId}-published" ${page.published ? 'checked' : ''}> Published
+          </label>
+          <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
+            <input type="checkbox" id="${safeId}-footer" ${page.showInFooter ? 'checked' : ''}> Show in Footer
+          </label>
+          <button class="btn-submit" onclick="saveCustomerPageContent('${page._id}', '${safeId}')" style="padding:6px 18px;font-size:13px;margin-left:auto;">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+async function saveCustomerPageContent(pageId, safeId) {
+  const content = document.getElementById(safeId).value;
+  const published = document.getElementById(safeId + '-published').checked;
+  const showInFooter = document.getElementById(safeId + '-footer').checked;
+
+  try {
+    const response = await authFetch(`${API_BASE}/admin/pages/${pageId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, published, showInFooter })
+    });
+
+    if (response.ok) {
+      alert('Page saved successfully!');
+    } else {
+      const err = await response.json();
+      alert('Error: ' + (err.message || 'Failed to save page'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error saving page');
   }
 }
 
@@ -987,6 +1073,10 @@ function populateSettingsForm(settings) {
   document.getElementById('taxRate').value = settings.taxRate || 0;
   document.getElementById('shippingCost').value = settings.shippingCost || 0;
   document.getElementById('freeShippingThreshold').value = settings.freeShippingThreshold || 0;
+  document.getElementById('socialFacebook').value = settings.socialFacebook || '';
+  document.getElementById('socialTwitter').value = settings.socialTwitter || '';
+  document.getElementById('socialInstagram').value = settings.socialInstagram || '';
+  document.getElementById('socialYoutube').value = settings.socialYoutube || '';
   document.getElementById('orderEmail').checked = settings.notifications?.orderEmail || false;
   document.getElementById('orderSMS').checked = settings.notifications?.orderSMS || false;
   document.getElementById('marketingEmail').checked = settings.notifications?.marketingEmail || false;
@@ -1004,6 +1094,10 @@ async function handleSettingsSubmit(e) {
     taxRate: parseFloat(document.getElementById('taxRate').value),
     shippingCost: parseFloat(document.getElementById('shippingCost').value),
     freeShippingThreshold: parseFloat(document.getElementById('freeShippingThreshold').value),
+    socialFacebook: document.getElementById('socialFacebook').value,
+    socialTwitter: document.getElementById('socialTwitter').value,
+    socialInstagram: document.getElementById('socialInstagram').value,
+    socialYoutube: document.getElementById('socialYoutube').value,
     notifications: {
       orderEmail: document.getElementById('orderEmail').checked,
       orderSMS: document.getElementById('orderSMS').checked,
@@ -1029,12 +1123,178 @@ async function handleSettingsSubmit(e) {
   }
 }
 
+// ==================== PAGES ====================
+async function loadPages() {
+  try {
+    const response = await authFetch(`${API_BASE}/admin/pages`);
+    const pages = await response.json();
+    displayPagesTable(pages);
+  } catch (error) {
+    console.error('Error loading pages:', error);
+  }
+}
+
+function displayPagesTable(pages) {
+  const table = document.getElementById('pages-table');
+  if (!table) return;
+
+  table.innerHTML = '';
+
+  pages.forEach(page => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><strong>${page.title}</strong></td>
+      <td><code>${page.slug}</code></td>
+      <td><span class="status ${page.published ? 'active' : 'out'}">${page.published ? 'Published' : 'Draft'}</span></td>
+      <td>${page.showInFooter ? '<span style="color:#198754;">Footer</span>' : '-'}</td>
+      <td>${new Date(page.updatedAt || page.createdAt).toLocaleDateString()}</td>
+      <td>
+        <button class="btn-action btn-view" onclick="previewPage('${page.slug}')">
+          <i class="fas fa-eye"></i>
+        </button>
+        <button class="btn-action btn-edit" onclick="editPage('${page._id}')">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-action btn-delete" onclick="deletePage('${page._id}')">
+          <i class="fas fa-trash"></i>
+        </button>
+      </td>
+    `;
+    table.appendChild(row);
+  });
+}
+
+function previewPage(slug) {
+  window.open(`/page?slug=${slug}`, '_blank');
+}
+
+function autoSlug(value) {
+  const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  document.getElementById('pageSlug').value = slug;
+  document.getElementById('page-slug-preview').textContent = slug;
+}
+
+function openPageModal(page = null) {
+  const modal = document.getElementById('pageModal');
+  const title = document.getElementById('page-modal-title');
+  const submitBtn = document.getElementById('page-submit-btn');
+  const form = document.getElementById('pageForm');
+
+  form.reset();
+  document.getElementById('pageId').value = '';
+
+  if (page) {
+    title.textContent = 'Edit Page';
+    submitBtn.textContent = 'Update Page';
+    document.getElementById('pageId').value = page._id;
+    document.getElementById('pageTitle').value = page.title;
+    document.getElementById('pageSlug').value = page.slug;
+    document.getElementById('page-slug-preview').textContent = page.slug;
+    document.getElementById('pageMetaDescription').value = page.metaDescription || '';
+    document.getElementById('pageContent').value = page.content || '';
+    document.getElementById('pagePublished').checked = page.published !== false;
+    document.getElementById('pageShowInFooter').checked = page.showInFooter || false;
+    document.getElementById('pageFooterColumn').value = page.footerColumn || 'customer-service';
+  } else {
+    title.textContent = 'Add New Page';
+    submitBtn.textContent = 'Add Page';
+    document.getElementById('pagePublished').checked = true;
+    document.getElementById('pageShowInFooter').checked = false;
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closePageModal() {
+  document.getElementById('pageModal').style.display = 'none';
+  document.getElementById('pageForm').reset();
+  document.getElementById('pageId').value = '';
+}
+
+async function handlePageSubmit(e) {
+  e.preventDefault();
+
+  const pageId = document.getElementById('pageId').value;
+  const pageData = {
+    title: document.getElementById('pageTitle').value,
+    slug: document.getElementById('pageSlug').value,
+    metaDescription: document.getElementById('pageMetaDescription').value,
+    content: document.getElementById('pageContent').value,
+    published: document.getElementById('pagePublished').checked,
+    showInFooter: document.getElementById('pageShowInFooter').checked,
+    footerColumn: document.getElementById('pageFooterColumn').value
+  };
+
+  try {
+    let response;
+    if (pageId) {
+      response = await authFetch(`${API_BASE}/admin/pages/${pageId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pageData)
+      });
+    } else {
+      response = await authFetch(`${API_BASE}/admin/pages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pageData)
+      });
+    }
+
+    if (response.ok) {
+      closePageModal();
+      loadPages();
+      alert(pageId ? 'Page updated successfully!' : 'Page added successfully!');
+    } else {
+      const error = await response.json();
+      alert('Error: ' + (error.message || 'Failed to save page'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error saving page');
+  }
+}
+
+async function editPage(pageId) {
+  try {
+    const response = await authFetch(`${API_BASE}/admin/pages`);
+    const pages = await response.json();
+    const page = pages.find(p => p._id === pageId);
+    if (page) openPageModal(page);
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error loading page');
+  }
+}
+
+async function deletePage(pageId) {
+  if (!confirm('Are you sure you want to delete this page?')) return;
+
+  try {
+    const response = await authFetch(`${API_BASE}/admin/pages/${pageId}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      loadPages();
+      alert('Page deleted successfully!');
+    } else {
+      alert('Error deleting page');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error deleting page');
+  }
+}
+
 // Close modals when clicking outside
 window.onclick = function (event) {
   const productModal = document.getElementById('productModal');
   const orderModal = document.getElementById('orderModal');
   const userModal = document.getElementById('userModal');
+  const pageModal = document.getElementById('pageModal');
   if (event.target === productModal) closeModal();
   if (event.target === orderModal) closeOrderModal();
   if (event.target === userModal) closeUserModal();
+  if (event.target === pageModal) closePageModal();
 };

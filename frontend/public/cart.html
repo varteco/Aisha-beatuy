@@ -599,10 +599,31 @@
                     <label>Address</label>
                     <input type="text" id="customerAddress" placeholder="Enter your address">
                 </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <div class="payment-methods" style="display:flex;flex-direction:column;gap:8px;margin-top:5px;">
+                        <label class="payment-option" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #FFD700;border-radius:8px;cursor:pointer;background:rgba(255,215,0,0.05);" onclick="selectPayment('cod')">
+                            <input type="radio" name="payment" value="cod" checked style="width:18px;height:18px;accent-color:#FFD700;">
+                            <span style="font-size:18px;"><i class="fas fa-money-bill-wave"></i></span>
+                            <div>
+                                <div style="font-weight:600;">Pay on Delivery</div>
+                                <div style="font-size:13px;color:#888;">Pay when you receive your order</div>
+                            </div>
+                        </label>
+                        <label class="payment-option" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #ddd;border-radius:8px;cursor:pointer;" onclick="selectPayment('stripe')">
+                            <input type="radio" name="payment" value="stripe" style="width:18px;height:18px;accent-color:#FFD700;">
+                            <span style="font-size:18px;"><i class="fas fa-credit-card"></i></span>
+                            <div>
+                                <div style="font-weight:600;">Credit / Debit Card</div>
+                                <div style="font-size:13px;color:#888;">Pay online via secure payment</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
                 <div class="checkout-actions">
                     <button type="button" class="btn-cancel" onclick="closeCheckoutModal()">Cancel</button>
                     <button type="submit" class="btn-submit" id="submitBtn">
-                        <span id="btnText">Proceed to Payment</span>
+                        <span id="btnText"><i class="fas fa-lock"></i> Place Order (COD)</span>
                     </button>
                 </div>
             </form>
@@ -610,11 +631,40 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:5000/api';
+        const API_BASE = '/api';
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let cachedSettings = null;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            renderCart();
+        let selectedPayment = 'cod';
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(function(el) {
+                el.querySelector('input').checked = el.querySelector('input').value === method;
+                el.style.borderColor = el.querySelector('input').value === method ? '#FFD700' : '#ddd';
+                el.style.background = el.querySelector('input').value === method ? 'rgba(255,215,0,0.05)' : 'transparent';
+            });
+            const btnText = document.getElementById('btnText');
+            if (btnText) {
+                btnText.innerHTML = method === 'cod'
+                    ? '<i class="fas fa-lock"></i> Place Order (COD)'
+                    : '<i class="fas fa-lock"></i> Pay Online';
+            }
+        }
+
+        async function getSettings() {
+            if (cachedSettings) return cachedSettings;
+            try {
+                const res = await fetch(`${API_BASE}/settings/public`);
+                cachedSettings = await res.json();
+                return cachedSettings;
+            } catch (e) {
+                return { taxRate: 15, shippingCost: 10, freeShippingThreshold: 100 };
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await renderCart();
             updateBadge();
             
             // Pre-fill user data if logged in
@@ -637,7 +687,7 @@
             window.location.href = 'shop.html';
         }
 
-        function renderCart() {
+        async function renderCart() {
             const container = document.getElementById('cartContent');
             cart = JSON.parse(localStorage.getItem('cart')) || [];
             
@@ -652,6 +702,11 @@
                 `;
                 return;
             }
+
+            const s = await getSettings();
+            const taxRate = parseFloat(s.taxRate) || 15;
+            const shippingCost = parseFloat(s.shippingCost) || 10;
+            const freeThreshold = parseFloat(s.freeShippingThreshold) || 100;
 
             let subtotal = 0;
             const rowsHtml = cart.map(item => {
@@ -679,7 +734,9 @@
                 `;
             }).join('');
 
-            const total = subtotal;
+            const shipping = subtotal >= freeThreshold && freeThreshold > 0 ? 0 : shippingCost;
+            const tax = subtotal * (taxRate / 100);
+            const total = subtotal + shipping + tax;
 
             container.innerHTML = `
                 <section class="cart-items">
@@ -710,8 +767,12 @@
                         <span>$${subtotal.toFixed(2)}</span>
                     </div>
                     <div class="summary-row">
-                        <span>Tax</span>
-                        <span>$0</span>
+                        <span>Shipping</span>
+                        <span>${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (${taxRate}%)</span>
+                        <span>$${tax.toFixed(2)}</span>
                     </div>
                     <div class="summary-total">
                         <span class="total-label">Total Amount</span>
@@ -754,6 +815,14 @@
             };
 
             cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const s = await getSettings();
+            const taxRate = parseFloat(s.taxRate) || 15;
+            const shippingCost = parseFloat(s.shippingCost) || 10;
+            const freeThreshold = parseFloat(s.freeShippingThreshold) || 100;
+            const shipping = subtotal >= freeThreshold && freeThreshold > 0 ? 0 : shippingCost;
+            const tax = subtotal * (taxRate / 100);
+            const total = subtotal + tax + shipping;
             
             const items = cart.map(item => ({
                 productId: item.id,
@@ -763,67 +832,80 @@
                 image: item.image
             }));
 
+            const headers = { 'Content-Type': 'application/json' };
+            const token = localStorage.getItem('customerToken');
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+
             try {
                 const response = await fetch(`${API_BASE}/checkout`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ customer, items })
+                    headers: headers,
+                    body: JSON.stringify({ customer, items, tax, shipping, paymentMethod: selectedPayment })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    if (data.url) {
-                        // Redirect to Stripe checkout
+                    if (data.success || data.orderIdFormatted) {
+                        const orderId = data.orderIdFormatted || data.orderId;
+                        if (selectedPayment === 'cod') {
+                            alert('Order placed successfully! Pay on delivery.');
+                        } else {
+                            alert('Order placed successfully! Order ID: ' + orderId);
+                        }
+                        localStorage.setItem('cart', JSON.stringify([]));
+                        window.location.href = 'order-success.html?orderId=' + data.orderId + '&method=' + selectedPayment;
+                    } else if (data.url) {
                         window.location.href = data.url;
                     } else {
-                        // Order created without Stripe
-                        alert('Order placed successfully! Order ID: ' + data.orderIdFormatted);
-                        localStorage.setItem('cart', JSON.stringify([]));
-                        window.location.href = 'order-success.html?orderId=' + data.orderId;
+                        alert(data.message || 'Error processing order');
+                        submitBtn.disabled = false;
+                        btnText.innerHTML = '<i class="fas fa-lock"></i> Place Order';
                     }
                 } else {
                     alert(data.message || 'Error processing order');
                     submitBtn.disabled = false;
-                    btnText.textContent = 'Proceed to Payment';
+                    btnText.innerHTML = selectedPayment === 'cod'
+                        ? '<i class="fas fa-lock"></i> Place Order (COD)'
+                        : '<i class="fas fa-lock"></i> Pay Online';
                 }
             } catch (error) {
                 alert('Network error. Please try again.');
                 submitBtn.disabled = false;
-                btnText.textContent = 'Proceed to Payment';
+                btnText.innerHTML = selectedPayment === 'cod'
+                    ? '<i class="fas fa-lock"></i> Place Order (COD)'
+                    : '<i class="fas fa-lock"></i> Pay Online';
             }
         });
 
-        function updateQuantity(id, delta) {
+        async function updateQuantity(id, delta) {
             cart = JSON.parse(localStorage.getItem('cart')) || [];
             const item = cart.find(item => item.id === id);
             if (item) {
                 item.qty += delta;
                 if (item.qty < 1) {
-                    removeItem(id);
+                    await removeItem(id);
                 } else {
                     localStorage.setItem('cart', JSON.stringify(cart));
                     updateBadge();
-                    renderCart();
+                    await renderCart();
                 }
             }
         }
 
-        function removeItem(id) {
+        async function removeItem(id) {
             cart = JSON.parse(localStorage.getItem('cart')) || [];
             cart = cart.filter(item => item.id !== id);
             localStorage.setItem('cart', JSON.stringify(cart));
             updateBadge();
-            renderCart();
+            await renderCart();
         }
 
-        function clearCart() {
+        async function clearCart() {
             if (confirm('Are you sure you want to clear your cart?')) {
                 localStorage.setItem('cart', JSON.stringify([]));
                 updateBadge();
-                renderCart();
+                await renderCart();
             }
         }
     </script>

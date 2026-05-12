@@ -50,11 +50,10 @@ router.post('/login', async (req, res) => {
     let user = await User.findOne({ email: SUPER_ADMIN_EMAIL });
     
     if (!user) {
-      const hashedPassword = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
       user = new User({
         username: 'superadmin',
         email: SUPER_ADMIN_EMAIL,
-        password: hashedPassword,
+        password: SUPER_ADMIN_PASSWORD,
         name: 'Super Admin',
         role: 'admin'
       });

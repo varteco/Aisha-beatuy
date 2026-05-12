@@ -39,6 +39,44 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/checkout', require('./routes/checkout'));
+app.use('/api/pages', require('./routes/pages'));
+
+// Public settings endpoint (no auth)
+app.get('/api/settings/public', async (req, res) => {
+  try {
+    const Setting = require('./models/Setting');
+    let settings = await Setting.findOne({ key: 'store' });
+    if (!settings) {
+      settings = {
+        storeName: 'Aisha Beauty',
+        storeEmail: 'contact@aishabeauty.com',
+        storePhone: '+1 234 567 8900',
+        storeAddress: '123 Beauty Street, Fashion City',
+        currency: 'USD',
+        taxRate: 10,
+        shippingCost: 15,
+        freeShippingThreshold: 100
+      };
+      return res.json(settings);
+    }
+    res.json({
+      storeName: settings.storeName,
+      storeEmail: settings.storeEmail,
+      storePhone: settings.storePhone,
+      storeAddress: settings.storeAddress,
+      currency: settings.currency,
+      taxRate: settings.taxRate,
+      shippingCost: settings.shippingCost,
+      freeShippingThreshold: settings.freeShippingThreshold,
+      socialFacebook: settings.socialFacebook,
+      socialTwitter: settings.socialTwitter,
+      socialInstagram: settings.socialInstagram,
+      socialYoutube: settings.socialYoutube
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching settings' });
+  }
+});
 
 // Health check
 app.get('/api/health', (req, res) => {

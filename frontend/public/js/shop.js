@@ -20,11 +20,21 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('click', function(e) {
     if (e.target.classList.contains('add-to-cart')) {
       const btn = e.target;
+      const card = btn.closest('.product-card, .sale-product-card');
+      let size = null;
+      if (card) {
+        const selectedSizeBtn = card.querySelector('.size-btn.selected');
+        if (card.querySelector('.size-btn') && !selectedSizeBtn) {
+          alert('Please select a size');
+          return;
+        }
+        if (selectedSizeBtn) size = selectedSizeBtn.dataset.size;
+      }
       const id = btn.dataset.id;
       const name = btn.dataset.name;
       const price = parseFloat(btn.dataset.price);
       const image = btn.dataset.image;
-      addToCart(id, name, price, image);
+      addToCart(id, name, price, image, size);
     }
   });
 });
@@ -244,6 +254,7 @@ function displayProducts(products) {
       const originalPrice = product.price;
       const salePrice = originalPrice * (1 - discount / 100);
       card.className = 'product-card sale-product-card';
+      const hasSizes = product.sizes && product.sizes.length > 0;
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
         <div class="sale-badge">-${discount}%</div>
@@ -254,6 +265,7 @@ function displayProducts(products) {
             <span class="original-price">$${originalPrice.toFixed(2)}</span>
             <span class="sale-price">$${salePrice.toFixed(2)}</span>
           </div>
+          ${hasSizes ? `<div class="product-sizes">${product.sizes.map(s => `<button type="button" class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`).join('')}</div>` : ''}
           <p class="stock-info ${stockClass}">${stockStatus}</p>
           <button class="add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}">
             ${t('addToCart')}
@@ -261,12 +273,14 @@ function displayProducts(products) {
         </div>
       `;
     } else {
+      const hasSizes = product.sizes && product.sizes.length > 0;
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || ''}</p>
           <div class="price">$${product.price.toFixed(2)}</div>
+          ${hasSizes ? `<div class="product-sizes">${product.sizes.map(s => `<button type="button" class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`).join('')}</div>` : ''}
           <p class="stock-info ${stockClass}">${stockStatus}</p>
           <button class="add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}">
             ${t('addToCart')}
@@ -328,12 +342,13 @@ function closeCart() {
   document.getElementById('cart-modal').classList.remove('show');
 }
 
-function addToCart(id, name, price, image) {
-  const existingItem = cart.find(item => item.id === id);
+function addToCart(id, name, price, image, size) {
+  const key = size ? id + '_' + size : id;
+  const existingItem = cart.find(item => item.id === key);
   if (existingItem) {
     existingItem.qty++;
   } else {
-    cart.push({ id, name, price, image: image || 'images/1.jpg', qty: 1 });
+    cart.push({ id: key, name: name + (size ? ' (' + size + ')' : ''), price: price, image: image || 'images/1.jpg', qty: 1, size: size, productId: id });
   }
   localStorage.setItem('cart', JSON.stringify(cart));
   updateCartCount();
@@ -431,6 +446,14 @@ function subscribeNewsletter(e) {
     alert('Thank you for subscribing!');
     e.target.reset();
   }
+}
+
+function selectSize(btn) {
+  const parent = btn.parentElement;
+  if (parent) {
+    parent.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+  }
+  btn.classList.add('selected');
 }
 
 window.onclick = function(event) {

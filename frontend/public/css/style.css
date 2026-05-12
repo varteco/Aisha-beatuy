@@ -3435,3 +3435,35 @@ body.rtl .main-footer .container {
   left: 0;
   color: #999;
 }
+
+.product-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.size-btn {
+  min-width: 36px;
+  height: 32px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0 8px;
+}
+
+.size-btn:hover {
+  border-color: #FFD700;
+  color: #000;
+}
+
+.size-btn.selected {
+  border-color: #FFD700;
+  background: #FFD700;
+  color: #000;
+  font-weight: 700;
+}

@@ -57,6 +57,7 @@
           <li><a href="#customers" data-section="customers"><i class="fas fa-users"></i> Customers</a></li>
           <li><a href="#categories" data-section="categories"><i class="fas fa-tags"></i> Categories</a></li>
           <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="#pages" data-section="pages"><i class="fas fa-file-alt"></i> Pages</a></li>
           <li><a href="#users" data-section="users" id="nav-users" style="display: none;"><i class="fas fa-user-cog"></i> Users</a></li>
           <li><a href="#account" data-section="account"><i class="fas fa-user-circle"></i> My Account</a></li>
           <li><a href="#settings" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
@@ -278,6 +279,7 @@
             <button class="category-tab" data-category="women">Women</button>
             <button class="category-tab" data-category="kids">Kids</button>
             <button class="category-tab" data-category="accessories">Accessories</button>
+            <button class="category-tab" data-category="perfumes">Perfumes</button>
           </div>
           <div class="category-products-grid" id="category-products-grid">
           </div>
@@ -333,6 +335,34 @@
                 </tr>
               </thead>
               <tbody id="top-products-table">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Pages Section -->
+      <section id="pages" class="content-section">
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Page Management</h2>
+            <button class="btn-add" onclick="openPageModal()">
+              <i class="fas fa-plus"></i> Add Page
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Slug</th>
+                  <th>Status</th>
+                  <th>Footer</th>
+                  <th>Updated</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="pages-table">
               </tbody>
             </table>
           </div>
@@ -474,6 +504,30 @@
             </div>
 
             <div class="form-section">
+              <h3>Social Media</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label><i class="fab fa-facebook-f" style="color:#1877F2;"></i> Facebook URL</label>
+                  <input type="url" id="socialFacebook" placeholder="https://facebook.com/yourpage">
+                </div>
+                <div class="form-group">
+                  <label><i class="fab fa-twitter" style="color:#1DA1F2;"></i> Twitter URL</label>
+                  <input type="url" id="socialTwitter" placeholder="https://twitter.com/yourpage">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label><i class="fab fa-instagram" style="color:#E4405F;"></i> Instagram URL</label>
+                  <input type="url" id="socialInstagram" placeholder="https://instagram.com/yourpage">
+                </div>
+                <div class="form-group">
+                  <label><i class="fab fa-youtube" style="color:#FF0000;"></i> YouTube URL</label>
+                  <input type="url" id="socialYoutube" placeholder="https://youtube.com/@yourchannel">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
               <h3>Notifications</h3>
               <div class="checkbox-group">
                 <label>
@@ -492,6 +546,16 @@
               <button type="submit" class="btn-submit">Save Settings</button>
             </div>
           </form>
+        </section>
+
+        <section class="management-section">
+          <div class="section-header">
+            <h2>Customer Service Pages</h2>
+          </div>
+          <div id="customer-pages-list">
+            <p style="color:#888;padding:20px;">Loading pages...</p>
+          </div>
+          <p style="font-size:13px;color:#888;margin-top:10px;padding:0 20px 20px;">Edit page content below. Pages appear on your store at <code>/page?slug=page-name</code> and in the footer.</p>
         </section>
       </section>
     </main>
@@ -527,12 +591,13 @@
           </div>
           <div class="form-group">
             <label for="productCategory">Category</label>
-            <select id="productCategory" required>
-              <option value="men">Men</option>
-              <option value="women">Women</option>
-              <option value="kids">Kids</option>
-              <option value="accessories">Accessories</option>
-            </select>
+              <select id="productCategory" required>
+                <option value="men">Men</option>
+                <option value="women">Women</option>
+                <option value="kids">Kids</option>
+                <option value="accessories">Accessories</option>
+                <option value="perfumes">Perfumes</option>
+              </select>
           </div>
           <div class="form-group">
             <label for="productImages">Product Images (URLs - one per line)</label>
@@ -629,6 +694,58 @@
           <div class="form-actions">
             <button type="button" class="btn-cancel" onclick="closeUserModal()">Cancel</button>
             <button type="submit" class="btn-submit" id="user-submit-btn">Add User</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Modal -->
+  <div id="pageModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="page-modal-title">Add Page</h3>
+        <span class="close" onclick="closePageModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="pageForm">
+          <input type="hidden" id="pageId">
+          <div class="form-group">
+            <label>Page Title</label>
+            <input type="text" id="pageTitle" required oninput="autoSlug(this.value)">
+          </div>
+          <div class="form-group">
+            <label>Slug (URL)</label>
+            <input type="text" id="pageSlug" required>
+            <small style="color:#888;">URL: /page?slug=<span id="page-slug-preview">about-us</span></small>
+          </div>
+          <div class="form-group">
+            <label>Meta Description</label>
+            <input type="text" id="pageMetaDescription" placeholder="Brief description for SEO">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="pagePublished" checked> Published
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="pageShowInFooter"> Show in Footer
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Footer Column</label>
+            <select id="pageFooterColumn">
+              <option value="customer-service">Customer Service</option>
+              <option value="quick-links">Quick Links</option>
+              <option value="about">About</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="closePageModal()">Cancel</button>
+            <button type="submit" class="btn-submit" id="page-submit-btn">Add Page</button>
           </div>
         </form>
       </div>

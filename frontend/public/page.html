@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title-tag">Aisha Beauty</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="description" id="page-meta" content="">
+  <style>
+    .page-content { max-width: 800px; margin: 40px auto; padding: 0 20px; min-height: 60vh; }
+    .page-content h1 { font-size: 32px; margin-bottom: 20px; color: #FFD700; }
+    .page-content h2 { font-size: 24px; margin: 30px 0 15px; color: #333; }
+    .page-content h3 { font-size: 20px; margin: 25px 0 10px; color: #555; }
+    .page-content p { line-height: 1.8; margin-bottom: 15px; color: #444; font-size: 16px; }
+    .page-content ul, .page-content ol { margin: 15px 0; padding-left: 25px; }
+    .page-content li { margin-bottom: 8px; line-height: 1.6; color: #444; }
+    .page-content a { color: #FFD700; text-decoration: underline; }
+    .page-content a:hover { color: #e6c200; }
+    .page-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; }
+    .page-loading { text-align: center; padding: 100px 20px; color: #888; }
+    .page-loading i { font-size: 48px; margin-bottom: 20px; color: #FFD700; }
+    .page-error { text-align: center; padding: 100px 20px; }
+    .page-error i { font-size: 48px; color: #dc3545; margin-bottom: 20px; }
+    .page-error h2 { color: #333; margin-bottom: 10px; }
+    .page-error p { color: #888; }
+    .breadcrumb { max-width: 800px; margin: 20px auto 0; padding: 0 20px; }
+  </style>
+</head>
+<body>
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="#">Sell on Aisha Beauty</a>
+        <a href="#">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <a href="/"><i class="fas fa-home"></i> Home</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <div class="container">
+      <div class="header-main" style="justify-content:center;">
+        <a href="/" class="logo">
+          <img src="images/LOGO.png" alt="Aisha Beauty" height="60">
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="main-nav">
+    <div class="container">
+      <div class="nav-main" style="justify-content:center;">
+        <ul class="nav-links-main">
+          <li><a href="/">Home</a></li>
+          <li><a href="/shop">Shop</a></li>
+          <li><a href="/categories">Categories</a></li>
+          <li><a href="/new-arrivals">New Arrivals</a></li>
+          <li><a href="/sale">Sale</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="breadcrumb">
+    <a href="/">Home</a> / <span id="page-breadcrumb">Page</span>
+  </div>
+
+  <div class="page-content" id="page-content">
+    <div class="page-loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading page...</p>
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3 id="footer-store-name">Aisha Beauty</h3>
+          <p id="footer-tagline">Your trusted destination for premium fashion and lifestyle products.</p>
+          <div class="footer-social" id="footer-social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/shop">Shop</a></li>
+            <li><a href="/categories">Categories</a></li>
+            <li><a href="/sale">Sale</a></li>
+            <li><a href="/new-arrivals">New Arrivals</a></li>
+          </ul>
+        </div>
+        <div class="footer-col" id="footer-pages">
+          <h4>Customer Service</h4>
+          <ul id="footer-pages-list"></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Sudan, Khartum</span></li>
+            <li><i class="fas fa-phone"></i> <span id="footer-phone">+256 767 886 480</span></li>
+            <li><i class="fas fa-envelope"></i> <span id="footer-email">info@aishabeauty.com</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-links">
+          <a href="#"><i class="fas fa-globe"></i> English</a>
+          <a href="#"><i class="fas fa-map-marker-alt"></i> Sudan</a>
+        </div>
+        <p>&copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = '/api';
+
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    async function loadPage() {
+      const slug = getQueryParam('slug') || getQueryParam('page') || 'about-us';
+      const contentEl = document.getElementById('page-content');
+
+      try {
+        const res = await fetch(`${API_BASE}/pages/${slug}`);
+        if (!res.ok) throw new Error('Not found');
+        const page = await res.json();
+
+        document.title = page.title + ' - Aisha Beauty';
+        document.getElementById('page-title-tag').textContent = document.title;
+        document.getElementById('page-meta').content = page.metaDescription || '';
+        document.getElementById('page-breadcrumb').textContent = page.title;
+
+        contentEl.innerHTML = `
+          <h1>${page.title}</h1>
+          ${page.content || '<p>Content coming soon.</p>'}
+        `;
+      } catch (e) {
+        contentEl.innerHTML = `
+          <div class="page-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <h2>Page Not Found</h2>
+            <p>The page you're looking for doesn't exist or has been removed.</p>
+            <a href="/" style="display:inline-block;margin-top:20px;padding:10px 25px;background:#FFD700;color:#000;border-radius:6px;text-decoration:none;">Go Home</a>
+          </div>
+        `;
+      }
+    }
+
+    function loadFooterPages() {
+      fetch(`${API_BASE}/pages`)
+        .then(r => r.json())
+        .then(pages => {
+          const list = document.getElementById('footer-pages-list');
+          if (!list) return;
+          const footerPages = pages.filter(p => p.showInFooter);
+          if (footerPages.length === 0) {
+            const defaults = [
+              { title: 'Shipping Info', slug: 'shipping-info' },
+              { title: 'Returns & Exchanges', slug: 'returns-exchanges' },
+              { title: 'About Us', slug: 'about-us' },
+              { title: 'Contact', slug: 'contact' }
+            ];
+            list.innerHTML = defaults.map(p =>
+              `<li><a href="/page?slug=${p.slug}">${p.title}</a></li>`
+            ).join('');
+          } else {
+            list.innerHTML = footerPages.map(p =>
+              `<li><a href="/page?slug=${p.slug}">${p.title}</a></li>`
+            ).join('');
+          }
+        })
+        .catch(() => {});
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPage();
+      loadFooterPages();
+    });
+  </script>
+</body>
+</html>

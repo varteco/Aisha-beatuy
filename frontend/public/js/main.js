@@ -183,6 +183,7 @@ function handleLogin() {
       localStorage.setItem('customerUser', JSON.stringify(currentUser));
       closeAuthModal();
       showLoggedInState();
+      window.location.href = '/orders';
     } else {
       alert(data.message || 'Login failed');
     }
@@ -764,6 +765,40 @@ function loadFooter() {
     })
     .catch(() => {});
 }
+
+// Load footer pages from CMS
+function loadFooterPages() {
+  const footerPagesList = document.getElementById('footer-pages-list');
+  if (!footerPagesList) return;
+
+  fetch(`${API_BASE}/pages`)
+    .then(r => r.json())
+    .then(pages => {
+      const footerPages = pages.filter(p => p.showInFooter);
+      if (footerPages.length === 0) {
+        const defaults = [
+          { title: 'Shipping Info', slug: 'shipping-info' },
+          { title: 'Returns & Exchanges', slug: 'returns-exchanges' },
+          { title: 'About Us', slug: 'about-us' },
+          { title: 'Contact', slug: 'contact' }
+        ];
+        footerPagesList.innerHTML = defaults.map(p =>
+          `<li><a href="/page?slug=${p.slug}">${p.title}</a></li>`
+        ).join('');
+      } else {
+        footerPagesList.innerHTML = footerPages.map(p =>
+          `<li><a href="/page?slug=${p.slug}">${p.title}</a></li>`
+        ).join('');
+      }
+    })
+    .catch(() => {});
+}
+
+// Run on every page
+document.addEventListener('DOMContentLoaded', function() {
+  loadFooter();
+  loadFooterPages();
+});
 
 // Run on every page
 document.addEventListener('DOMContentLoaded', loadFooter);
