@@ -305,7 +305,7 @@
                   <a href="/shop" class="btn-amz btn-amz-primary"><i class="fas fa-shopping-cart"></i> Buy it again</a>
                   <a href="#" class="btn-amz" onclick="viewItem('${item.product || item._id || ''}')">View your item</a>
                   <a href="/tracking.html?orderId=${order._id}" class="btn-amz">Track package</a>
-                  ${order.status === 'pending' ? `<a href="#" class="btn-amz" onclick="cancelOrder('${order._id}')">Cancel</a>` : ''}
+                  ${['pending', 'payment_confirmed'].includes(order.status) ? `<a href="#" class="btn-amz" onclick="cancelOrder('${order._id}')">Cancel</a>` : ''}
                   <a href="#" class="btn-amz">Return items</a>
                   <a href="#" class="btn-amz">Leave seller feedback</a>
                   <a href="#" class="btn-amz">Write a product review</a>
@@ -399,7 +399,7 @@
           body: JSON.stringify({ status: 'cancelled' })
         });
         if (res.ok) { alert('Order cancelled.'); loadOrders(); }
-        else { alert('Could not cancel.'); }
+        else { const err = await res.json(); alert(err.message || 'Could not cancel.'); }
       } catch (e) { alert('Error.'); }
     }
 

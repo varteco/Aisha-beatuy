@@ -135,9 +135,9 @@ router.patch('/:id', customerAuth, async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Customer can only cancel pending orders
-    if (order.status !== 'pending' && status === 'cancelled') {
-      return res.status(400).json({ message: 'Can only cancel pending orders' });
+    // Customer can cancel pending or payment_confirmed orders
+    if (!['pending', 'payment_confirmed'].includes(order.status) && status === 'cancelled') {
+      return res.status(400).json({ message: 'Cannot cancel order at current status' });
     }
 
     order.status = status;
