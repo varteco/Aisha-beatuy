@@ -89,6 +89,27 @@
             .flex-inputs { flex-direction: column; gap: 0; }
         }
     </style>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: "en",
+    includedLanguages: "en,ar,fr,es,de,pt,ru,zh-CN,hi,ur,tr,it",
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false
+  }, "google_translate_element");
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<style>
+  .gtranslate-wrap { display: inline-block; vertical-align: middle; }
+  .gtranslate-wrap .goog-te-gadget { font-size: 12px; color: #fff !important; }
+  .gtranslate-wrap .goog-te-gadget-simple { background: transparent; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px 6px; font-size: 12px; }
+  .gtranslate-wrap .goog-te-gadget-simple img { display: none; }
+  .gtranslate-wrap .goog-te-gadget-simple .goog-te-menu-value { color: #fff !important; }
+  .gtranslate-wrap .goog-te-gadget-simple .goog-te-menu-value span { color: #fff !important; border-color: #fff !important; }
+  .goog-te-banner-frame.skiptranslate { display: none !important; }
+  body { top: 0 !important; }
+</style>
 </head>
 <body>
   <!-- Top Header -->
@@ -101,6 +122,7 @@
       </div>
       <div class="top-header-right">
         <div class="lang-switcher">
+          <div id="google_translate_element" class="gtranslate-wrap"></div>
           <button class="lang-btn" onclick="setLanguage('en')">EN</button>
           <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
         </div>
