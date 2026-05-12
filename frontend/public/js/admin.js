@@ -1132,6 +1132,30 @@ async function seedDefaultPages() {
   }
 }
 
+// ==================== HELPERS ====================
+function htmlToPlainText(html) {
+  if (!html) return '';
+  let text = html
+    .replace(/<\/?(p|h[1-6]|li|div|tr|td|th|ul|ol|br|table)[^>]*>/gi, '\n')
+    .replace(/<[^>]*>/g, '');
+  text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
+  text = text.replace(/\n{3,}/g, '\n\n').trim();
+  text = text.split('\n').map(l => l.trim()).join('\n');
+  return text;
+}
+
+function plainTextToHtml(text) {
+  if (!text) return '';
+  text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const paragraphs = text.split(/\n\s*\n/);
+  return paragraphs.map(p => {
+    p = p.trim();
+    if (!p) return '';
+    const lines = p.split('\n');
+    return lines.length === 1 ? `<p>${lines[0]}</p>` : `<p>${lines.join('<br>')}</p>`;
+  }).join('\n');
+}
+
 // ==================== CUSTOMER SERVICE ====================
 async function loadCustomerService() {
   try {
@@ -1175,6 +1199,7 @@ function displayCustomerServicePages(pages) {
   let html = '';
   servicePages.forEach(page => {
     const safeId = 'cs-page-content-' + page.slug.replace(/-/g, '_');
+    const plainContent = htmlToPlainText(page.content || '');
     html += `
       <div style="border:1px solid #e0e0e0;border-radius:8px;padding:16px;margin:0 20px 12px;background:#fff;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -1190,7 +1215,7 @@ function displayCustomerServicePages(pages) {
           </div>
         </div>
         <div class="form-group" style="margin-bottom:8px;">
-          <textarea id="${safeId}" rows="6" style="width:100%;font-family:monospace;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:vertical;">${(page.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}</textarea>
+          <textarea id="${safeId}" rows="6" style="width:100%;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:vertical;">${plainContent}</textarea>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
@@ -1243,7 +1268,7 @@ function displayCustomerPages(pages) {
           </div>
         </div>
         <div class="form-group" style="margin-bottom:8px;">
-          <textarea id="${safeId}" rows="6" style="width:100%;font-family:monospace;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:vertical;">${(page.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}</textarea>
+          <textarea id="${safeId}" rows="6" style="width:100%;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:vertical;">${htmlToPlainText(page.content || '')}</textarea>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
@@ -1264,7 +1289,7 @@ function displayCustomerPages(pages) {
 }
 
 async function saveCustomerPageContent(pageId, safeId) {
-  const content = document.getElementById(safeId).value;
+  const content = plainTextToHtml(document.getElementById(safeId).value);
   const published = document.getElementById(safeId + '-published').checked;
   const showInFooter = document.getElementById(safeId + '-footer').checked;
 
@@ -1276,7 +1301,7 @@ async function saveCustomerPageContent(pageId, safeId) {
     });
 
     if (response.ok) {
-      alert('Page saved successfully!');
+      showToast('Page saved successfully!');
     } else {
       const err = await response.json();
       alert('Error: ' + (err.message || 'Failed to save page'));
