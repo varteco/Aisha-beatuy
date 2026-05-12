@@ -1113,6 +1113,23 @@ async function loadSettings() {
   }
 }
 
+async function seedDefaultPages() {
+  if (!confirm('This will create default customer service pages (Shipping Info, FAQs, etc.) if they do not exist. Continue?')) return;
+  try {
+    const response = await authFetch(`${API_BASE}/admin/seed-pages`, { method: 'POST' });
+    if (response.ok) {
+      showToast('Default pages created!');
+      loadSettings();
+    } else {
+      const err = await response.json();
+      alert('Error: ' + (err.message || 'Failed to seed pages'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error seeding pages');
+  }
+}
+
 function displayCustomerPages(pages) {
   const container = document.getElementById('customer-pages-list');
   if (!container) return;

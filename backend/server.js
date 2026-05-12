@@ -83,8 +83,8 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running' });
 });
 
-// Serve frontend static files
-app.use(express.static('../frontend/public'));
+// Serve frontend static files (auto-resolve .html extension)
+app.use(express.static('../frontend/public', { extensions: ['html'] }));
 
 // Error handling middleware
 app.use(errorHandler);
