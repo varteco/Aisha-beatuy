@@ -7,32 +7,9 @@
   <title>New Arrivals - Aisha Beauty</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: "en",
-    includedLanguages: "en,ar,fr,es,de,pt,ru,zh-CN,hi,ur,tr,it",
-    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-    autoDisplay: false
-  }, "google_translate_element");
-}
-function toggleTranslate() {
-  var c = document.cookie.indexOf("googtrans=/en/ar");
-  if (c >= 0) {
-    document.cookie = "googtrans=/en/en;path=/;max-age=31536000";
-  } else {
-    document.cookie = "googtrans=/en/ar;path=/;max-age=31536000";
-  }
-  location.reload();
-}
 
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <script src="js/location.js"></script>
 <style>
-
-  .goog-te-banner-frame.skiptranslate { display: none !important; }
-  body { top: 0 !important; }
   .footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
   .footer-bottom-links { display: flex; gap: 20px; }
   .footer-bottom-links a { color: #ccc; font-size: 13px; text-decoration: none; }
@@ -66,7 +43,6 @@ function toggleTranslate() {
         <a href="#">Help Center</a>
       </div>
       <div class="top-header-right">
-          <div id="google_translate_element" style="display:none;"></div>
         <a href="#"><i class="fas fa-envelope"></i> Messages</a>
         <a href="#"><i class="fas fa-bell"></i> Notifications</a>
         <a href="/orders" id="nav-orders" style="display:none;"><i class="fas fa-box"></i> Orders</a>
@@ -145,7 +121,9 @@ function toggleTranslate() {
   </div>
 
   <!-- Navigation -->
-  <nav class="main-nav">
+  <div id="breadcrumb" class="breadcrumb container"></div>
+
+<nav class="main-nav">
     <div class="container">
       <div class="nav-main">
         <div class="categories-menu">
@@ -385,6 +363,7 @@ function toggleTranslate() {
   <script src="js/language.js"></script>
   <script src="js/main.js"></script>
   <script src="js/new-arrivals.js"></script>
+<script src="js/amazon-enhance.js"></script>
 </body>
 
 </html>

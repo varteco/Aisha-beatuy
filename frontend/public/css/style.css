@@ -3195,3 +3195,243 @@ body.rtl .main-footer .container {
   border-color: var(--primary);
   outline: none;
 }
+
+/* === AMAZON-STYLE UPGRADES === */
+
+/* Product Badge (discount) */
+.product-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #B12704;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  z-index: 2;
+}
+
+.product-badge.deal {
+  background: #232F3E;
+}
+
+/* Star Ratings */
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  color: #FFA41C;
+  font-size: 14px;
+  letter-spacing: -1px;
+}
+
+.stars .empty { color: #ddd; }
+
+.stars-count {
+  font-size: 12px;
+  color: #007185;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.stars-count:hover { color: #C7511F; }
+
+/* Price Display */
+.price-original {
+  text-decoration: line-through;
+  color: #565959;
+  font-size: 13px;
+}
+
+.price-deal {
+  color: #B12704;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.price-deal-percent {
+  color: #B12704;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* Amazon Card Hover */
+.product-card {
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border-color: #ddd;
+}
+
+/* Sticky Header Shadow */
+.header-shadow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  transition: box-shadow 0.2s ease;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #565959;
+  padding: 8px 0;
+  flex-wrap: wrap;
+}
+
+.breadcrumb a {
+  color: #007185;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover { color: #C7511F; text-decoration: underline; }
+
+.breadcrumb .separator { color: #999; font-size: 11px; }
+
+.breadcrumb .current { color: #565959; font-weight: 500; }
+
+/* Prime Badge */
+.prime-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #565959;
+  margin-top: 4px;
+}
+
+.prime-badge .prime-logo {
+  background: #00A8E1;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* Loading Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text { height: 14px; margin-bottom: 8px; width: 80%; }
+.skeleton-title { height: 18px; margin-bottom: 10px; width: 60%; }
+.skeleton-image { height: 180px; margin-bottom: 10px; }
+.skeleton-price { height: 20px; width: 40%; }
+
+/* Deal Timer */
+.deal-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #B12704;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-top: 4px;
+}
+
+.deal-timer i { font-size: 10px; }
+
+/* Buy Again Button (Orders page) */
+.btn-buy-again {
+  background: #FFD814;
+  border: 1px solid #FCD200;
+  border-radius: 20px;
+  color: #111;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-buy-again:hover { background: #F7CA00; }
+
+/* Quick Add to Cart (Amazon-style) */
+.btn-add-cart-amz {
+  background: #FFD814;
+  border: 1px solid #FCD200;
+  border-radius: 20px;
+  color: #111;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 24px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.btn-add-cart-amz:hover { background: #F7CA00; }
+
+/* Amazon-style Product Grid */
+.amz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 600px) { .amz-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+
+/* Rating Bar (Amazon-style histogram) */
+.rating-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin: 2px 0;
+}
+
+.rating-bar-track {
+  flex: 1;
+  height: 14px;
+  background: #f0f2f2;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rating-bar-fill {
+  height: 100%;
+  background: #FFA41C;
+  border-radius: 3px;
+}
+
+.rating-bar-count { color: #007185; min-width: 20px; text-align: right; }
+
+/* Feature Bullets */
+.feature-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+.feature-bullets li {
+  font-size: 13px;
+  color: #565959;
+  padding: 2px 0;
+  padding-left: 14px;
+  position: relative;
+}
+
+.feature-bullets li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #999;
+}
