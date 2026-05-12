@@ -548,6 +548,7 @@
         }
     </style>
 <script>
+function setGoogleTranslateCookie() { document.cookie = "googtrans=/en/ar; path=/; max-age=31536000"; }
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: "en",
@@ -557,7 +558,10 @@ function googleTranslateElementInit() {
   }, "google_translate_element");
 }
 </script>
+<script>document.cookie="googtrans=/en/ar;path=/;max-age=31536000";</script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+</script>
 <style>
   .translate-btn-wrap { display: inline-block; vertical-align: middle; }
   .translate-btn-wrap .goog-te-gadget { font-size: 0; }
