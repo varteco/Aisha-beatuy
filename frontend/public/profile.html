@@ -88,9 +88,24 @@
             .order-footer { flex-direction: column; align-items: flex-start; }
             .flex-inputs { flex-direction: column; gap: 0; }
         }
-    </style>
+    .location-display { color: #ccc; font-size: 13px; text-decoration: none; margin-right: 10px; }
+  .location-display:hover { color: #FFD700; }
+  .location-modal-content { max-width: 420px; }
+  .location-modal-content h3 { margin-bottom: 5px; }
+  .location-modal-content p { color: #888; font-size: 13px; margin-bottom: 15px; }
+  .location-list { max-height: 320px; overflow-y: auto; }
+  .location-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
+  .location-option:hover { background: rgba(255,215,0,0.1); }
+  .location-option.active { background: rgba(255,215,0,0.15); border: 1px solid #FFD700; }
+  .location-flag { font-size: 22px; }
+  .location-name-option { font-weight: 600; flex: 1; }
+  .location-name-ar { color: #888; font-size: 13px; }
+  .location-check { color: #FFD700; }
+  .detect-btn { display: block; width: 100%; padding: 8px; margin: 10px 0; background: rgba(255,215,0,0.1); border: 1px dashed #FFD700; border-radius: 6px; color: #FFD700; font-size: 13px; cursor: pointer; text-align: center; }
+  .detect-btn:hover { background: rgba(255,215,0,0.2); }
+  .detect-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
 <script>
-function setGoogleTranslateCookie() { document.cookie = "googtrans=/en/ar; path=/; max-age=31536000"; }
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: "en",
@@ -99,21 +114,43 @@ function googleTranslateElementInit() {
     autoDisplay: false
   }, "google_translate_element");
 }
+function toggleTranslate() {
+  var c = document.cookie.indexOf("googtrans=/en/ar");
+  if (c >= 0) {
+    document.cookie = "googtrans=/en/en;path=/;max-age=31536000";
+  } else {
+    document.cookie = "googtrans=/en/ar;path=/;max-age=31536000";
+  }
+  location.reload();
+}
+
 </script>
-<script>document.cookie="googtrans=/en/ar;path=/;max-age=31536000";</script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>
-</script>
+<script src="js/location.js"></script>
 <style>
-  .translate-btn-wrap { display: inline-block; vertical-align: middle; }
-  .translate-btn-wrap .goog-te-gadget { font-size: 0; }
-  .translate-btn-wrap .goog-te-gadget-simple { background: rgba(255,215,0,0.15); border: 1px solid #FFD700; border-radius: 4px; padding: 4px 10px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: #FFD700; }
-  .translate-btn-wrap .goog-te-gadget-simple::before { content: "\f0ac"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 14px; color: #FFD700; }
-.translate-btn-wrap .goog-te-gadget-simple img { display: none; }
-  .translate-btn-wrap .goog-te-gadget-simple .goog-te-menu-value { color: #FFD700 !important; font-weight: 600; font-size: 13px; }
-  .translate-btn-wrap .goog-te-gadget-simple .goog-te-menu-value span { color: #FFD700 !important; border-color: #FFD700 !important; }
+
   .goog-te-banner-frame.skiptranslate { display: none !important; }
   body { top: 0 !important; }
+  .footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .footer-bottom-links { display: flex; gap: 20px; }
+  .footer-bottom-links a { color: #ccc; font-size: 13px; text-decoration: none; }
+  .footer-bottom-links a:hover { color: #FFD700; }
+.location-display { color: #ccc; font-size: 13px; text-decoration: none; margin-right: 10px; }
+  .location-display:hover { color: #FFD700; }
+  .location-modal-content { max-width: 420px; }
+  .location-modal-content h3 { margin-bottom: 5px; }
+  .location-modal-content p { color: #888; font-size: 13px; margin-bottom: 15px; }
+  .location-list { max-height: 320px; overflow-y: auto; }
+  .location-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
+  .location-option:hover { background: rgba(255,215,0,0.1); }
+  .location-option.active { background: rgba(255,215,0,0.15); border: 1px solid #FFD700; }
+  .location-flag { font-size: 22px; }
+  .location-name-option { font-weight: 600; flex: 1; }
+  .location-name-ar { color: #888; font-size: 13px; }
+  .location-check { color: #FFD700; }
+  .detect-btn { display: block; width: 100%; padding: 8px; margin: 10px 0; background: rgba(255,215,0,0.1); border: 1px dashed #FFD700; border-radius: 6px; color: #FFD700; font-size: 13px; cursor: pointer; text-align: center; }
+  .detect-btn:hover { background: rgba(255,215,0,0.2); }
+  .detect-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -126,11 +163,7 @@ function googleTranslateElementInit() {
         <a href="#">Help Center</a>
       </div>
       <div class="top-header-right">
-        <div class="lang-switcher">
-          <div id="google_translate_element" class="translate-btn-wrap" title="Translate page"></div>
-          <button class="lang-btn" onclick="setLanguage('en')">EN</button>
-          <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
-        </div>
+          <div id="google_translate_element" style="display:none;"></div>
         <a href="#"><i class="fas fa-envelope"></i> Messages</a>
         <a href="#"><i class="fas fa-bell"></i> Notifications</a>
         <a href="/orders" id="nav-orders" style="display:none;"><i class="fas fa-box"></i> Orders</a>
@@ -701,7 +734,12 @@ function googleTranslateElementInit() {
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
+        <div class="footer-bottom-links">
+          <a href="#" onclick="event.preventDefault(); setLanguage(currentLang === 'en' ? 'ar' : 'en')"><i class="fas fa-globe"></i> <span id="footer-lang-label">English</span></a>
+          <a href="#" onclick="event.preventDefault(); openLocationModal()"><i class="fas fa-map-marker-alt"></i> <span class="location-name">Sudan</span></a>
+        </div>
+        <div class="ship-notice" style="font-size:12px;color:#aaa;"></div>
+        <p><p>&copy; <span id="footer-year">copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
         <div class="footer-payments">
           <i class="fab fa-cc-visa"></i>
           <i class="fab fa-cc-mastercard"></i>

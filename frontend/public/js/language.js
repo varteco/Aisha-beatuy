@@ -142,6 +142,7 @@ function setLanguage(lang) {
   }
   
   translatePage();
+  if (typeof updateUI === 'function') updateUI();
 }
 
 function t(key) {

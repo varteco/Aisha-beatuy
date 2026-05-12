@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="css/admin.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script>
-function setGoogleTranslateCookie() { document.cookie = "googtrans=/en/ar; path=/; max-age=31536000"; }
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: "en",
@@ -17,13 +16,21 @@ function googleTranslateElementInit() {
     autoDisplay: false
   }, "google_translate_element");
 }
+function toggleTranslate() {
+  var c = document.cookie.indexOf("googtrans=/en/ar");
+  if (c >= 0) {
+    document.cookie = "googtrans=/en/en;path=/;max-age=31536000";
+  } else {
+    document.cookie = "googtrans=/en/ar;path=/;max-age=31536000";
+  }
+  location.reload();
+}
 </script>
-<script>document.cookie="googtrans=/en/ar;path=/;max-age=31536000";</script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>
-</script>
 <style>
   .translate-btn-wrap { display: inline-block; vertical-align: middle; }
+.translate-btn { background: rgba(255,215,0,0.15); border: 1px solid #FFD700; border-radius: 4px; padding: 4px 10px; font-size: 13px; cursor: pointer; color: #FFD700; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.translate-btn:hover { background: rgba(255,215,0,0.25); }
   .translate-btn-wrap .goog-te-gadget { font-size: 0; }
   .translate-btn-wrap .goog-te-gadget-simple { background: rgba(255,215,0,0.15); border: 1px solid #FFD700; border-radius: 4px; padding: 4px 10px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: #FFD700; }
   .translate-btn-wrap .goog-te-gadget-simple::before { content: "\f0ac"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 14px; color: #FFD700; }
