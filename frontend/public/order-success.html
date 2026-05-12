@@ -197,6 +197,8 @@
             <div class="order-id">
                 <p>Order ID: <strong id="orderId">Loading...</strong></p>
             </div>
+            <div id="payment-info" style="margin-top:10px;padding:10px 15px;border-radius:8px;font-size:14px;display:none;"></div>
+            <a href="/orders" class="btn" style="margin-right:10px;">View Orders</a>
             <a href="/shop" class="btn">Continue Shopping</a>
         </div>
     </div>
@@ -206,7 +208,14 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('orderId');
+        const method = urlParams.get('method');
         document.getElementById('orderId').textContent = orderId || 'N/A';
+        if (method === 'cod') {
+            var info = document.getElementById('payment-info');
+            info.style.display = 'block';
+            info.style.background = '#e8f5e9';
+            info.innerHTML = '<i class="fas fa-truck" style="color:#2e7d32;margin-right:8px;"></i> <strong>Pay on Delivery</strong> — No payment needed now. Pay when you receive your order.';
+        }
     </script>
 
   <!-- Footer -->

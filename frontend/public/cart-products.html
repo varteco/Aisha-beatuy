@@ -247,6 +247,53 @@
             color: #333;
         }
 
+        .payment-methods {
+            margin: 15px 0;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .payment-methods h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        .payment-option:hover {
+            border-color: #FFD700;
+        }
+        .payment-option.active {
+            border-color: #FFD700;
+            background: rgba(255,215,0,0.08);
+        }
+        .payment-option input[type="radio"] {
+            accent-color: #FFD700;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .payment-option .pay-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .payment-option .pay-desc {
+            font-size: 12px;
+            color: #888;
+        }
+        .payment-option .pay-icon {
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+        }
         .summary-total {
             display: flex;
             justify-content: space-between;
@@ -656,7 +703,9 @@
             }).join('');
 
             const shipping = subtotal > 100 ? 0 : 10;
-            const total = subtotal + shipping;
+            const taxRate = 0.15;
+            const tax = subtotal * taxRate;
+            const total = subtotal + shipping + tax;
 
             container.innerHTML = `
                 <div class="cart-wrapper">
@@ -690,12 +739,35 @@
                             <span>Shipping</span>
                             <span>${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span>
                         </div>
+                        <div class="summary-row">
+                            <span>Tax (15%)</span>
+                            <span>$${tax.toFixed(2)}</span>
+                        </div>
+                        <div class="payment-methods">
+                            <h4>Payment Method</h4>
+                            <label class="payment-option active" onclick="selectPayment('cod')">
+                                <input type="radio" name="payment" value="cod" checked>
+                                <span class="pay-icon"><i class="fas fa-money-bill-wave"></i></span>
+                                <div>
+                                    <div class="pay-label">Pay on Delivery</div>
+                                    <div class="pay-desc">Pay when you receive your order</div>
+                                </div>
+                            </label>
+                            <label class="payment-option" onclick="selectPayment('stripe')">
+                                <input type="radio" name="payment" value="stripe">
+                                <span class="pay-icon"><i class="fas fa-credit-card"></i></span>
+                                <div>
+                                    <div class="pay-label">Credit / Debit Card</div>
+                                    <div class="pay-desc">Pay online via secure payment</div>
+                                </div>
+                            </label>
+                        </div>
                         <div class="summary-total">
                             <span class="total-label">Total Amount</span>
                             <span class="total-amount">$${total.toFixed(2)}</span>
                         </div>
                         <button class="pay-btn" onclick="proceedToCheckout()">
-                            <i class="fas fa-lock"></i> Pay <span>$${total.toFixed(2)}</span>
+                            <i class="fas fa-lock"></i> Place Order <span>$${total.toFixed(2)}</span>
                         </button>
                     </aside>
                 </div>
@@ -732,8 +804,74 @@
             }
         }
 
-        function proceedToCheckout() {
-            alert('Payment feature coming soon! This will integrate with Stripe.');
+        let selectedPayment = 'cod';
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(function(el) {
+                el.classList.toggle('active', el.querySelector('input').value === method);
+            });
+        }
+
+        async function proceedToCheckout() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/cart-login.html?redirect=/cart-products';
+                return;
+            }
+
+            if (!cart || cart.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+
+            const btn = document.querySelector('.pay-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const shipping = subtotal > 100 ? 0 : 10;
+            const tax = subtotal * 0.15;
+            const total = subtotal + shipping + tax;
+
+            try {
+                const res = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({
+                        customer: {
+                            name: localStorage.getItem('userName') || 'Customer',
+                            email: localStorage.getItem('userEmail') || 'customer@example.com',
+                            phone: localStorage.getItem('userPhone') || '',
+                            address: localStorage.getItem('userAddress') || ''
+                        },
+                        items: cart.map(function(item) {
+                            return { productId: item.id, name: item.name, price: item.price, quantity: item.qty, image: item.image };
+                        }),
+                        tax: tax,
+                        shipping: shipping,
+                        paymentMethod: selectedPayment
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.removeItem('cart');
+                    updateCartCount();
+                    window.location.href = '/order-success.html?orderId=' + data.orderId + '&method=' + selectedPayment;
+                } else if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert(data.message || 'Checkout failed. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-lock"></i> Place Order <span>$' + total.toFixed(2) + '</span>';
+                }
+            } catch (e) {
+                alert('Connection error. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-lock"></i> Place Order <span>$' + total.toFixed(2) + '</span>';
+            }
         }
     </script>
 
@@ -795,7 +933,7 @@
           <a href="#" onclick="event.preventDefault(); openLocationModal()"><i class="fas fa-map-marker-alt"></i> <span class="location-name">Sudan</span></a>
         </div>
         <div class="ship-notice" style="font-size:12px;color:#aaa;"></div>
-        <p><p>&copy; <span id="footer-year">copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
+        <p>&copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. <span data-i18n="allRightsReserved">All rights reserved.</span></p>
         <div class="footer-payments">
           <i class="fab fa-cc-visa"></i>
           <i class="fab fa-cc-mastercard"></i>
