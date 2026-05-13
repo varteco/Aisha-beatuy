@@ -1102,33 +1102,11 @@ async function handleAccountSubmit(e) {
 // ==================== SETTINGS ====================
 async function loadSettings() {
   try {
-    const [settingsRes, pagesRes] = await Promise.all([
-      authFetch(`${API_BASE}/admin/settings`),
-      authFetch(`${API_BASE}/admin/pages`)
-    ]);
+    const settingsRes = await authFetch(`${API_BASE}/admin/settings`);
     const settings = await settingsRes.json();
-    const pages = await pagesRes.json();
     populateSettingsForm(settings);
-    displayCustomerPages(pages);
   } catch (error) {
     console.error('Error loading settings:', error);
-  }
-}
-
-async function seedDefaultPages() {
-  if (!confirm('This will create default customer service pages (Shipping Info, FAQs, etc.) if they do not exist. Continue?')) return;
-  try {
-    const response = await authFetch(`${API_BASE}/admin/seed-pages`, { method: 'POST' });
-    if (response.ok) {
-      showToast('Default pages created!');
-      loadSettings();
-    } else {
-      const err = await response.json();
-      alert('Error: ' + (err.message || 'Failed to seed pages'));
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error seeding pages');
   }
 }
 
@@ -1235,71 +1213,16 @@ function displayCustomerServicePages(pages) {
   container.innerHTML = html;
 }
 
-function displayCustomerPages(pages) {
-  const container = document.getElementById('customer-pages-list');
-  if (!container) return;
-
-  const customerSlugs = ['shipping-info', 'returns-exchanges', 'order-tracking', 'faqs', 'size-guide', 'about-us', 'contact'];
-  const customerPages = customerSlugs.map(slug => pages.find(p => p.slug === slug)).filter(Boolean);
-
-  if (customerPages.length === 0) {
-    container.innerHTML = '<p style="color:#888;padding:20px;">No pages found. Run seed or create pages from the Pages section.</p>';
-    return;
-  }
-
-  let html = '';
-  customerPages.forEach(page => {
-    const safeId = 'page-content-' + page.slug.replace(/-/g, '_');
-    html += `
-      <div style="border:1px solid #e0e0e0;border-radius:8px;padding:16px;margin:0 20px 12px;background:#fff;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <div>
-            <strong style="font-size:16px;">${page.title}</strong>
-            <span style="font-size:12px;color:#888;margin-left:10px;"><code>${page.slug}</code></span>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span class="status ${page.published ? 'active' : 'out'}" style="font-size:11px;padding:2px 8px;">${page.published ? 'Published' : 'Draft'}</span>
-            <a href="/page?slug=${page.slug}" target="_blank" class="btn-action btn-view" style="font-size:12px;padding:4px 10px;text-decoration:none;">
-              <i class="fas fa-eye"></i>
-            </a>
-            <button class="btn-action btn-delete" onclick="deletePage('${page._id}')" style="font-size:12px;padding:4px 10px;">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </div>
-        <div class="form-group" style="margin-bottom:8px;">
-          <textarea id="${safeId}" rows="6" style="width:100%;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:vertical;">${htmlToPlainText(page.content || '')}</textarea>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
-            <input type="checkbox" id="${safeId}-published" ${page.published ? 'checked' : ''}> Published
-          </label>
-          <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer;">
-            <input type="checkbox" id="${safeId}-footer" ${page.showInFooter ? 'checked' : ''}> Show in Footer
-          </label>
-          <button class="btn-submit" onclick="saveCustomerPageContent('${page._id}', '${safeId}')" style="padding:6px 18px;font-size:13px;margin-left:auto;">
-            <i class="fas fa-save"></i> Save
-          </button>
-        </div>
-      </div>
-    `;
-  });
-
-  container.innerHTML = html;
-}
-
 async function saveCustomerPageContent(pageId, safeId) {
   const content = plainTextToHtml(document.getElementById(safeId).value);
   const published = document.getElementById(safeId + '-published').checked;
   const showInFooter = document.getElementById(safeId + '-footer').checked;
-
   try {
     const response = await authFetch(`${API_BASE}/admin/pages/${pageId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content, published, showInFooter })
     });
-
     if (response.ok) {
       showToast('Page saved successfully!');
     } else {
@@ -1311,6 +1234,8 @@ async function saveCustomerPageContent(pageId, safeId) {
     alert('Error saving page');
   }
 }
+
+// ==================== CUSTOMER SERVICE ====================
 
 function populateSettingsForm(settings) {
   document.getElementById('storeName').value = settings.storeName || '';
