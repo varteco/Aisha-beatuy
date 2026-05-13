@@ -626,6 +626,9 @@
                         <span id="btnText"><i class="fas fa-lock"></i> Place Order (COD)</span>
                     </button>
                 </div>
+                <div id="orderSuccessMsg" style="display:none;margin-top:16px;padding:14px 18px;background:#e8f5e9;color:#2e7d32;border-radius:8px;font-size:15px;font-weight:600;text-align:center;">
+                    <i class="fas fa-check-circle"></i> <span id="orderSuccessText">Order placed successfully! Pay on delivery.</span>
+                </div>
             </form>
         </div>
     </div>
@@ -848,13 +851,20 @@
                 if (response.ok) {
                     if (data.success || data.orderIdFormatted) {
                         const orderId = data.orderIdFormatted || data.orderId;
+                        const msg = document.getElementById('orderSuccessMsg');
+                        const msgText = document.getElementById('orderSuccessText');
                         if (selectedPayment === 'cod') {
-                            alert('Order placed successfully! Pay on delivery.');
+                            msgText.textContent = 'Order placed successfully! Pay on delivery.';
                         } else {
-                            alert('Order placed successfully! Order ID: ' + orderId);
+                            msgText.textContent = 'Order placed successfully! Order ID: ' + orderId;
                         }
+                        msg.style.display = 'block';
+                        document.getElementById('submitBtn').style.display = 'none';
+                        document.querySelector('.btn-cancel').style.display = 'none';
                         localStorage.setItem('cart', JSON.stringify([]));
-                        window.location.href = 'order-success.html?orderId=' + data.orderId + '&method=' + selectedPayment;
+                        setTimeout(() => {
+                            window.location.href = 'order-success.html?orderId=' + data.orderId + '&method=' + selectedPayment;
+                        }, 1500);
                     } else if (data.url) {
                         window.location.href = data.url;
                     } else {
