@@ -67,8 +67,7 @@ const orderSchema = new mongoose.Schema({
 
 orderSchema.pre('save', async function () {
   if (!this.orderId) {
-    const count = await mongoose.model('Order').countDocuments();
-    this.orderId = 'ORD' + String(count + 1).padStart(6, '0');
+    this.orderId = 'ORD' + Date.now().toString(36).toUpperCase() + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
   }
   if (this.total && !this.totalAmount) {
     this.totalAmount = this.total;

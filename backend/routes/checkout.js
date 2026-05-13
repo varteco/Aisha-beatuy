@@ -69,8 +69,7 @@ router.post('/', async (req, res) => {
     const shippingAmount = parseFloat(shipping) || 0;
     const totalAmount = subtotal + taxAmount + shippingAmount;
 
-    const count = await Order.countDocuments();
-    const orderId = 'ORD' + String(count + 1).padStart(6, '0');
+    const orderId = 'ORD' + Date.now().toString(36).toUpperCase() + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
 
     const order = new Order({
       orderId,
