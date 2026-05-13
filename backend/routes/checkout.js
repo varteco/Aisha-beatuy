@@ -155,7 +155,7 @@ router.post('/', async (req, res) => {
     res.json({ sessionId: session.id, url: session.url, orderId: order._id });
   } catch (error) {
     console.error('Checkout error:', error);
-    res.status(500).json({ message: 'Error creating checkout session', error: error.message });
+    res.status(500).json({ message: 'Error creating checkout session', error: error.message, stack: error.stack });
   }
 });
 

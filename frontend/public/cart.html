@@ -908,6 +908,7 @@
                     }
                 } else {
                     alert(data.message || 'Error processing order');
+                    console.error('Checkout error:', data);
                     submitBtn.disabled = false;
                     btnText.innerHTML = selectedPayment === 'cod'
                         ? '<i class="fas fa-lock"></i> Place Order (COD)'
