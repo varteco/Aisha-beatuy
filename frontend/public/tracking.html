@@ -181,21 +181,21 @@
   <script src="js/main.js"></script>
   <script>
     const API = 'https://aisha-beatuy.onrender.com/api';
-    const STATUS_ORDER = ['pending', 'payment_confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+    const STATUS_ORDER = ['pending', 'processing', 'shipped', 'out_for_delivery', 'payment_confirmed', 'delivered'];
     const STATUS_LABELS = {
       pending: 'Order Placed',
-      payment_confirmed: 'Payment Confirmed',
       processing: 'Processing',
       shipped: 'Shipped',
       out_for_delivery: 'Out for Delivery',
+      payment_confirmed: 'Payment Confirmed',
       delivered: 'Delivered'
     };
     const STATUS_ICONS = {
       pending: 'fa-clock',
-      payment_confirmed: 'fa-credit-card',
       processing: 'fa-cog',
       shipped: 'fa-truck',
       out_for_delivery: 'fa-truck-fast',
+      payment_confirmed: 'fa-credit-card',
       delivered: 'fa-check-circle'
     };
 
@@ -251,10 +251,10 @@
 
       const timelineData = [
         { title: 'Order Placed', desc: 'Your order has been placed successfully.', icon: 'fa-clock', done: currentIdx >= 0 },
-        { title: 'Payment Confirmed', desc: 'Payment has been confirmed.', icon: 'fa-credit-card', done: currentIdx >= 1 },
-        { title: 'Processing', desc: 'Your items are being prepared.', icon: 'fa-cog', done: currentIdx >= 2 },
-        { title: 'Shipped', desc: 'Your package has been shipped.', icon: 'fa-truck', done: currentIdx >= 3 },
-        { title: 'Out for Delivery', desc: 'Your package is out for delivery.', icon: 'fa-truck-fast', done: currentIdx >= 4 },
+        { title: 'Processing', desc: 'Your items are being prepared.', icon: 'fa-cog', done: currentIdx >= 1 },
+        { title: 'Shipped', desc: 'Your package has been shipped.', icon: 'fa-truck', done: currentIdx >= 2 },
+        { title: 'Out for Delivery', desc: 'Your package is out for delivery.', icon: 'fa-truck-fast', done: currentIdx >= 3 },
+        { title: 'Payment Confirmed', desc: 'Payment has been confirmed.', icon: 'fa-credit-card', done: currentIdx >= 4 },
         { title: 'Delivered', desc: currentIdx >= 5 ? 'Your package was delivered.' : 'Package will arrive soon.', icon: 'fa-check-circle', done: currentIdx >= 5 }
       ];
 
