@@ -394,7 +394,7 @@ router.post('/forgot-password', async (req, res) => {
     user.resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
     await user.save();
     
-    const resetLink = `https://aishabeautyfrontend.vercel.app/reset-password.html?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL || 'https://aishabeautyfrontend.vercel.app'}/reset-password.html?token=${resetToken}`;
     
     // Send email if configured
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {

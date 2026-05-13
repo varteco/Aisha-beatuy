@@ -17,7 +17,7 @@ app.use('/api/webhook', require('./routes/webhook'));
 const corsOptions = {
   origin: function(origin, callback) {
     const allowedOrigins = [
-    'https://aishabeautyfrontend.vercel.app',
+    process.env.FRONTEND_URL || 'https://aishabeautyfrontend.vercel.app',
     'http://localhost:9000',
     'http://localhost:8888'
     ];
