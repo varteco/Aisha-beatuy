@@ -15,62 +15,6 @@
             font-family: 'Roboto', sans-serif;
         }
 
-        .navbar {
-            background: #1a1a2e;
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .navbar .logo {
-            color: #FFD700;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .navbar .nav-icons {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .navbar .cart-icon {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .navbar .cart-icon i {
-            color: #FFD700;
-            font-size: 22px;
-        }
-
-        .navbar .cart-icon .badge {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            background: #FFD700;
-            color: #000;
-            font-size: 12px;
-            font-weight: bold;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .navbar .user-avatar {
-            width: 35px;
-            height: 35px;
-            background: #FFD700;
-            border-radius: 50%;
-        }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -535,10 +479,6 @@
         }
 
         @media (max-width: 576px) {
-            .navbar {
-                padding: 15px 20px;
-            }
-
             .cart-actions {
                 flex-direction: column;
             }
@@ -564,18 +504,87 @@
 </style>
 </head>
 <body>
-    <header class="navbar">
-        <div class="logo">CWM STORE</div>
-        <div class="nav-icons">
-            <div class="cart-icon" onclick="viewCartProducts()">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="badge" id="cart-badge">0</span>
-            </div>
-            <div class="user-avatar" id="userAvatar"></div>
-        </div>
-    </header>
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="#">Sell on Aisha Beauty</a>
+        <a href="#">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="/orders" id="nav-orders" style="display:none;"><i class="fas fa-box"></i> Orders</a>
+        <a href="cart-login.html" id="user-icon-top"><i class="fas fa-user"></i> <span data-i18n="login">Login</span></a>
+        <a href="/profile" id="user-menu-top" style="display:none;" class="user-logged-in"><i class="fas fa-user-circle"></i> <span id="user-name-top"></span></a>
+      </div>
+    </div>
+  </div>
 
-    <main class="container">
+  <!-- Main Header -->
+  <header class="main-header">
+    <div class="container">
+      <div class="header-main">
+        <div class="logo-section">
+          <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="60"></a>
+        </div>
+        <div class="header-actions" style="justify-content:flex-end;">
+          <a href="#" class="action-item" onclick="viewCartProducts()">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span id="cart-count" class="cart-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" onclick="toggleMobileMenu()">&times;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/shop">Shop</a></li>
+      <li><a href="/categories">Categories</a></li>
+      <li><a href="/new-arrivals">New Arrivals</a></li>
+      <li><a href="/sale">Sale</a></li>
+    </ul>
+    <div class="mobile-nav-actions">
+      <a href="#" onclick="viewCartProducts(); toggleMobileMenu();"><i class="fas fa-shopping-cart"></i> Cart</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <div class="nav-main">
+        <div class="categories-menu">
+          <button class="categories-btn"><i class="fas fa-bars"></i> <span>Categories</span></button>
+          <div class="categories-dropdown">
+            <a href="shop.html?category=men"><i class="fas fa-male"></i> Men's Fashion <i class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=women"><i class="fas fa-female"></i> Women's Fashion <i class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=kids"><i class="fas fa-child"></i> Kids Fashion <i class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=accessories"><i class="fas fa-gem"></i> Accessories <i class="fas fa-chevron-right"></i></a>
+            <a href="shop.html?category=perfumes"><i class="fas fa-spray-can"></i> Perfumes <i class="fas fa-chevron-right"></i></a>
+          </div>
+        </div>
+        <ul class="nav-links-main">
+          <li><a href="/">Home</a></li>
+          <li><a href="/shop">Shop</a></li>
+          <li><a href="/categories">Categories</a></li>
+          <li><a href="/new-arrivals">New Arrivals</a></li>
+          <li><a href="/sale">Sale</a></li>
+          <li><a href="#">Bulk Orders</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <main class="container" style="margin-top:20px;">
         <nav class="breadcrumb">Home > <span>Cart</span></nav>
 
         <div id="cartContent"></div>
@@ -916,6 +925,11 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             updateBadge();
             await renderCart();
+        }
+
+        function toggleMobileMenu() {
+            var nav = document.getElementById('mobileNav');
+            if (nav) nav.classList.toggle('active');
         }
 
         async function clearCart() {
