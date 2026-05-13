@@ -21,6 +21,13 @@
     .sell-container .btn-submit:hover { background: #222; }
     .success-msg { display: none; text-align: center; padding: 20px; background: #e8f5e9; color: #2e7d32; border-radius: 8px; margin-top: 16px; font-weight: 600; }
     .success-msg i { font-size: 40px; display: block; margin-bottom: 10px; }
+    .nav-left { display: flex; align-items: center; flex-shrink: 0; }
+    .nav-left .logo { display: flex; align-items: center; line-height: 1; }
+    .nav-left .logo img { display: block; }
+    .nav-right { display: flex; align-items: center; flex-shrink: 0; }
+    .cart-icon-nav { position: relative; color: #fff; font-size: 22px; padding: 8px; }
+    .cart-icon-nav .cart-badge { position: absolute; top: -2px; right: -6px; background: #FFD700; color: #000; font-size: 11px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .nav-links-main { flex: 1; justify-content: center; }
   </style>
 </head>
 <body>
@@ -38,27 +45,23 @@
   </div>
 </div>
 
-<header class="main-header">
-  <div class="container">
-    <div class="header-main">
-      <div class="logo-section">
-        <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="60"></a>
-      </div>
-      <div class="header-actions" style="justify-content:flex-end;">
-        <a href="#" class="action-item"><i class="fas fa-shopping-cart"></i><span>Cart</span></a>
-      </div>
-    </div>
-  </div>
-</header>
-
 <nav class="main-nav">
   <div class="container">
     <div class="nav-main">
+      <div class="nav-left">
+        <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="50"></a>
+      </div>
       <ul class="nav-links-main">
         <li><a href="/">Home</a></li>
         <li><a href="/shop">Shop</a></li>
         <li><a href="/categories">Categories</a></li>
       </ul>
+      <div class="nav-right">
+        <a href="cart.html" class="cart-icon-nav">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cart-badge" class="cart-badge">0</span>
+        </a>
+      </div>
     </div>
   </div>
 </nav>
@@ -129,6 +132,13 @@
 </div>
 
 <script>
+  function updateCartBadge() {
+    var cart = JSON.parse(localStorage.getItem('cart')) || [];
+    var count = cart.reduce(function(sum, item) { return sum + (item.qty || 1); }, 0);
+    var el = document.getElementById('cart-badge');
+    if (el) el.textContent = count;
+  }
+  updateCartBadge();
   document.getElementById('sellForm').addEventListener('submit', function(e) {
     e.preventDefault();
     document.getElementById('sellForm').style.display = 'none';
