@@ -15,6 +15,49 @@
             font-family: 'Roboto', sans-serif;
         }
 
+        .nav-left {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .nav-left .logo {
+            display: flex;
+            align-items: center;
+            line-height: 1;
+        }
+        .nav-left .logo img {
+            display: block;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .cart-icon-nav {
+            position: relative;
+            color: #fff;
+            font-size: 22px;
+            padding: 8px;
+        }
+        .cart-icon-nav .cart-badge {
+            position: absolute;
+            top: -2px;
+            right: -6px;
+            background: #FFD700;
+            color: #000;
+            font-size: 11px;
+            font-weight: bold;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-links-main {
+            flex: 1;
+            justify-content: center;
+        }
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -522,24 +565,6 @@
     </div>
   </div>
 
-  <!-- Main Header -->
-  <header class="main-header">
-    <div class="container">
-      <div class="header-main">
-        <div class="logo-section">
-          <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="60"></a>
-        </div>
-        <div class="header-actions" style="justify-content:flex-end;">
-          <a href="#" class="action-item" onclick="viewCartProducts()">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
-            <span id="cart-count" class="cart-badge">0</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </header>
-
   <!-- Mobile Menu Toggle -->
   <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
 
@@ -562,6 +587,9 @@
   <nav class="main-nav">
     <div class="container">
       <div class="nav-main">
+        <div class="nav-left">
+          <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="50"></a>
+        </div>
         <div class="categories-menu">
           <button class="categories-btn"><i class="fas fa-bars"></i> <span>Categories</span></button>
           <div class="categories-dropdown">
@@ -580,6 +608,12 @@
           <li><a href="/sale">Sale</a></li>
           <li><a href="#">Bulk Orders</a></li>
         </ul>
+        <div class="nav-right">
+          <a href="#" class="cart-icon-nav" onclick="viewCartProducts()">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="cart-badge">0</span>
+          </a>
+        </div>
       </div>
     </div>
   </nav>
