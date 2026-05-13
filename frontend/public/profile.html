@@ -332,6 +332,27 @@
       </div>
   </div>
 
+  <!-- Forgot Password Modal -->
+  <div id="forgot-password-modal" class="modal">
+    <div class="modal-content" style="max-width:400px;padding:30px;">
+      <span class="close" onclick="closeForgotPassword()">&times;</span>
+      <h2 style="margin-bottom:8px;">Reset Password</h2>
+      <p style="color:#888;font-size:14px;margin-bottom:20px;">Enter your email to receive a password reset link.</p>
+      <div id="forgot-form">
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="forgot-email" placeholder="Enter your email" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+        <button class="btn" onclick="handleForgotPassword()" id="forgot-btn" style="margin-top:10px;width:100%;">
+          <span id="forgot-btn-text"><i class="fas fa-paper-plane"></i> Send Reset Link</span>
+        </button>
+      </div>
+      <div id="forgot-success" style="display:none;">
+        <p style="color:#2e7d32;font-size:14px;"><i class="fas fa-check-circle"></i> Reset link sent to your email!</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast" class="toast"></div>
 
@@ -430,13 +451,16 @@
               const data = await response.json();
               console.log('Login response:', data);
               
-              if (data.token) {
-                  localStorage.setItem('customerToken', data.token);
-                  localStorage.setItem('customerUser', JSON.stringify(data.user));
-                  document.getElementById('login-form').reset();
-                  showProfileSection(data.user);
-                  loadOrders();
-                  showToast('Welcome back!');
+               if (data.token) {
+                   localStorage.setItem('customerToken', data.token);
+                   localStorage.setItem('customerUser', JSON.stringify(data.user));
+                   authToken = data.token;
+                   currentUser = data.user;
+                   document.getElementById('login-form').reset();
+                   showLoggedInState();
+                   showProfileSection(data.user);
+                   loadOrders();
+                   showToast('Welcome back!');
               } else {
                   showToast(data.message || 'Login failed', true);
               }
