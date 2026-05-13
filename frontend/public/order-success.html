@@ -207,6 +207,7 @@
     <script src="js/language.js"></script>
     <script src="js/main.js"></script>
     <script>
+        localStorage.removeItem('cart');
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('orderId');
         const method = urlParams.get('method');
@@ -216,6 +217,11 @@
             info.style.display = 'block';
             info.style.background = '#e8f5e9';
             info.innerHTML = '<i class="fas fa-truck" style="color:#2e7d32;margin-right:8px;"></i> <strong>Pay on Delivery</strong> — No payment needed now. Pay when you receive your order.';
+        } else if (method === 'stripe') {
+            var info = document.getElementById('payment-info');
+            info.style.display = 'block';
+            info.style.background = '#e3f2fd';
+            info.innerHTML = '<i class="fas fa-credit-card" style="color:#1565c0;margin-right:8px;"></i> <strong>Paid via Credit/Debit Card</strong> — Your payment has been processed successfully.';
         }
     </script>
 

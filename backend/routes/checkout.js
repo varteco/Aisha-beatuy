@@ -104,7 +104,7 @@ router.post('/', async (req, res) => {
     }
 
     // If Stripe is not configured, return order info so frontend can handle it
-    if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_your_stripe_secret_key') {
+    if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.startsWith('sk_test_dummy') || process.env.STRIPE_SECRET_KEY === 'sk_test_your_stripe_secret_key') {
       return res.json({ 
         success: true, 
         orderId: order._id,
@@ -125,7 +125,7 @@ router.post('/', async (req, res) => {
         quantity: item.quantity,
       })),
       mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/order-success.html?orderId=${order._id}`,
+      success_url: `${process.env.CLIENT_URL}/order-success.html?orderId=${order._id}&method=stripe`,
       cancel_url: `${process.env.CLIENT_URL}/cart.html`,
       metadata: { orderId: order._id.toString() },
     });

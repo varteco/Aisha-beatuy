@@ -42,6 +42,15 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: 'cod',
   },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'failed'],
+    default: 'pending',
+  },
+  stripePaymentId: {
+    type: String,
+    default: '',
+  },
   orderDate: {
     type: Date,
     default: Date.now,
