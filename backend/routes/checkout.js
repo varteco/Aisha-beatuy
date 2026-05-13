@@ -103,32 +103,54 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // If Stripe is not configured, return order info so frontend can handle it
+    // If Stripe is not configured, fall back to COD
     if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.startsWith('sk_test_dummy') || process.env.STRIPE_SECRET_KEY === 'sk_test_your_stripe_secret_key') {
+      order.paymentMethod = 'cod';
+      order.paymentStatus = 'pending';
+      await order.save();
       return res.json({ 
         success: true, 
         orderId: order._id,
         orderIdFormatted: orderId,
         totalAmount,
-        message: 'Order created successfully. Payment integration pending.'
+        paymentMethod: 'cod',
+        message: 'Order placed! We will contact you to arrange payment.'
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: processedItems.map(item => ({
-        price_data: {
-          currency: 'usd',
-          product_data: { name: item.name },
-          unit_amount: Math.round(item.price * 100),
-        },
-        quantity: item.quantity,
-      })),
-      mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/order-success.html?orderId=${order._id}&method=stripe`,
-      cancel_url: `${process.env.CLIENT_URL}/cart.html`,
-      metadata: { orderId: order._id.toString() },
-    });
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: processedItems.map(item => ({
+          price_data: {
+            currency: 'usd',
+            product_data: { name: item.name },
+            unit_amount: Math.round(item.price * 100),
+          },
+          quantity: item.quantity,
+        })),
+        mode: 'payment',
+        success_url: `${process.env.CLIENT_URL}/order-success.html?orderId=${order._id}&method=stripe`,
+        cancel_url: `${process.env.CLIENT_URL}/cart.html`,
+        metadata: { orderId: order._id.toString() },
+      });
+    } catch (stripeError) {
+      console.error('Stripe session creation failed:', stripeError.message);
+      // Fall back to COD if Stripe fails
+      order.paymentMethod = 'cod';
+      order.paymentStatus = 'pending';
+      await order.save();
+      return res.json({ 
+        success: true, 
+        orderId: order._id,
+        orderIdFormatted: orderId,
+        totalAmount,
+        paymentMethod: 'cod',
+        message: 'Online payment unavailable. Order placed as COD.',
+        stripeError: stripeError.message
+      });
+    }
 
     res.json({ sessionId: session.id, url: session.url, orderId: order._id });
   } catch (error) {

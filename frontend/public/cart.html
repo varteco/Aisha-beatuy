@@ -884,10 +884,11 @@
                 if (response.ok) {
                     if (data.success || data.orderIdFormatted) {
                         const orderId = data.orderIdFormatted || data.orderId;
+                        const method = data.paymentMethod || selectedPayment;
                         const msg = document.getElementById('orderSuccessMsg');
                         const msgText = document.getElementById('orderSuccessText');
-                        if (selectedPayment === 'cod') {
-                            msgText.textContent = 'Order placed successfully! Pay on delivery.';
+                        if (method === 'cod') {
+                            msgText.textContent = data.message || 'Order placed successfully! Pay on delivery.';
                         } else {
                             msgText.textContent = 'Order placed successfully! Order ID: ' + orderId;
                         }
@@ -896,7 +897,7 @@
                         document.querySelector('.btn-cancel').style.display = 'none';
                         localStorage.setItem('cart', JSON.stringify([]));
                         setTimeout(() => {
-                            window.location.href = 'order-success.html?orderId=' + data.orderId + '&method=' + selectedPayment;
+                            window.location.href = 'order-success.html?orderId=' + data.orderId + '&method=' + method;
                         }, 1500);
                     } else if (data.url) {
                         window.location.href = data.url;
