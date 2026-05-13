@@ -561,7 +561,7 @@
       <li><a href="/sale">Sale</a></li>
     </ul>
     <div class="mobile-nav-actions">
-      <a href="#" onclick="viewCartProducts(); toggleMobileMenu();"><i class="fas fa-shopping-cart"></i> Cart</a>
+      <a href="#" onclick="location.reload(); toggleMobileMenu();"><i class="fas fa-shopping-cart"></i> Cart</a>
     </div>
   </div>
 
@@ -591,9 +591,9 @@
           <li><a href="#">Bulk Orders</a></li>
         </ul>
         <div class="nav-right">
-          <a href="#" class="cart-icon-nav" onclick="viewCartProducts()">
+          <a href="#" class="cart-icon-nav" onclick="location.reload()">
             <i class="fas fa-shopping-cart"></i>
-            <span id="cart-count" class="cart-badge">0</span>
+            <span id="cart-badge" class="cart-badge">0</span>
           </a>
         </div>
       </div>
@@ -667,6 +667,7 @@
         let cachedSettings = null;
 
         let selectedPayment = 'cod';
+        updateBadge();
 
         function selectPayment(method) {
             selectedPayment = method;
