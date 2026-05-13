@@ -216,7 +216,7 @@ router.get('/analytics', auth, async (req, res) => {
 router.patch('/orders/:id/status', auth, async (req, res) => {
   try {
     const { status } = req.body;
-    const validStatuses = ['pending', 'payment_confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+    const validStatuses = ['pending', 'processing', 'shipped', 'out_for_delivery', 'payment_confirmed', 'delivered', 'cancelled'];
     if (!status || !validStatuses.includes(status.toLowerCase())) {
       return res.status(400).json({ message: 'Invalid status: "' + (status || '') + '"' });
     }

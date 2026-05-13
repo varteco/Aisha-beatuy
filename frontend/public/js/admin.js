@@ -465,10 +465,10 @@ function displayOrdersTable(orders, tableId) {
 
   const statusLabels = {
     pending: 'Order Placed',
-    payment_confirmed: 'Payment Confirmed',
     processing: 'Processing',
     shipped: 'Shipped',
     out_for_delivery: 'Out for Delivery',
+    payment_confirmed: 'Payment Confirmed',
     delivered: 'Delivered',
     cancelled: 'Cancelled'
   };
@@ -515,10 +515,10 @@ async function viewOrder(orderId) {
 
     const statusLabels = {
       pending: 'Order Placed',
-      payment_confirmed: 'Payment Confirmed',
       processing: 'Processing',
       shipped: 'Shipped',
       out_for_delivery: 'Out for Delivery',
+      payment_confirmed: 'Payment Confirmed',
       delivered: 'Delivered',
       cancelled: 'Cancelled'
     };
@@ -809,10 +809,10 @@ function displayAnalytics(data) {
 
     const statusLabels = {
       pending: 'Order Placed',
-      payment_confirmed: 'Payment Confirmed',
       processing: 'Processing',
       shipped: 'Shipped',
       out_for_delivery: 'Out for Delivery',
+      payment_confirmed: 'Payment Confirmed',
       delivered: 'Delivered',
       cancelled: 'Cancelled'
     };
