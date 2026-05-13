@@ -258,6 +258,7 @@ router.get('/settings', auth, async (req, res) => {
         taxRate: 10,
         shippingCost: 15,
         freeShippingThreshold: 100,
+        freeCountries: [],
         allowGuestCheckout: true,
         notifications: { orderEmail: true, orderSMS: false, marketingEmail: true }
       });

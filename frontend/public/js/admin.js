@@ -1321,6 +1321,9 @@ function populateSettingsForm(settings) {
   document.getElementById('taxRate').value = settings.taxRate || 0;
   document.getElementById('shippingCost').value = settings.shippingCost || 0;
   document.getElementById('freeShippingThreshold').value = settings.freeShippingThreshold || 0;
+  document.querySelectorAll('#freeCountriesList input[type=checkbox]').forEach(cb => {
+    cb.checked = (settings.freeCountries || []).includes(cb.value);
+  });
   document.getElementById('socialFacebook').value = settings.socialFacebook || '';
   document.getElementById('socialTwitter').value = settings.socialTwitter || '';
   document.getElementById('socialInstagram').value = settings.socialInstagram || '';
@@ -1342,6 +1345,7 @@ async function handleSettingsSubmit(e) {
     taxRate: parseFloat(document.getElementById('taxRate').value),
     shippingCost: parseFloat(document.getElementById('shippingCost').value),
     freeShippingThreshold: parseFloat(document.getElementById('freeShippingThreshold').value),
+    freeCountries: Array.from(document.querySelectorAll('#freeCountriesList input[type=checkbox]:checked')).map(cb => cb.value),
     socialFacebook: document.getElementById('socialFacebook').value,
     socialTwitter: document.getElementById('socialTwitter').value,
     socialInstagram: document.getElementById('socialInstagram').value,

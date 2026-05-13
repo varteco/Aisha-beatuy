@@ -547,8 +547,10 @@ function displayCart() {
       const taxRate = parseFloat(s.taxRate) || 0;
       const shippingCost = parseFloat(s.shippingCost) || 0;
       const freeThreshold = parseFloat(s.freeShippingThreshold) || 0;
+      const userCountry = localStorage.getItem('aisha_country') || 'SD';
+      const isFreeCountry = (s.freeCountries || []).includes(userCountry);
       const tax = subtotal * (taxRate / 100);
-      const shipping = subtotal >= freeThreshold && freeThreshold > 0 ? 0 : shippingCost;
+      const shipping = (subtotal >= freeThreshold && freeThreshold > 0) || isFreeCountry ? 0 : shippingCost;
       const total = subtotal + tax + shipping;
       
       const totalEl = document.getElementById('cart-total');
@@ -605,16 +607,20 @@ async function checkout() {
   
   // Fetch store settings for tax & shipping
   let taxRate = 0, shippingCost = 0, freeShippingThreshold = 0;
+  let freeCountries = [];
   try {
     const res = await fetch(`${API_BASE}/settings/public`);
     const s = await res.json();
     taxRate = parseFloat(s.taxRate) || 0;
     shippingCost = parseFloat(s.shippingCost) || 0;
     freeShippingThreshold = parseFloat(s.freeShippingThreshold) || 0;
+    freeCountries = s.freeCountries || [];
   } catch (e) {}
   
+  const userCountry = localStorage.getItem('aisha_country') || 'SD';
+  const isFreeCountry = freeCountries.includes(userCountry);
   const tax = subtotal * (taxRate / 100);
-  const shipping = subtotal >= freeShippingThreshold && freeShippingThreshold > 0 ? 0 : shippingCost;
+  const shipping = (subtotal >= freeShippingThreshold && freeShippingThreshold > 0) || isFreeCountry ? 0 : shippingCost;
   const total = subtotal + tax + shipping;
   
   const orderData = {

@@ -10,6 +10,7 @@ const settingSchema = new mongoose.Schema({
   taxRate: { type: Number, default: 10 },
   shippingCost: { type: Number, default: 15 },
   freeShippingThreshold: { type: Number, default: 100 },
+  freeCountries: { type: [String], default: [] },
   allowGuestCheckout: { type: Boolean, default: true },
   socialFacebook: { type: String, default: '' },
   socialTwitter: { type: String, default: '' },

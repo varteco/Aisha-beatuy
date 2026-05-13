@@ -662,7 +662,7 @@
                 cachedSettings = await res.json();
                 return cachedSettings;
             } catch (e) {
-                return { taxRate: 15, shippingCost: 10, freeShippingThreshold: 100 };
+                return { taxRate: 15, shippingCost: 10, freeShippingThreshold: 100, freeCountries: [] };
             }
         }
 
@@ -737,7 +737,9 @@
                 `;
             }).join('');
 
-            const shipping = subtotal >= freeThreshold && freeThreshold > 0 ? 0 : shippingCost;
+            const userCountry = localStorage.getItem('aisha_country') || 'SD';
+            const isFreeCountry = (s.freeCountries || []).includes(userCountry);
+            const shipping = (subtotal >= freeThreshold && freeThreshold > 0) || isFreeCountry ? 0 : shippingCost;
             const tax = subtotal * (taxRate / 100);
             const total = subtotal + shipping + tax;
 
@@ -823,7 +825,9 @@
             const taxRate = parseFloat(s.taxRate) || 15;
             const shippingCost = parseFloat(s.shippingCost) || 10;
             const freeThreshold = parseFloat(s.freeShippingThreshold) || 100;
-            const shipping = subtotal >= freeThreshold && freeThreshold > 0 ? 0 : shippingCost;
+            const userCountry = localStorage.getItem('aisha_country') || 'SD';
+            const isFreeCountry = (s.freeCountries || []).includes(userCountry);
+            const shipping = (subtotal >= freeThreshold && freeThreshold > 0) || isFreeCountry ? 0 : shippingCost;
             const tax = subtotal * (taxRate / 100);
             const total = subtotal + tax + shipping;
             

@@ -55,7 +55,8 @@ app.get('/api/settings/public', async (req, res) => {
         currency: 'USD',
         taxRate: 10,
         shippingCost: 15,
-        freeShippingThreshold: 100
+        freeShippingThreshold: 100,
+        freeCountries: []
       };
       return res.json(settings);
     }
@@ -68,6 +69,7 @@ app.get('/api/settings/public', async (req, res) => {
       taxRate: settings.taxRate,
       shippingCost: settings.shippingCost,
       freeShippingThreshold: settings.freeShippingThreshold,
+      freeCountries: settings.freeCountries,
       socialFacebook: settings.socialFacebook,
       socialTwitter: settings.socialTwitter,
       socialInstagram: settings.socialInstagram,
