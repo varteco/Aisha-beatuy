@@ -364,6 +364,9 @@
                     <label for="loginPassword">Password</label>
                     <input type="password" id="loginPassword" placeholder="Enter your password" required>
                 </div>
+                <div style="text-align: right; margin-top: -10px; margin-bottom: 10px;">
+                    <a href="#" onclick="showForgotPassword()" style="color: #FFD700; font-size: 13px; text-decoration: none; font-weight: 500;">Forgot Password?</a>
+                </div>
                 <button type="submit" class="btn-submit" id="loginBtn">
                     <span id="loginBtnText">Login</span>
                     <div class="spinner" id="loginSpinner" style="display: none;"></div>
@@ -501,6 +504,52 @@
                 spinner.style.display = 'none';
             }
         });
+
+        function showForgotPassword() {
+            document.getElementById('forgot-password-modal').style.display = 'flex';
+            document.getElementById('forgot-form').style.display = 'block';
+            document.getElementById('forgot-success').style.display = 'none';
+            document.getElementById('forgot-email').value = '';
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('forgot-password-modal').style.display = 'none';
+        }
+
+        function handleForgotPassword() {
+            const email = document.getElementById('forgot-email').value;
+            const btn = document.getElementById('forgot-btn');
+
+            if (!email) {
+                alert('Please enter your email');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            fetch(API_BASE + '/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('forgot-form').style.display = 'none';
+                    document.getElementById('forgot-success').style.display = 'block';
+                } else {
+                    alert(data.message || 'Failed to send reset link');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';
+                }
+            })
+            .catch(err => {
+                alert('Connection error. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';
+            });
+        }
 
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -644,6 +693,26 @@
     }
     document.addEventListener('DOMContentLoaded', loadFooter);
   </script>
+  <div id="forgot-password-modal" class="modal">
+    <div class="modal-content" style="max-width:400px;padding:30px;">
+      <span class="close" onclick="closeForgotPassword()">&times;</span>
+      <h2 style="margin-bottom:8px;">Reset Password</h2>
+      <p style="color:#888;font-size:14px;margin-bottom:20px;">Enter your email to receive a password reset link.</p>
+      <div id="forgot-form">
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="forgot-email" placeholder="Enter your email" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+        <button class="btn-submit" onclick="handleForgotPassword()" id="forgot-btn" style="margin-top:10px;">
+          <span id="forgot-btn-text"><i class="fas fa-paper-plane"></i> Send Reset Link</span>
+        </button>
+      </div>
+      <div id="forgot-success" style="display:none;">
+        <p style="color:#2e7d32;font-size:14px;"><i class="fas fa-check-circle"></i> Reset link sent to your email!</p>
+      </div>
+    </div>
+  </div>
+
 <script src="js/amazon-enhance.js"></script>
 </body>
 </html>
