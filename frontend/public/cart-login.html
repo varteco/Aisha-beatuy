@@ -385,7 +385,27 @@
                 </div>
                 <div class="input-group">
                     <label for="signupPhone">Phone Number</label>
-                    <input type="tel" id="signupPhone" placeholder="Enter your phone number" required>
+                    <div style="display:flex;gap:8px;">
+                        <select id="signupPhoneCode" style="width:110px;padding:14px;border:2px solid transparent;border-radius:8px;background:#f5f5f5;box-sizing:border-box;font-size:14px;outline:none;transition:all 0.3s ease;">
+                            <option value="+249">🇸🇩 +249</option>
+                            <option value="+256">🇺🇬 +256</option>
+                            <option value="+254">🇰🇪 +254</option>
+                            <option value="+255">🇹🇿 +255</option>
+                            <option value="+251">🇪🇹 +251</option>
+                            <option value="+211">🇸🇸 +211</option>
+                            <option value="+20">🇪🇬 +20</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+971">🇦🇪 +971</option>
+                            <option value="+966">🇸🇦 +966</option>
+                            <option value="+974">🇶🇦 +974</option>
+                            <option value="+973">🇧🇭 +973</option>
+                            <option value="+968">🇴🇲 +968</option>
+                            <option value="+965">🇰🇼 +965</option>
+                            <option value="+962">🇯🇴 +962</option>
+                        </select>
+                        <input type="tel" id="signupPhone" placeholder="Phone number" required style="flex:1;">
+                    </div>
                 </div>
                 <div class="input-group">
                     <label for="signupPassword">Password</label>
@@ -555,7 +575,8 @@
             e.preventDefault();
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
-            const phone = document.getElementById('signupPhone').value;
+            const phoneCode = document.getElementById('signupPhoneCode').value;
+            const phone = phoneCode + document.getElementById('signupPhone').value;
             const password = document.getElementById('signupPassword').value;
             const btn = document.getElementById('signupBtn');
             const btnText = document.getElementById('signupBtnText');

@@ -335,7 +335,27 @@
               </div>
               <div class="form-group">
                   <label><i class="fas fa-phone"></i> Phone</label>
-                  <input type="tel" id="signup-phone" placeholder="Your phone number" required>
+                  <div style="display:flex;gap:8px;">
+                      <select id="signup-phone-code" style="width:110px;padding:12px;border:2px solid #e5e5e5;border-radius:8px;background:#fafafa;box-sizing:border-box;font-size:14px;outline:none;">
+                          <option value="+249">🇸🇩 +249</option>
+                          <option value="+256">🇺🇬 +256</option>
+                          <option value="+254">🇰🇪 +254</option>
+                          <option value="+255">🇹🇿 +255</option>
+                          <option value="+251">🇪🇹 +251</option>
+                          <option value="+211">🇸🇸 +211</option>
+                          <option value="+20">🇪🇬 +20</option>
+                          <option value="+1">🇺🇸 +1</option>
+                          <option value="+44">🇬🇧 +44</option>
+                          <option value="+971">🇦🇪 +971</option>
+                          <option value="+966">🇸🇦 +966</option>
+                          <option value="+974">🇶🇦 +974</option>
+                          <option value="+973">🇧🇭 +973</option>
+                          <option value="+968">🇴🇲 +968</option>
+                          <option value="+965">🇰🇼 +965</option>
+                          <option value="+962">🇯🇴 +962</option>
+                      </select>
+                      <input type="tel" id="signup-phone" placeholder="Phone number" required style="flex:1;">
+                  </div>
               </div>
               <div class="form-group">
                   <label><i class="fas fa-lock"></i> Password</label>
@@ -526,7 +546,8 @@
            e.preventDefault();
            const name = document.getElementById('signup-name').value;
            const email = document.getElementById('signup-email').value;
-           const phone = document.getElementById('signup-phone').value;
+            const phoneCode = document.getElementById('signup-phone-code').value;
+            const phone = phoneCode + document.getElementById('signup-phone').value;
            const password = document.getElementById('signup-password').value;
 
            try {
