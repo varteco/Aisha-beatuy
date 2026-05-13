@@ -3,10 +3,31 @@ const COUNTRIES = [
   { code: 'AE', name: 'UAE', nameAr: 'الإمارات', flag: '🇦🇪', currency: 'AED', ship: true },
   { code: 'SA', name: 'Saudi Arabia', nameAr: 'المملكة العربية السعودية', flag: '🇸🇦', currency: 'SAR', ship: true },
   { code: 'EG', name: 'Egypt', nameAr: 'مصر', flag: '🇪🇬', currency: 'EGP', ship: true },
-  { code: 'QA', name: 'Qatar', nameAr: 'قطر', flag: '🇶🇦', currency: 'QAR', ship: false },
-  { code: 'KW', name: 'Kuwait', nameAr: 'الكويت', flag: '🇰🇼', currency: 'KWD', ship: false },
-  { code: 'BH', name: 'Bahrain', nameAr: 'البحرين', flag: '🇧🇭', currency: 'BHD', ship: false },
-  { code: 'OM', name: 'Oman', nameAr: 'عُمان', flag: '🇴🇲', currency: 'OMR', ship: false },
+  { code: 'QA', name: 'Qatar', nameAr: 'قطر', flag: '🇶🇦', currency: 'QAR', ship: true },
+  { code: 'KW', name: 'Kuwait', nameAr: 'الكويت', flag: '🇰🇼', currency: 'KWD', ship: true },
+  { code: 'BH', name: 'Bahrain', nameAr: 'البحرين', flag: '🇧🇭', currency: 'BHD', ship: true },
+  { code: 'OM', name: 'Oman', nameAr: 'عُمان', flag: '🇴🇲', currency: 'OMR', ship: true },
+  { code: 'US', name: 'United States', nameAr: 'الولايات المتحدة', flag: '🇺🇸', currency: 'USD', ship: true },
+  { code: 'GB', name: 'United Kingdom', nameAr: 'المملكة المتحدة', flag: '🇬🇧', currency: 'GBP', ship: true },
+  { code: 'DE', name: 'Germany', nameAr: 'ألمانيا', flag: '🇩🇪', currency: 'EUR', ship: true },
+  { code: 'FR', name: 'France', nameAr: 'فرنسا', flag: '🇫🇷', currency: 'EUR', ship: true },
+  { code: 'CA', name: 'Canada', nameAr: 'كندا', flag: '🇨🇦', currency: 'CAD', ship: true },
+  { code: 'AU', name: 'Australia', nameAr: 'أستراليا', flag: '🇦🇺', currency: 'AUD', ship: true },
+  { code: 'IN', name: 'India', nameAr: 'الهند', flag: '🇮🇳', currency: 'INR', ship: true },
+  { code: 'TR', name: 'Turkey', nameAr: 'تركيا', flag: '🇹🇷', currency: 'TRY', ship: true },
+  { code: 'CN', name: 'China', nameAr: 'الصين', flag: '🇨🇳', currency: 'CNY', ship: true },
+  { code: 'JP', name: 'Japan', nameAr: 'اليابان', flag: '🇯🇵', currency: 'JPY', ship: true },
+  { code: 'KR', name: 'South Korea', nameAr: 'كوريا الجنوبية', flag: '🇰🇷', currency: 'KRW', ship: true },
+  { code: 'MY', name: 'Malaysia', nameAr: 'ماليزيا', flag: '🇲🇾', currency: 'MYR', ship: true },
+  { code: 'SG', name: 'Singapore', nameAr: 'سنغافورة', flag: '🇸🇬', currency: 'SGD', ship: true },
+  { code: 'TH', name: 'Thailand', nameAr: 'تايلاند', flag: '🇹🇭', currency: 'THB', ship: true },
+  { code: 'PH', name: 'Philippines', nameAr: 'الفلبين', flag: '🇵🇭', currency: 'PHP', ship: true },
+  { code: 'KE', name: 'Kenya', nameAr: 'كينيا', flag: '🇰🇪', currency: 'KES', ship: true },
+  { code: 'NG', name: 'Nigeria', nameAr: 'نيجيريا', flag: '🇳🇬', currency: 'NGN', ship: true },
+  { code: 'ZA', name: 'South Africa', nameAr: 'جنوب أفريقيا', flag: '🇿🇦', currency: 'ZAR', ship: true },
+  { code: 'IL', name: 'Israel', nameAr: 'إسرائيل', flag: '🇮🇱', currency: 'ILS', ship: true },
+  { code: 'LB', name: 'Lebanon', nameAr: 'لبنان', flag: '🇱🇧', currency: 'LBP', ship: true },
+  { code: 'JO', name: 'Jordan', nameAr: 'الأردن', flag: '🇯🇴', currency: 'JOD', ship: true },
 ];
 
 let currentCountryCode = localStorage.getItem('aisha_country') || 'SD';
@@ -70,7 +91,15 @@ function fallbackDetect() {
     const tzMap = {
       'Africa/Khartoum': 'SD', 'Asia/Dubai': 'AE', 'Asia/Riyadh': 'SA',
       'Africa/Cairo': 'EG', 'Asia/Qatar': 'QA', 'Asia/Kuwait': 'KW',
-      'Asia/Bahrain': 'BH', 'Asia/Muscat': 'OM'
+      'Asia/Bahrain': 'BH', 'Asia/Muscat': 'OM',
+      'America/New_York': 'US', 'America/Chicago': 'US', 'America/Denver': 'US', 'America/Los_Angeles': 'US',
+      'Europe/London': 'GB', 'Europe/Berlin': 'DE', 'Europe/Paris': 'FR',
+      'America/Toronto': 'CA', 'Australia/Sydney': 'AU', 'Asia/Kolkata': 'IN',
+      'Europe/Istanbul': 'TR', 'Asia/Shanghai': 'CN', 'Asia/Tokyo': 'JP',
+      'Asia/Seoul': 'KR', 'Asia/Kuala_Lumpur': 'MY', 'Asia/Singapore': 'SG',
+      'Asia/Bangkok': 'TH', 'Asia/Manila': 'PH', 'Africa/Nairobi': 'KE',
+      'Africa/Lagos': 'NG', 'Africa/Johannesburg': 'ZA',
+      'Asia/Jerusalem': 'IL', 'Asia/Beirut': 'LB', 'Asia/Amman': 'JO'
     };
     const code = tzMap[tz];
     if (code) { setCountry(code); showDetectResult('📍 Location set to ' + getCountry().name + ' (based on your timezone).'); }
