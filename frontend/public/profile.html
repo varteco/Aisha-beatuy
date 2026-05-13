@@ -294,13 +294,19 @@
       </div>
   </div>
 
-  <!-- Login Container -->
+  <!-- Login / Signup Container -->
   <div class="profile-container" id="loginContainer" style="display: none;">
       <div class="profile-header">
           <h1><i class="fas fa-user-circle"></i> My Account</h1>
       </div>
       <div class="login-box">
-          <h2><i class="fas fa-lock"></i> Login to Your Account</h2>
+          <div style="display:flex;border-bottom:2px solid #eee;margin-bottom:24px;">
+              <button id="profileLoginTab" class="auth-tab active" onclick="showProfileLogin()" style="flex:1;padding:12px;border:none;background:none;font-size:16px;font-weight:600;cursor:pointer;color:#000;border-bottom:2px solid #FFD700;margin-bottom:-2px;">Login</button>
+              <button id="profileSignupTab" class="auth-tab" onclick="showProfileSignup()" style="flex:1;padding:12px;border:none;background:none;font-size:16px;font-weight:600;cursor:pointer;color:#999;">Sign Up</button>
+          </div>
+
+          <h2 id="profileFormTitle" style="font-size:18px;margin-bottom:20px;"><i class="fas fa-lock"></i> Login to Your Account</h2>
+
           <form id="login-form">
               <div class="form-group">
                   <label><i class="fas fa-envelope"></i> Email</label>
@@ -316,6 +322,28 @@
               <p style="text-align: center; margin-top: 15px; color: #666;">
                   <a href="#" onclick="showForgotPassword(); return false;" style="color: var(--primary);">Forgot Password?</a>
               </p>
+          </form>
+
+          <form id="signup-form" style="display:none;">
+              <div class="form-group">
+                  <label><i class="fas fa-user"></i> Full Name</label>
+                  <input type="text" id="signup-name" placeholder="Your name" required>
+              </div>
+              <div class="form-group">
+                  <label><i class="fas fa-envelope"></i> Email</label>
+                  <input type="email" id="signup-email" placeholder="Your email" required>
+              </div>
+              <div class="form-group">
+                  <label><i class="fas fa-phone"></i> Phone</label>
+                  <input type="tel" id="signup-phone" placeholder="Your phone number" required>
+              </div>
+              <div class="form-group">
+                  <label><i class="fas fa-lock"></i> Password</label>
+                  <input type="password" id="signup-password" placeholder="Create a password" required>
+              </div>
+              <button type="submit" class="btn" style="width: 100%;">
+                  <i class="fas fa-user-plus"></i> Sign Up
+              </button>
           </form>
       </div>
   </div>
@@ -466,11 +494,66 @@
               }
           } catch (error) {
               console.error('Login error:', error);
-              showToast('Connection error. Please try again.', true);
-          }
-      }
-      
-      async function handleProfileUpdate(e) {
+           showToast('Connection error. Please try again.', true);
+           }
+       }
+
+       function showProfileLogin() {
+           document.getElementById('profileLoginTab').className = 'auth-tab active';
+           document.getElementById('profileLoginTab').style.color = '#000';
+           document.getElementById('profileLoginTab').style.borderBottom = '2px solid #FFD700';
+           document.getElementById('profileSignupTab').className = 'auth-tab';
+           document.getElementById('profileSignupTab').style.color = '#999';
+           document.getElementById('profileSignupTab').style.borderBottom = 'none';
+           document.getElementById('login-form').style.display = 'block';
+           document.getElementById('signup-form').style.display = 'none';
+           document.getElementById('profileFormTitle').innerHTML = '<i class="fas fa-lock"></i> Login to Your Account';
+       }
+
+       function showProfileSignup() {
+           document.getElementById('profileSignupTab').className = 'auth-tab active';
+           document.getElementById('profileSignupTab').style.color = '#000';
+           document.getElementById('profileSignupTab').style.borderBottom = '2px solid #FFD700';
+           document.getElementById('profileLoginTab').className = 'auth-tab';
+           document.getElementById('profileLoginTab').style.color = '#999';
+           document.getElementById('profileLoginTab').style.borderBottom = 'none';
+           document.getElementById('login-form').style.display = 'none';
+           document.getElementById('signup-form').style.display = 'block';
+           document.getElementById('profileFormTitle').innerHTML = '<i class="fas fa-user-plus"></i> Create Your Account';
+       }
+
+       document.getElementById('signup-form').addEventListener('submit', async function(e) {
+           e.preventDefault();
+           const name = document.getElementById('signup-name').value;
+           const email = document.getElementById('signup-email').value;
+           const phone = document.getElementById('signup-phone').value;
+           const password = document.getElementById('signup-password').value;
+
+           try {
+               const res = await fetch(`${API_BASE}/auth/register`, {
+                   method: 'POST',
+                   headers: { 'Content-Type': 'application/json' },
+                   body: JSON.stringify({ name, email, phone, password })
+               });
+               const data = await res.json();
+               if (data.token) {
+                   localStorage.setItem('customerToken', data.token);
+                   localStorage.setItem('customerUser', JSON.stringify(data.user));
+                   authToken = data.token;
+                   currentUser = data.user;
+                   showLoggedInState();
+                   showProfileSection(data.user);
+                   loadOrders();
+                   showToast('Account created! Welcome!');
+               } else {
+                   showToast(data.message || 'Registration failed', true);
+               }
+           } catch (err) {
+               showToast('Connection error. Please try again.', true);
+           }
+       });
+
+       async function handleProfileUpdate(e) {
           e.preventDefault();
           const token = localStorage.getItem('customerToken');
           if (!token) {

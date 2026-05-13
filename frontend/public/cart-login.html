@@ -490,7 +490,7 @@
                 if (response.ok) {
                     localStorage.setItem('customerToken', data.token);
                     localStorage.setItem('customerUser', JSON.stringify(data.user));
-                    window.location.href = 'cart.html';
+                    window.location.href = '/shop';
                 } else {
                     errorMessage.textContent = data.message || 'Login failed';
                     errorMessage.style.display = 'block';
@@ -577,7 +577,7 @@
                 if (response.ok) {
                     localStorage.setItem('customerToken', data.token);
                     localStorage.setItem('customerUser', JSON.stringify(data.user));
-                    window.location.href = 'cart.html';
+                    window.location.href = '/shop';
                 } else {
                     errorMessage.textContent = data.message || 'Registration failed';
                     errorMessage.style.display = 'block';
