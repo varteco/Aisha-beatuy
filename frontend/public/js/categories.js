@@ -77,6 +77,9 @@ function displayFeaturedProducts(products) {
     return `
       <div class="product-card">
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <button class="wishlist-btn" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}" >
+          <i class="far fa-heart"></i>
+        </button>
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || 'Premium fashion item'}</p>
@@ -90,6 +93,7 @@ function displayFeaturedProducts(products) {
       </div>
     `;
   }).join('');
+  updateWishlistHearts();
 }
 
 function checkAuth() {

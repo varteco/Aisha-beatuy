@@ -1254,6 +1254,8 @@ function populateSettingsForm(settings) {
   document.getElementById('orderEmail').checked = settings.notifications?.orderEmail || false;
   document.getElementById('orderSMS').checked = settings.notifications?.orderSMS || false;
   document.getElementById('marketingEmail').checked = settings.notifications?.marketingEmail || false;
+  document.getElementById('saleBannerDiscount').value = settings.saleBannerDiscount || '50';
+  document.getElementById('saleBannerText').value = settings.saleBannerText || 'Limited time offers on selected items';
 }
 
 async function handleSettingsSubmit(e) {
@@ -1273,6 +1275,8 @@ async function handleSettingsSubmit(e) {
     socialTwitter: document.getElementById('socialTwitter').value,
     socialInstagram: document.getElementById('socialInstagram').value,
     socialYoutube: document.getElementById('socialYoutube').value,
+    saleBannerDiscount: document.getElementById('saleBannerDiscount').value,
+    saleBannerText: document.getElementById('saleBannerText').value,
     notifications: {
       orderEmail: document.getElementById('orderEmail').checked,
       orderSMS: document.getElementById('orderSMS').checked,

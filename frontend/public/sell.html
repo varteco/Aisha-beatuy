@@ -41,6 +41,9 @@
     </div>
     <div class="top-header-right">
       <a href="cart-login.html" id="user-icon-top"><i class="fas fa-user"></i> <span>Login</span></a>
+      <a href="/profile" id="user-menu-top" style="display:none;" class="user-logged-in">
+        <i class="fas fa-user-circle"></i> <span id="user-name-top"></span>
+      </a>
     </div>
   </div>
 </div>
@@ -131,7 +134,11 @@
   </div>
 </div>
 
+<script src="js/main.js"></script>
+<script src="js/amazon-enhance.js"></script>
 <script>
+  var API_BASE = '/api';
+
   function updateCartBadge() {
     var cart = JSON.parse(localStorage.getItem('cart')) || [];
     var count = cart.reduce(function(sum, item) { return sum + (item.qty || 1); }, 0);
@@ -139,10 +146,62 @@
     if (el) el.textContent = count;
   }
   updateCartBadge();
-  document.getElementById('sellForm').addEventListener('submit', function(e) {
+
+  var token = localStorage.getItem('customerToken');
+  if (!token) {
+    window.location.href = 'cart-login.html';
+  }
+
+  var storedUser = localStorage.getItem('customerUser');
+  if (storedUser) {
+    try {
+      var user = JSON.parse(storedUser);
+      document.getElementById('fullName').value = user.name || '';
+      document.getElementById('email').value = user.email || '';
+      document.getElementById('phone').value = user.phone || '';
+    } catch (e) {}
+  }
+
+  document.getElementById('sellForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    document.getElementById('sellForm').style.display = 'none';
-    document.getElementById('successMsg').style.display = 'block';
+    var btn = document.querySelector('.btn-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+    var data = {
+      requestType: document.getElementById('requestType').value,
+      fullName: document.getElementById('fullName').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      businessName: document.getElementById('businessName').value,
+      businessType: document.getElementById('businessType').value,
+      country: document.getElementById('country').value,
+      message: document.getElementById('message').value,
+    };
+
+    try {
+      var res = await fetch(API_BASE + '/sell', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify(data),
+      });
+      var result = await res.json();
+      if (res.ok) {
+        document.getElementById('sellForm').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+      } else {
+        alert(result.message || 'Failed to submit request');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+      }
+    } catch (err) {
+      alert('Network error. Please try again.');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+    }
   });
 </script>
 </body>

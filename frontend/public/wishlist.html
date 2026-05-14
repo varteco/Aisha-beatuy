@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist - Aisha Beauty</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var lbl = document.getElementById("footer-lang-label");
+  if (lbl) lbl.textContent = (localStorage.getItem("language") || "en") === "ar" ? "العربية" : "English";
+});
+</script>
+<script src="js/location.js"></script>
+<style>
+  :root { --primary: #FFD700; --black: #000; --dark: #333; --light: #f5f5f5; --white: #fff; }
+  body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: var(--light); }
+  .wishlist-page { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+  .wishlist-page h1 { margin-bottom: 24px; font-size: 26px; }
+  .wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  .wishlist-item { background: var(--white); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); position: relative; }
+  .wishlist-item img { width: 100%; height: 200px; object-fit: cover; }
+  .wishlist-item .info { padding: 14px; }
+  .wishlist-item .info h3 { margin: 0 0 6px; font-size: 16px; }
+  .wishlist-item .info .price { font-size: 18px; font-weight: bold; color: var(--black); margin-bottom: 12px; }
+  .wishlist-item .info .actions { display: flex; gap: 8px; }
+  .wishlist-item .info .actions button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-add-cart { background: var(--black); color: var(--primary); }
+  .btn-add-cart:hover { background: #222; }
+  .btn-remove { background: #fee; color: #c00; }
+  .btn-remove:hover { background: #fdd; }
+  .empty-wishlist { text-align: center; padding: 80px 20px; color: #888; }
+  .empty-wishlist i { font-size: 60px; color: #ddd; margin-bottom: 16px; }
+  .empty-wishlist h2 { margin: 0 0 8px; color: var(--dark); }
+  .empty-wishlist p { margin: 0 0 20px; }
+  .empty-wishlist a { display: inline-block; padding: 12px 30px; background: var(--black); color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 600; }
+  .section-title { font-size: 20px; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); }
+  .rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .rec-card { background: var(--white); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+  .rec-card img { width: 100%; height: 160px; object-fit: cover; }
+  .rec-card .rec-info { padding: 12px; }
+  .rec-card .rec-info h4 { margin: 0 0 4px; font-size: 14px; }
+  .rec-card .rec-info .rec-price { font-size: 15px; font-weight: bold; }
+  .rec-card .rec-info button { width: 100%; margin-top: 8px; padding: 8px; background: var(--black); color: var(--primary); border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
+  .empty-rec { color: #aaa; font-size: 14px; padding: 20px 0; }
+  .nav-links-main { flex: 1; justify-content: center; }
+  .footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .footer-bottom-links { display: flex; gap: 20px; }
+  .footer-bottom-links a { color: #ccc; font-size: 13px; text-decoration: none; }
+  .footer-bottom-links a:hover { color: #FFD700; }
+  .location-display { color: #ccc; font-size: 13px; text-decoration: none; margin-right: 10px; }
+  .location-display:hover { color: #FFD700; }
+  .location-modal-content { max-width: 420px; }
+  .location-modal-content h3 { margin-bottom: 5px; }
+  .location-modal-content p { color: #888; font-size: 13px; margin-bottom: 15px; }
+  .location-list { max-height: 320px; overflow-y: auto; }
+  .location-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
+  .location-option:hover { background: rgba(255,215,0,0.1); }
+  .location-option.active { background: rgba(255,215,0,0.15); border: 1px solid #FFD700; }
+  .location-flag { font-size: 22px; }
+  .location-name-option { font-weight: 600; flex: 1; }
+  .location-name-ar { color: #888; font-size: 13px; }
+  .location-check { color: #FFD700; }
+  .detect-btn { display: block; width: 100%; padding: 8px; margin: 10px 0; background: rgba(255,215,0,0.1); border: 1px dashed #FFD700; border-radius: 6px; color: #FFD700; font-size: 13px; cursor: pointer; text-align: center; }
+  .detect-btn:hover { background: rgba(255,215,0,0.2); }
+  .detect-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  @media (max-width: 576px) {
+    .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .rec-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  }
+</style>
+</head>
+<body>
+  <div class="top-header">
+    <div class="container">
+      <div class="top-header-left">
+        <a href="sell.html">Sell on Aisha Beauty</a>
+        <a href="sell.html">Become a Supplier</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="top-header-right">
+        <a href="#" class="location-display" onclick="event.preventDefault(); openLocationModal()"><i class="fas fa-map-marker-alt"></i> 🇸🇩 Sudan</a>
+        <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="/orders" id="nav-orders" style="display:none;"><i class="fas fa-box"></i> Orders</a>
+        <a href="cart-login.html" id="user-icon-top">
+          <i class="fas fa-user"></i> <span data-i18n="login">Login</span>
+        </a>
+        <a href="/profile" id="user-menu-top" style="display: none;" class="user-logged-in">
+          <i class="fas fa-user-circle"></i> <span id="user-name-top"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <div class="container">
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="mobile-nav" id="mobileNav">
+        <button class="mobile-nav-close" onclick="toggleMobileMenu()">&times;</button>
+        <ul class="mobile-nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/shop">Shop</a></li>
+          <li><a href="/categories">Categories</a></li>
+          <li><a href="/new-arrivals">New Arrivals</a></li>
+          <li><a href="/sale">Sale</a></li>
+        </ul>
+        <div class="mobile-nav-actions">
+          <a href="#" onclick="viewCartProducts(); toggleMobileMenu();"><i class="fas fa-shopping-cart"></i> Cart (<span id="mobile-cart-count">0</span>)</a>
+          <a href="cart-login.html" onclick="toggleMobileMenu();"><i class="fas fa-user"></i> Login / Register</a>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <div class="container">
+          <div class="nav-main">
+            <div class="categories-menu">
+              <button class="categories-btn"><i class="fas fa-bars"></i> <span>Categories</span></button>
+              <div class="categories-dropdown">
+                <a href="shop.html?category=men"><i class="fas fa-male"></i> Men's Fashion <i class="fas fa-chevron-right"></i></a>
+                <a href="shop.html?category=women"><i class="fas fa-female"></i> Women's Fashion <i class="fas fa-chevron-right"></i></a>
+                <a href="shop.html?category=kids"><i class="fas fa-child"></i> Kids Fashion <i class="fas fa-chevron-right"></i></a>
+                <a href="shop.html?category=accessories"><i class="fas fa-gem"></i> Accessories <i class="fas fa-chevron-right"></i></a>
+                <a href="shop.html?category=perfumes"><i class="fas fa-spray-can"></i> Perfumes <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+            <div class="nav-left">
+              <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="50"></a>
+            </div>
+            <ul class="nav-links-main">
+              <li><a href="/" data-i18n="home">Home</a></li>
+              <li><a href="/shop" data-i18n="shop">Shop</a></li>
+              <li><a href="/categories" data-i18n="categories">Categories</a></li>
+              <li><a href="/new-arrivals" data-i18n="newArrivals">New Arrivals</a></li>
+              <li><a href="/sale" data-i18n="sale">Sale</a></li>
+              <li><a href="#">Bulk Orders</a></li>
+            </ul>
+            <div class="nav-right">
+              <a href="wishlist.html" class="nav-icon-link" title="Wishlist">
+                <i class="fas fa-heart"></i>
+                <span id="wishlist-count" class="nav-badge">0</span>
+              </a>
+              <a href="cart.html" class="nav-icon-link" title="Cart">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count" class="nav-badge">0</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wishlist-page">
+    <h1><i class="fas fa-heart" style="color:#e74c3c;"></i> My Wishlist</h1>
+    <div id="wishlistContent"></div>
+    <h2 class="section-title">You May Also Like</h2>
+    <div id="recommendations" class="rec-grid"></div>
+  </div>
+
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3 id="footer-store-name">Aisha Beauty</h3>
+          <p id="footer-tagline">Your trusted destination for premium fashion and lifestyle products.</p>
+          <div class="footer-social" id="footer-social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/shop">Shop</a></li>
+            <li><a href="/categories">Categories</a></li>
+            <li><a href="/sale">Sale</a></li>
+            <li><a href="/new-arrivals">New Arrivals</a></li>
+          </ul>
+        </div>
+        <div class="footer-col" id="footer-pages">
+          <h4>Customer Service</h4>
+          <ul id="footer-pages-list"></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Sudan, Khartum</span></li>
+            <li><i class="fas fa-phone"></i> <span id="footer-phone">+256 767 886 480</span></li>
+            <li><i class="fas fa-envelope"></i> <span id="footer-email">info@aishabeauty.com</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-links">
+          <a href="#" onclick="event.preventDefault(); setLanguage(currentLang === 'en' ? 'ar' : 'en')"><i class="fas fa-globe"></i> <span id="footer-lang-label">English</span></a>
+          <a href="#" onclick="event.preventDefault(); openLocationModal()"><i class="fas fa-map-marker-alt"></i> <span class="location-name">Sudan</span></a>
+        </div>
+        <p>&copy; <span id="footer-year">2024</span> <span id="footer-company">Aisha Beauty</span>. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = '/api';
+
+    function getWishlist() {
+      return JSON.parse(localStorage.getItem('wishlist')) || [];
+    }
+
+    function saveWishlist(list) {
+      localStorage.setItem('wishlist', JSON.stringify(list));
+      updateWishlistCount();
+    }
+
+    function updateWishlistCount() {
+      const list = getWishlist();
+      const el = document.getElementById('wishlist-count');
+      if (el) el.textContent = list.length;
+    }
+
+    function renderWishlist() {
+      const container = document.getElementById('wishlistContent');
+      const list = getWishlist();
+      if (list.length === 0) {
+        container.innerHTML = '<div class="empty-wishlist"><i class="far fa-heart"></i><h2>Your wishlist is empty</h2><p>Save items you love to your wishlist and come back anytime!</p><a href="shop.html">Browse Products</a></div>';
+        return;
+      }
+      const html = list.map(function(item) {
+        return '<div class="wishlist-item">' +
+          '<img src="' + (item.image || 'images/1.jpg') + '" alt="' + item.name.replace(/"/g,'&quot;') + '" onerror="this.src=\'images/1.jpg\'">' +
+          '<div class="info">' +
+          '<h3>' + item.name + '</h3>' +
+          '<div class="price">$' + (item.price || 0).toFixed(2) + '</div>' +
+          '<div class="actions">' +
+          '<button class="btn-add-cart" data-id="' + item.productId + '" data-name="' + item.name.replace(/"/g,'&quot;') + '" data-price="' + (item.price || 0) + '" data-image="' + (item.image || '') + '"><i class="fas fa-shopping-cart"></i> Add to Cart</button>' +
+          '<button class="btn-remove" data-id="' + item.productId + '"><i class="fas fa-trash"></i></button>' +
+          '</div></div></div>';
+      }).join('');
+      container.innerHTML = '<div class="wishlist-grid">' + html + '</div>';
+    }
+
+    async function loadRecommendations() {
+      const container = document.getElementById('recommendations');
+      try {
+        const res = await fetch(API_BASE + '/products');
+        if (!res.ok) throw new Error('Failed');
+        const products = await res.json();
+        const list = getWishlist();
+        const wishlistIds = list.map(function(i) { return i.productId; });
+        const filtered = products.filter(function(p) { return !wishlistIds.includes(p._id); });
+        const shuffled = filtered.sort(function() { return 0.5 - Math.random(); });
+        const recs = shuffled.slice(0, 4);
+        if (recs.length === 0) {
+          container.innerHTML = '<div class="empty-rec">Check back later for recommendations.</div>';
+          return;
+        }
+        container.innerHTML = recs.map(function(p) {
+          var img = (p.images && p.images[0]) ? p.images[0] : 'images/1.jpg';
+          var price = p.onSale && p.discount ? (p.price * (1 - p.discount / 100)) : p.price;
+          return '<div class="rec-card">' +
+            '<img src="' + img + '" alt="' + p.name.replace(/"/g,'&quot;') + '" onerror="this.src=\'images/1.jpg\'">' +
+            '<div class="rec-info">' +
+            '<h4>' + p.name + '</h4>' +
+            '<div class="rec-price">$' + price.toFixed(2) + '</div>' +
+            '<button class="btn-add-cart" data-id="' + p._id + '" data-name="' + p.name.replace(/"/g,'&quot;') + '" data-price="' + price + '" data-image="' + img + '"><i class="fas fa-shopping-cart"></i> Add to Cart</button>' +
+            '</div></div>';
+        }).join('');
+      } catch(e) {
+        container.innerHTML = '<div class="empty-rec">Unable to load recommendations.</div>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderWishlist();
+      loadRecommendations();
+      updateWishlistCount();
+      var cart = JSON.parse(localStorage.getItem('cart')) || [];
+      var cartCount = cart.reduce(function(s, i) { return s + (i.qty || 1); }, 0);
+      var cartEl = document.getElementById('cart-count');
+      if (cartEl) cartEl.textContent = cartCount;
+    });
+
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.btn-add-cart, .btn-remove');
+      if (!btn) return;
+
+      if (btn.classList.contains('btn-add-cart')) {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var key = btn.dataset.id;
+        var existing = cart.find(function(item) { return item.id === key || item.productId === key; });
+        if (existing) {
+          existing.qty = (existing.qty || 1) + 1;
+        } else {
+          cart.push({ id: key, name: btn.dataset.name, price: parseFloat(btn.dataset.price), image: btn.dataset.image || 'images/1.jpg', qty: 1, productId: key });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        var cartEl = document.getElementById('cart-count');
+        if (cartEl) cartEl.textContent = cart.reduce(function(s, i) { return s + (i.qty || 1); }, 0);
+
+        var list = getWishlist();
+        list = list.filter(function(item) { return item.productId !== key; });
+        saveWishlist(list);
+        renderWishlist();
+        loadRecommendations();
+        if (typeof showToast === 'function') showToast('Moved to Cart!');
+      } else if (btn.classList.contains('btn-remove')) {
+        var list = getWishlist();
+        list = list.filter(function(item) { return item.productId !== btn.dataset.id; });
+        saveWishlist(list);
+        renderWishlist();
+        loadRecommendations();
+        if (typeof showToast === 'function') showToast('Removed from Wishlist');
+      }
+    });
+  </script>
+  <script src="js/language.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -25,11 +25,14 @@ function showToast(message) {
     loadProducts();
     loadFlashSaleProducts();
     updateCartCount();
+    updateWishlistCount();
   });
 
   document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('add-to-cart')) {
-      const btn = e.target;
+    const btn = e.target.closest('.add-to-cart, .wishlist-btn');
+    if (!btn) return;
+
+    if (btn.classList.contains('add-to-cart')) {
       const card = btn.closest('.product-card, .sale-product-card');
       let size = null;
       if (card) {
@@ -40,11 +43,9 @@ function showToast(message) {
         }
         if (selectedSizeBtn) size = selectedSizeBtn.dataset.size;
       }
-      const id = btn.dataset.id;
-      const name = btn.dataset.name;
-      const price = parseFloat(btn.dataset.price);
-      const image = btn.dataset.image;
-      addToCart(id, name, price, image, size);
+      addToCart(btn.dataset.id, btn.dataset.name, parseFloat(btn.dataset.price), btn.dataset.image, size);
+    } else if (btn.classList.contains('wishlist-btn')) {
+      toggleWishlist(btn.dataset.id, btn.dataset.name, parseFloat(btn.dataset.price), btn.dataset.image);
     }
   });
 
@@ -377,6 +378,9 @@ function displayFlashSaleProducts(products) {
     card.innerHTML = `
       <img src="${imgUrl}" alt="${product.name}" class="product-img">
       <div class="sale-badge">-${discount}%</div>
+      <button class="wishlist-btn" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}">
+        <i class="far fa-heart"></i>
+      </button>
       <div class="product-info">
         <h3>${product.name}</h3>
         <p>${product.description || ''}</p>
@@ -392,6 +396,7 @@ function displayFlashSaleProducts(products) {
     `;
     container.appendChild(card);
   });
+  updateWishlistHearts();
 }
 
 function displayProducts(products) {
@@ -433,6 +438,9 @@ function displayProducts(products) {
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
         <div class="sale-badge">-${discount}%</div>
+        <button class="wishlist-btn" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}" >
+          <i class="far fa-heart"></i>
+        </button>
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || ''}</p>
@@ -454,6 +462,9 @@ function displayProducts(products) {
         : '';
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <button class="wishlist-btn" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}" >
+          <i class="far fa-heart"></i>
+        </button>
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || ''}</p>
@@ -468,6 +479,7 @@ function displayProducts(products) {
     }
     container.appendChild(card);
   });
+  updateWishlistHearts();
 }
 
 function selectSize(btn) {
@@ -476,6 +488,54 @@ function selectSize(btn) {
     parent.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
   }
   btn.classList.add('selected');
+}
+
+// ==================== WISHLIST ====================
+function getWishlist() {
+  return JSON.parse(localStorage.getItem('wishlist')) || [];
+}
+
+function saveWishlist(list) {
+  localStorage.setItem('wishlist', JSON.stringify(list));
+  updateWishlistCount();
+}
+
+function updateWishlistCount() {
+  const list = getWishlist();
+  const el = document.getElementById('wishlist-count');
+  if (el) el.textContent = list.length;
+}
+
+function isInWishlist(productId) {
+  return getWishlist().some(item => item.productId === productId);
+}
+
+function toggleWishlist(productId, name, price, image) {
+  let list = getWishlist();
+  const idx = list.findIndex(item => item.productId === productId);
+  if (idx > -1) {
+    list.splice(idx, 1);
+    showToast('Removed from Wishlist');
+  } else {
+    list.push({ productId, name, price, image: image || 'images/1.jpg' });
+    showToast('Added to Wishlist');
+  }
+  saveWishlist(list);
+  updateWishlistHearts();
+}
+
+function updateWishlistHearts() {
+  const list = getWishlist();
+  document.querySelectorAll('.wishlist-btn').forEach(btn => {
+    const pid = btn.dataset.id;
+    if (list.some(item => item.productId === pid)) {
+      btn.classList.add('active');
+      btn.querySelector('i').className = 'fas fa-heart';
+    } else {
+      btn.classList.remove('active');
+      btn.querySelector('i').className = 'far fa-heart';
+    }
+  });
 }
 
 // ==================== CART ====================
@@ -805,6 +865,3 @@ document.addEventListener('DOMContentLoaded', function() {
   loadFooter();
   loadFooterPages();
 });
-
-// Run on every page
-document.addEventListener('DOMContentLoaded', loadFooter);

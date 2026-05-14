@@ -40,6 +40,7 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/checkout', require('./routes/checkout'));
 app.use('/api/pages', require('./routes/pages'));
+app.use('/api/sell', require('./routes/sell'));
 
 // Public settings endpoint (no auth)
 app.get('/api/settings/public', async (req, res) => {
@@ -70,6 +71,8 @@ app.get('/api/settings/public', async (req, res) => {
       shippingCost: settings.shippingCost,
       freeShippingThreshold: settings.freeShippingThreshold,
       freeCountries: settings.freeCountries,
+      saleBannerDiscount: settings.saleBannerDiscount,
+      saleBannerText: settings.saleBannerText,
       socialFacebook: settings.socialFacebook,
       socialTwitter: settings.socialTwitter,
       socialInstagram: settings.socialInstagram,

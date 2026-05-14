@@ -101,12 +101,18 @@ function applyFilters() {
   
   // Sort
   const sortSelect = document.getElementById('sort-select');
-  const sortBy = sortSelect ? sortSelect.value : 'featured';
+  const sortBy = sortSelect ? sortSelect.value : 'newest';
   
   if (sortBy === 'price-low') {
     products.sort((a, b) => (a.price || 0) - (b.price || 0));
   } else if (sortBy === 'price-high') {
     products.sort((a, b) => (b.price || 0) - (a.price || 0));
+  } else if (sortBy === 'newest') {
+    products.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
   } else {
     products.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
   }
@@ -138,7 +144,11 @@ function updateResultsCount(count) {
   const resultsCount = document.getElementById('results-count');
   if (resultsCount) {
     const categoryText = currentCategory && currentCategory !== 'all' ? ` in ${currentCategory}` : '';
-    resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}${categoryText}`;
+    const sortSelect = document.getElementById('sort-select');
+    const sortLabels = { newest: 'Newest', featured: 'Featured', 'price-low': 'Price Low-High', 'price-high': 'Price High-Low' };
+    const sortLabel = sortSelect && sortSelect.value ? sortLabels[sortSelect.value] || '' : '';
+    const sortText = sortLabel ? ` sorted by ${sortLabel}` : '';
+    resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}${categoryText}${sortText}`;
   }
 }
 
@@ -179,6 +189,9 @@ function displayProducts(products) {
       <div class="product-card sale-product-card">
         <div class="sale-badge">-${discount}%</div>
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <button class="wishlist-btn" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}" >
+          <i class="far fa-heart"></i>
+        </button>
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || 'Premium fashion item'}</p>
@@ -195,6 +208,7 @@ function displayProducts(products) {
       </div>
     `;
   }).join('');
+  updateWishlistHearts();
 }
 
 function startSaleTimer() {

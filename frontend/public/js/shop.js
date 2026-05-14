@@ -198,7 +198,7 @@ function applyFilters() {
   
   // Sort
   const sortSelect = document.getElementById('sort-select');
-  const sortBy = sortSelect ? sortSelect.value : 'featured';
+  const sortBy = sortSelect ? sortSelect.value : 'newest';
   
   if (sortBy === 'price-low') {
     products.sort((a, b) => (a.price || 0) - (b.price || 0));
@@ -260,6 +260,9 @@ function displayProducts(products) {
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
         <div class="sale-badge">-${discount}%</div>
+        <button class="wishlist-btn" data-id="${product._id}" data-name="${product.name}" data-price="${salePrice}" data-image="${imgUrl}" >
+          <i class="far fa-heart"></i>
+        </button>
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || ''}</p>
@@ -278,6 +281,9 @@ function displayProducts(products) {
       const hasSizes = product.sizes && product.sizes.length > 0;
       card.innerHTML = `
         <img src="${imgUrl}" alt="${product.name}" class="product-img">
+        <button class="wishlist-btn" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}" >
+          <i class="far fa-heart"></i>
+        </button>
         <div class="product-info">
           <h3>${product.name}</h3>
           <p>${product.description || ''}</p>
@@ -292,13 +298,18 @@ function displayProducts(products) {
     }
     container.appendChild(card);
   });
+  updateWishlistHearts();
 }
 
 function updateResultsCount(count) {
   const resultsCount = document.getElementById('results-count');
   if (resultsCount) {
     const categoryText = currentCategory && currentCategory !== 'all' ? ` in ${currentCategory}` : '';
-    resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}${categoryText}`;
+    const sortSelect = document.getElementById('sort-select');
+    const sortLabels = { newest: 'Newest', featured: 'Featured', 'price-low': 'Price Low-High', 'price-high': 'Price High-Low' };
+    const sortLabel = sortSelect && sortSelect.value ? sortLabels[sortSelect.value] || '' : '';
+    const sortText = sortLabel ? ` sorted by ${sortLabel}` : '';
+    resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}${categoryText}${sortText}`;
   }
 }
 
@@ -333,6 +344,19 @@ function filterByCategory(category, event) {
       link.classList.remove('active');
     }
   });
+
+  var newUrl = window.location.pathname;
+  var params = new URLSearchParams(window.location.search);
+  params.delete('sale');
+  if (category && category !== 'all') {
+    params.set('category', category);
+  } else {
+    params.delete('category');
+  }
+  var searchStr = params.toString();
+  if (searchStr) newUrl += '?' + searchStr;
+  newUrl += '#';
+  window.history.pushState({ category: category }, '', newUrl);
 }
 
 function openCart() {

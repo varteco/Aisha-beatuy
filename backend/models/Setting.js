@@ -16,6 +16,8 @@ const settingSchema = new mongoose.Schema({
   socialTwitter: { type: String, default: '' },
   socialInstagram: { type: String, default: '' },
   socialYoutube: { type: String, default: '' },
+  saleBannerDiscount: { type: String, default: '50' },
+  saleBannerText: { type: String, default: 'Limited time offers on selected items' },
   notifications: {
     orderEmail: { type: Boolean, default: true },
     orderSMS: { type: Boolean, default: false },

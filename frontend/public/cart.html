@@ -189,19 +189,31 @@
         }
 
         .remove-btn {
-            width: 36px;
-            height: 36px;
+            background: none;
             border: none;
-            background: #ffe5e5;
-            border-radius: 50%;
+            color: #c00;
+            font-size: 18px;
             cursor: pointer;
-            color: #ff4444;
-            font-size: 14px;
-            transition: all 0.3s;
+            padding: 4px 8px;
+        }
+        .remove-btn:hover {
+            color: #a00;
+        }
+        .actions-cell {
             display: flex;
+            gap: 4px;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto;
+        }
+        .save-later-btn {
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .save-later-btn:hover {
+            color: #e6c200;
         }
 
         .remove-btn:hover {
@@ -591,6 +603,10 @@
           <li><a href="#">Bulk Orders</a></li>
         </ul>
         <div class="nav-right">
+          <a href="wishlist.html" class="nav-icon-link" title="Wishlist">
+            <i class="fas fa-heart"></i>
+            <span id="wishlist-count" class="nav-badge">0</span>
+          </a>
           <a href="#" class="cart-icon-nav" onclick="location.reload()">
             <i class="fas fa-shopping-cart"></i>
             <span id="cart-badge" class="cart-badge">0</span>
@@ -695,9 +711,16 @@
             }
         }
 
+        function updateWishlistCount() {
+            const list = JSON.parse(localStorage.getItem('wishlist')) || [];
+            const el = document.getElementById('wishlist-count');
+            if (el) el.textContent = list.length;
+        }
+
         document.addEventListener('DOMContentLoaded', async function() {
             await renderCart();
             updateBadge();
+            updateWishlistCount();
             
             // Pre-fill user data if logged in
             const user = JSON.parse(localStorage.getItem('customerUser'));
@@ -761,7 +784,10 @@
                             </div>
                         </td>
                         <td class="subtotal">$${itemTotal.toFixed(2)}</td>
-                        <td><button class="remove-btn" onclick="removeItem('${item.id}')"><i class="fa-solid fa-trash-can"></i></button></td>
+                        <td class="actions-cell">
+                            <button class="save-later-btn" onclick="saveForLater('${item.id}')" title="Save for later"><i class="fa-regular fa-bookmark"></i></button>
+                            <button class="remove-btn" onclick="removeItem('${item.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -949,6 +975,22 @@
         function toggleMobileMenu() {
             var nav = document.getElementById('mobileNav');
             if (nav) nav.classList.toggle('active');
+        }
+
+        function saveForLater(id) {
+            var item = cart.find(function(i) { return i.id === id; });
+            if (!item) return;
+            var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            if (!wishlist.some(function(w) { return w.productId === item.productId || w.productId === id; })) {
+                wishlist.push({ productId: item.productId || id, name: item.name, price: item.price, image: item.image || '' });
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            }
+            cart = cart.filter(function(i) { return i.id !== id; });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateBadge();
+            updateWishlistCount();
+            renderCart();
+            showToast('Saved for later!');
         }
 
         async function clearCart() {

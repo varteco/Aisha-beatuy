@@ -64,50 +64,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   <!-- Main Header -->
   <header class="main-header">
-    <div class="container">
-      <div class="header-main">
-        <div class="logo-section">
-          <a href="/" class="logo">
-            <img src="images/LOGO.png" alt="Aisha Beauty" height="60">
-          </a>
-        </div>
-
-        <div class="search-section">
-          <div class="search-box">
-            <div class="search-dropdown">
-              <span id="search-category">Products</span>
-              <i class="fas fa-chevron-down"></i>
-            </div>
-            <input type="text" id="search-input" placeholder="Search products...">
-            <button class="search-btn" onclick="performSearch()">
-              <i class="fas fa-search"></i> Search
-            </button>
-          </div>
-          <div class="search-suggestions">
-            <span>Popular:</span>
-            <a href="shop.html?category=women">Women's Fashion</a>
-            <a href="shop.html?category=men">Men's Clothing</a>
-            <a href="shop.html?category=accessories">Accessories</a>
-            <a href="shop.html?category=perfumes">Perfumes</a>
-          </div>
-        </div>
-
-        <div class="header-actions">
-          <a href="#" class="action-item">
-            <i class="fas fa-heart"></i>
-            <span>Wishlist</span>
-          </a>
-          <a href="#" class="action-item cart-dropdown-trigger" onclick="viewCartProducts()">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
-            <span id="cart-count" class="cart-badge">0</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Mobile Menu Toggle -->
+    <div class="container"><!-- Mobile Menu Toggle -->
   <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
     <i class="fas fa-bars"></i>
   </button>
@@ -151,6 +108,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 class="fas fa-chevron-right"></i></a>
           </div>
         </div>
+                <div class="nav-left">
+          <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="50"></a>
+        </div>
         <ul class="nav-links-main">
           <li><a href="/" class="active" data-i18n="home">Home</a></li>
           <li><a href="/shop" data-i18n="shop">Shop</a></li>
@@ -159,11 +119,41 @@ document.addEventListener("DOMContentLoaded", function() {
           <li><a href="/sale" data-i18n="sale">Sale</a></li>
           <li><a href="#">Bulk Orders</a></li>
         </ul>
-      </div>
+        <div class="nav-right">
+          <a href="wishlist.html" class="nav-icon-link" title="Wishlist">
+            <i class="fas fa-heart"></i>
+            <span id="wishlist-count" class="nav-badge">0</span>
+          </a>
+          <a href="cart.html" class="nav-icon-link" title="Cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="nav-badge">0</span>
+          </a>
+        </div>
+</div>
     </div>
   </nav>
 
-  <!-- Hero Banner -->
+  <div class="container" style="padding-top:10px;"><div class="search-section">
+          <div class="search-box">
+            <div class="search-dropdown">
+              <span id="search-category">Products</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <input type="text" id="search-input" placeholder="Search products...">
+            <button class="search-btn" onclick="performSearch()">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+          <div class="search-suggestions">
+            <span>Popular:</span>
+            <a href="shop.html?category=women">Women's Fashion</a>
+            <a href="shop.html?category=men">Men's Clothing</a>
+            <a href="shop.html?category=accessories">Accessories</a>
+            <a href="shop.html?category=perfumes">Perfumes</a>
+          </div>
+        </div>
+
+        <!-- Hero Banner -->
   <section class="hero-banner">
     <div class="container">
       <div class="banner-grid">
@@ -186,7 +176,7 @@ document.addEventListener("DOMContentLoaded", function() {
           </div>
           <div class="promo-box">
             <h3>Flash Sale</h3>
-            <p>Up to 50% off</p>
+            <p id="indexSaleBanner">Up to 50% off</p>
             <a href="shop.html?sale=true">Shop Sale</a>
           </div>
         </div>
@@ -514,6 +504,16 @@ document.addEventListener("DOMContentLoaded", function() {
   <script src="js/language.js"></script>
   <script src="js/main.js"></script>
 <script src="js/amazon-enhance.js"></script>
+<script>
+fetch('/api/settings/public')
+  .then(r => r.json())
+  .then(s => {
+    var discount = s.saleBannerDiscount || '50';
+    var el = document.getElementById('indexSaleBanner');
+    if (el) el.textContent = 'Up to ' + discount + '% off';
+  })
+  .catch(function(){});
+</script>
 </body>
 
 </html>

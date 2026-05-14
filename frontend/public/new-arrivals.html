@@ -30,6 +30,8 @@
   .detect-btn { display: block; width: 100%; padding: 8px; margin: 10px 0; background: rgba(255,215,0,0.1); border: 1px dashed #FFD700; border-radius: 6px; color: #FFD700; font-size: 13px; cursor: pointer; text-align: center; }
   .detect-btn:hover { background: rgba(255,215,0,0.2); }
   .detect-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .category-section { margin-bottom: 40px; }
+  .category-heading { font-size: 22px; color: #333; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #FFD700; display: inline-block; }
 </style>
 </head>
 
@@ -58,49 +60,7 @@
 
   <!-- Main Header -->
   <header class="main-header">
-    <div class="container">
-      <div class="header-main">
-        <div class="logo-section">
-          <a href="/" class="logo">
-            <img src="images/LOGO.png" alt="Aisha Beauty" height="60">
-          </a>
-        </div>
-        
-        <div class="search-section">
-          <div class="search-box">
-            <div class="search-dropdown">
-              <span id="search-category">Products</span>
-              <i class="fas fa-chevron-down"></i>
-            </div>
-            <input type="text" id="search-input" placeholder="Search products...">
-            <button class="search-btn" onclick="performSearch()">
-              <i class="fas fa-search"></i> Search
-            </button>
-          </div>
-          <div class="search-suggestions">
-            <span>Popular:</span>
-            <a href="shop.html?category=women">Women's Fashion</a>
-            <a href="shop.html?category=men">Men's Clothing</a>
-            <a href="shop.html?category=accessories">Accessories</a>
-          </div>
-        </div>
-        
-        <div class="header-actions">
-          <a href="#" class="action-item">
-            <i class="fas fa-heart"></i>
-            <span>Wishlist</span>
-          </a>
-          <a href="#" class="action-item cart-dropdown-trigger" onclick="viewCartProducts()">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
-            <span id="cart-count" class="cart-badge">0</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Mobile Menu Toggle -->
+    <div class="container"><!-- Mobile Menu Toggle -->
   <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
     <i class="fas fa-bars"></i>
   </button>
@@ -139,6 +99,9 @@
             <a href="shop.html?category=perfumes"><i class="fas fa-spray-can"></i> Perfumes <i class="fas fa-chevron-right"></i></a>
           </div>
         </div>
+                <div class="nav-left">
+          <a href="/" class="logo"><img src="images/LOGO.png" alt="Aisha Beauty" height="50"></a>
+        </div>
         <ul class="nav-links-main">
           <li><a href="/" data-i18n="home">Home</a></li>
           <li><a href="/shop" data-i18n="shop">Shop</a></li>
@@ -147,11 +110,40 @@
           <li><a href="/sale" data-i18n="sale">Sale</a></li>
           <li><a href="#">Bulk Orders</a></li>
         </ul>
-      </div>
+        <div class="nav-right">
+          <a href="wishlist.html" class="nav-icon-link" title="Wishlist">
+            <i class="fas fa-heart"></i>
+            <span id="wishlist-count" class="nav-badge">0</span>
+          </a>
+          <a href="cart.html" class="nav-icon-link" title="Cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="nav-badge">0</span>
+          </a>
+        </div>
+</div>
     </div>
   </nav>
 
-  <!-- Banner -->
+  <div class="container" style="padding-top:10px;"><div class="search-section">
+          <div class="search-box">
+            <div class="search-dropdown">
+              <span id="search-category">Products</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <input type="text" id="search-input" placeholder="Search products...">
+            <button class="search-btn" onclick="performSearch()">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+          <div class="search-suggestions">
+            <span>Popular:</span>
+            <a href="shop.html?category=women">Women's Fashion</a>
+            <a href="shop.html?category=men">Men's Clothing</a>
+            <a href="shop.html?category=accessories">Accessories</a>
+          </div>
+        </div>
+        
+        <!-- Banner -->
   <section class="page-banner">
     <div class="container">
       <div class="banner-content">
@@ -202,8 +194,9 @@
           </div>
           <div id="no-products" class="no-products" style="display: none;">
             <i class="fas fa-box-open"></i>
-            <p>No products found. Check back soon!</p>
-            <a href="/new-arrivals" class="btn-banner">Show All Products</a>
+            <h2>No products available</h2>
+            <p>This category is empty. Check back later for new arrivals or browse all products.</p>
+            <a href="/new-arrivals" class="btn-banner">View All Products</a>
           </div>
         </div>
       </div>

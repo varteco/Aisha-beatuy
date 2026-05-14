@@ -69,8 +69,7 @@ async function loadNewArrivals() {
     const response = await fetch(`${API_BASE}/products`);
     const products = await response.json();
     
-    // Filter only new arrival products
-    allProducts = products.filter(p => p.newArrival === true);
+    allProducts = products.filter(function(p) { return p.newArrival === true; });
     applyFilters();
   } catch (error) {
     console.error('Error loading products:', error);
@@ -114,9 +113,6 @@ function applyFilters() {
     });
   }
   
-  // Show newest 20 products
-  products = products.slice(0, 20);
-  
   displayProducts(products);
   updateResultsCount(products.length);
 }
@@ -144,8 +140,53 @@ function updateResultsCount(count) {
   const resultsCount = document.getElementById('results-count');
   if (resultsCount) {
     const categoryText = currentCategory && currentCategory !== 'all' ? ` in ${currentCategory}` : '';
-    resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}${categoryText}`;
+    const sortSelect = document.getElementById('sort-select');
+    const sortLabels = { newest: 'Newest', featured: 'Featured', 'price-low': 'Price Low-High', 'price-high': 'Price High-Low' };
+    const sortLabel = sortSelect && sortSelect.value ? sortLabels[sortSelect.value] || '' : '';
+    const sortText = sortLabel ? ` sorted by ${sortLabel}` : '';
+    resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}${categoryText}${sortText}`;
   }
+}
+
+function productCardHtml(product) {
+  let stockStatus, stockClass;
+  if (product.stock > 5) {
+    stockStatus = `${product.stock} ${t('inStock')}`;
+    stockClass = 'in-stock';
+  } else if (product.stock > 0) {
+    stockStatus = `${product.stock} ${t('lowStock')}`;
+    stockClass = 'low-stock';
+  } else {
+    stockStatus = t('outOfStock');
+    stockClass = 'out-of-stock';
+  }
+  
+  const imgUrl = product.images && product.images[0] ? product.images[0] : 'images/1.jpg';
+  const hasSizes = product.sizes && product.sizes.length > 0;
+  var priceHtml = '';
+  if (product.onSale && product.discount > 0) {
+    var salePrice = product.price * (1 - product.discount / 100);
+    priceHtml = '<div class="price-container"><span class="original-price">$' + product.price.toFixed(2) + '</span><span class="sale-price">$' + salePrice.toFixed(2) + '</span></div>';
+  } else {
+    priceHtml = '<div class="price">$' + product.price.toFixed(2) + '</div>';
+  }
+  return '<div class="product-card' + (product.onSale && product.discount > 0 ? ' sale-product-card' : '') + '">' +
+    '<img src="' + imgUrl + '" alt="' + product.name + '" class="product-img">' +
+    (product.onSale && product.discount > 0 ? '<div class="sale-badge">-' + product.discount + '%</div>' : '<div class="new-badge">NEW</div>') +
+    '<button class="wishlist-btn" data-id="' + product._id + '" data-name="' + product.name + '" data-price="' + (product.onSale && product.discount > 0 ? (product.price * (1 - product.discount / 100)) : product.price) + '" data-image="' + imgUrl + '" >' +
+      '<i class="far fa-heart"></i>' +
+    '</button>' +
+    '<div class="product-info">' +
+      '<h3>' + product.name + '</h3>' +
+      '<p>' + (product.description || 'Premium fashion item') + '</p>' +
+      priceHtml +
+      (hasSizes ? '<div class="product-sizes">' + product.sizes.map(function(s) { return '<button type="button" class="size-btn" data-size="' + s + '" onclick="selectSize(this)">' + s + '</button>'; }).join('') + '</div>' : '') +
+      '<p class="stock-info ' + stockClass + '">' + stockStatus + '</p>' +
+      '<button class="add-to-cart" data-id="' + product._id + '" data-name="' + product.name + '" data-price="' + (product.onSale && product.discount > 0 ? (product.price * (1 - product.discount / 100)) : product.price) + '" data-image="' + imgUrl + '">' +
+        t('addToCart') +
+      '</button>' +
+    '</div>' +
+  '</div>';
 }
 
 function displayProducts(products) {
@@ -159,41 +200,67 @@ function displayProducts(products) {
     return;
   }
 
-  container.style.display = 'grid';
+  container.style.display = 'block';
   if (noProducts) noProducts.style.display = 'none';
 
-  container.innerHTML = products.map(product => {
-    let stockStatus, stockClass;
-    if (product.stock > 5) {
-      stockStatus = `${product.stock} ${t('inStock')}`;
-      stockClass = 'in-stock';
-    } else if (product.stock > 0) {
-      stockStatus = `${product.stock} ${t('lowStock')}`;
-      stockClass = 'low-stock';
-    } else {
-      stockStatus = t('outOfStock');
-      stockClass = 'out-of-stock';
+  var categoryLabels = {
+    men: "Men's Fashion",
+    women: "Women's Fashion",
+    kids: 'Kids Fashion',
+    accessories: 'Accessories',
+    perfumes: 'Perfumes'
+  };
+
+  var categoryMap = {
+    men: ['men', "men's fashion", "men's", 'male'],
+    women: ['women', "women's fashion", "women's", 'female'],
+    kids: ['kids', "kids fashion", 'children', 'child'],
+    accessories: ['accessories', 'accessory', 'jewelry', 'jewellery'],
+    perfumes: ['perfumes', 'perfume', 'fragrance', 'scent']
+  };
+
+  function getCategoryKey(product) {
+    if (!product.category) return 'other';
+    var cat = product.category.toLowerCase();
+    for (var key in categoryMap) {
+      if (categoryMap[key].some(function(k) { return cat.includes(k); })) {
+        return key;
+      }
     }
-    
-    const imgUrl = product.images && product.images[0] ? product.images[0] : 'images/1.jpg';
-    const hasSizes = product.sizes && product.sizes.length > 0;
-    return `
-      <div class="product-card">
-        <div class="new-badge">NEW</div>
-        <img src="${imgUrl}" alt="${product.name}" class="product-img">
-        <div class="product-info">
-          <h3>${product.name}</h3>
-          <p>${product.description || 'Premium fashion item'}</p>
-          <div class="price">$${product.price.toFixed(2)}</div>
-          ${hasSizes ? `<div class="product-sizes">${product.sizes.map(s => `<button type="button" class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`).join('')}</div>` : ''}
-          <p class="stock-info ${stockClass}">${stockStatus}</p>
-          <button class="add-to-cart" data-id="${product._id}" data-name="${product.name}" data-price="${product.price}" data-image="${imgUrl}">
-            ${t('addToCart')}
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
+    return 'other';
+  }
+
+  if (currentCategory && currentCategory !== 'all') {
+    container.innerHTML = '<div class="products-grid-main">' + products.map(productCardHtml).join('') + '</div>';
+  } else {
+    var grouped = {};
+    for (var key in categoryLabels) grouped[key] = [];
+    grouped['other'] = [];
+
+    products.forEach(function(p) {
+      var k = getCategoryKey(p);
+      if (!grouped[k]) grouped[k] = [];
+      grouped[k].push(p);
+    });
+
+    var html = '';
+    for (var key in categoryLabels) {
+      if (grouped[key] && grouped[key].length > 0) {
+        html += '<div class="category-section">' +
+          '<h2 class="category-heading">' + categoryLabels[key] + '</h2>' +
+          '<div class="products-grid-main">' + grouped[key].map(productCardHtml).join('') + '</div>' +
+        '</div>';
+      }
+    }
+    if (grouped['other'] && grouped['other'].length > 0) {
+      html += '<div class="category-section">' +
+        '<h2 class="category-heading">Other</h2>' +
+        '<div class="products-grid-main">' + grouped['other'].map(productCardHtml).join('') + '</div>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+  }
+  updateWishlistHearts();
 }
 
 function openCart() {
