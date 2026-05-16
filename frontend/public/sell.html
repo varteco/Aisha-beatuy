@@ -144,6 +144,8 @@
     var count = cart.reduce(function(sum, item) { return sum + (item.qty || 1); }, 0);
     var el = document.getElementById('cart-badge');
     if (el) el.textContent = count;
+    var bottomEl = document.getElementById('bottom-cart-count');
+    if (bottomEl) bottomEl.textContent = count;
   }
   updateCartBadge();
 

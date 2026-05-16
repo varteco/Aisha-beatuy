@@ -384,7 +384,21 @@ function addToCart(id, name, price, image, size) {
 function updateCartCount() {
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
   const cartCountEl = document.getElementById('cart-count');
+  const bottomCartCountEl = document.getElementById('bottom-cart-count');
   if (cartCountEl) cartCountEl.textContent = count;
+  if (bottomCartCountEl) bottomCartCountEl.textContent = count;
+}
+
+function toggleFilterDrawer() {
+  const sidebar = document.getElementById('shopSidebar');
+  const toggle = document.querySelector('.filter-drawer-toggle');
+  if (sidebar) {
+    sidebar.classList.toggle('active');
+    const isOpen = sidebar.classList.contains('active');
+    toggle.innerHTML = isOpen
+      ? '<i class="fas fa-times"></i> Close Filters'
+      : '<i class="fas fa-sliders-h"></i> Filters & Sort';
+  }
 }
 
 function displayCart() {

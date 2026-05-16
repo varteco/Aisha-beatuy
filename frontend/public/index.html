@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function() {
   </section>
 
   <!-- Featured Products Section -->
-  <section class="products-showcase">
+  <section class="products-showcase hscroll-mobile">
     <div class="container">
       <div class="section-header-main">
         <h2><span class="gold">Featured</span> Products</h2>
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", function() {
   </section>
 
   <!-- Flash Sale Section -->
-  <section class="products-showcase flash-sale">
+  <section class="products-showcase flash-sale hscroll-mobile">
     <div class="container">
       <div class="section-header-main">
         <h2><span class="gold">Flash</span> Sale</h2>
@@ -401,6 +401,31 @@ document.addEventListener("DOMContentLoaded", function() {
       </div>
     </div>
   </footer>
+
+  <!-- Mobile Bottom Navigation (Amazon-style) -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <a href="/" class="bottom-nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="/shop" class="bottom-nav-item">
+      <i class="fas fa-th-large"></i>
+      <span>Shop</span>
+    </a>
+    <a href="/cart.html" class="bottom-nav-item">
+      <i class="fas fa-shopping-cart"></i>
+      <span id="bottom-cart-label">Cart</span>
+      <span class="nav-badge-bottom" id="bottom-cart-count">0</span>
+    </a>
+    <a href="/wishlist.html" class="bottom-nav-item">
+      <i class="fas fa-heart"></i>
+      <span>Wishlist</span>
+    </a>
+    <a href="cart-login.html" class="bottom-nav-item" id="bottom-account-link">
+      <i class="fas fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
 
   <!-- Auth Modal -->
   <div id="auth-modal" class="modal">
