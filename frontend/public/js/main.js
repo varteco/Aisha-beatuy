@@ -776,11 +776,14 @@ function subscribeNewsletter(e) {
   }
 }
 
-// Mobile menu toggle
+// Mobile menu toggle (slide-in from left)
 function toggleMobileMenu() {
   const mobileNav = document.getElementById('mobileNav');
+  const overlay = document.getElementById('mobileNavOverlay');
   if (mobileNav) {
     mobileNav.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
+    document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
   }
 }
 

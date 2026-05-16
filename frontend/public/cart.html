@@ -565,6 +565,8 @@
 </div>
 
   <!-- Mobile Navigation -->
+  <!-- Mobile Nav Overlay -->
+  <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" onclick="toggleMobileMenu()">&times;</button>
     <ul class="mobile-nav-links">
@@ -1003,7 +1005,12 @@
 
         function toggleMobileMenu() {
             var nav = document.getElementById('mobileNav');
-            if (nav) nav.classList.toggle('active');
+            var overlay = document.getElementById('mobileNavOverlay');
+            if (nav) {
+                nav.classList.toggle('active');
+                if (overlay) overlay.classList.toggle('active');
+                document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
+            }
         }
 
         function saveForLater(id) {

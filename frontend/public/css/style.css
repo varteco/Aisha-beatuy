@@ -2457,25 +2457,29 @@ body.rtl .main-footer .container {
 .mobile-top-row {
   display: none;
   align-items: center;
-  gap: 10px;
-  padding: 8px 0;
+  gap: 6px;
+  padding: 6px 0;
 }
 
 .mobile-top-row .mobile-menu-toggle {
   background: none;
   border: none;
-  padding: 8px 10px;
+  padding: 10px 12px;
   cursor: pointer;
   font-size: 22px;
   color: var(--black);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.mobile-top-row .mobile-menu-toggle:hover {
+.mobile-top-row .mobile-menu-toggle:active {
   background: var(--light);
+  transform: scale(0.95);
 }
 
 .mobile-top-row .mobile-logo-link {
@@ -2483,59 +2487,91 @@ body.rtl .main-footer .container {
   align-items: center;
   line-height: 1;
   text-decoration: none;
+  min-height: 44px;
 }
 
 .mobile-top-row .mobile-logo-link img {
-  height: 36px;
+  height: 32px;
   display: block;
 }
 
-.mobile-top-row .mobile-top-spacer {
-  flex: 1;
-}
-
-/* Legacy mobile menu toggle (deprecated - will be hidden) */
-.mobile-menu-toggle-legacy {
-  display: none !important;
-}
-
+/* Mobile Nav - Slide from left (Amazon-style) */
 .mobile-nav {
-  display: none;
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  max-width: 85vw;
+  height: 100%;
+  background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+  z-index: 10000;
+  padding: 80px 0 20px;
+  overflow-y: auto;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-nav.active {
+  left: 0;
+}
+
+/* Overlay when mobile nav is open */
+.mobile-nav-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #000 0%, #222 100%);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 9999;
-  padding: 80px 20px 20px;
-  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
-.mobile-nav.active {
-  display: block;
+.mobile-nav-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .mobile-nav-close {
   position: absolute;
-  top: 25px;
-  right: 25px;
-  background: none;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: var(--white);
-  font-size: 35px;
+  font-size: 24px;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: background 0.3s;
+  transition: background 0.2s;
 }
 
 .mobile-nav-close:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-nav-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+}
+
+.mobile-nav-header .mobile-nav-greeting {
+  color: var(--white);
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.mobile-nav-header .mobile-nav-name {
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .mobile-nav-links {
@@ -2546,31 +2582,39 @@ body.rtl .main-footer .container {
 
 .mobile-nav-links li {
   margin-bottom: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mobile-nav-links a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 14px;
   color: var(--white);
   text-decoration: none;
-  font-size: 18px;
-  padding: 18px 15px;
-  transition: all 0.3s;
-  border-radius: 0;
+  font-size: 16px;
+  padding: 16px 20px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.mobile-nav-links a i {
+  width: 22px;
+  text-align: center;
+  opacity: 0.7;
+  font-size: 16px;
 }
 
 .mobile-nav-links a:hover,
 .mobile-nav-links a.active {
   color: var(--primary);
-  background: rgba(255, 255, 255, 0.05);
-  padding-left: 25px;
+  background: rgba(255, 215, 0, 0.08);
+  border-left-color: var(--primary);
 }
 
 .mobile-nav-actions {
-  margin-top: 30px;
+  margin: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
 .mobile-nav-actions a {
@@ -2578,24 +2622,34 @@ body.rtl .main-footer .container {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: var(--white);
   text-decoration: none;
-  padding: 16px;
-  background: var(--primary);
-  color: var(--black);
-  font-weight: bold;
-  border-radius: 8px;
-  transition: all 0.3s;
+  padding: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.2s;
+  font-size: 14px;
+  min-height: 44px;
 }
 
-.mobile-nav-actions a:hover {
-  background: #e6c200;
-  transform: translateY(-2px);
+.mobile-nav-actions a:first-child {
+  background: var(--primary);
+  color: var(--black);
+}
+
+.mobile-nav-actions a:last-child {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.mobile-nav-actions a:active {
+  transform: scale(0.97);
 }
 
 .mobile-nav .lang-switcher {
-  margin-top: 20px;
+  margin-top: 16px;
   justify-content: center;
+  padding: 0 20px;
 }
 
 .mobile-nav .lang-btn {
@@ -2605,9 +2659,9 @@ body.rtl .main-footer .container {
 
 /* Desktop: hide mobile nav */
 @media (min-width: 769px) {
-
   .mobile-top-row,
-  .mobile-nav {
+  .mobile-nav,
+  .mobile-nav-overlay {
     display: none !important;
   }
 
@@ -2616,7 +2670,7 @@ body.rtl .main-footer .container {
   }
 }
 
-/* Mobile: show mobile nav, hide main-nav logo (duplicated in mobile-top-row) */
+/* Mobile: show mobile nav, hide main-nav logo */
 @media (max-width: 768px) {
   .mobile-top-row {
     display: flex;
@@ -3618,6 +3672,60 @@ body.rtl .main-footer .container {
   color: #000;
 }
 
+/* Professional touch feedback for interactive elements */
+.product-card,
+.category-box,
+.feature-card,
+.bottom-nav-item,
+.mobile-menu-toggle,
+.filter-drawer-toggle,
+.btn,
+.add-to-cart,
+.btn-banner,
+.btn-primary,
+.btn-outline,
+.pay-btn,
+.auth-submit-btn,
+.forgot-btn,
+.search-btn,
+.home-filter-btn,
+.sale-filter {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.product-card:active {
+  transform: scale(0.98);
+  transition: transform 0.15s;
+}
+
+.btn:active,
+.add-to-cart:active,
+.btn-banner:active,
+.btn-primary:active,
+.pay-btn:active,
+.auth-submit-btn:active,
+.search-btn:active {
+  transform: scale(0.96);
+  transition: transform 0.1s;
+}
+
+/* Button minimum touch target */
+.btn,
+.add-to-cart,
+.btn-banner,
+.btn-primary,
+.btn-outline,
+.pay-btn,
+.auth-submit-btn,
+.forgot-btn,
+.search-btn,
+.filter-drawer-toggle,
+.home-filter-btn,
+.sale-filter {
+  min-height: 44px;
+}
+
 .size-btn.selected {
   border-color: #FFD700;
   background: #FFD700;
@@ -3630,7 +3738,7 @@ body.rtl .main-footer .container {
    Bottom Nav, Horizontal Scroll, Filter Drawer
    ============================================ */
 
-/* Mobile Bottom Navigation */
+/* Mobile Bottom Navigation - Professional */
 .mobile-bottom-nav {
   display: none;
   position: fixed;
@@ -3638,12 +3746,18 @@ body.rtl .main-footer .container {
   left: 0;
   right: 0;
   background: #fff;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #f0f0f0;
   z-index: 9998;
-  padding: 6px 0;
-  padding-bottom: env(safe-area-inset-bottom, 6px);
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+  padding: 4px 0;
+  padding-bottom: env(safe-area-inset-bottom, 4px);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
   justify-content: space-around;
+  animation: bottomNavSlideUp 0.3s ease;
+}
+
+@keyframes bottomNavSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .mobile-bottom-nav .bottom-nav-item {
@@ -3652,22 +3766,28 @@ body.rtl .main-footer .container {
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  color: #666;
+  color: #8e8e93;
   font-size: 10px;
-  gap: 1px;
-  padding: 2px 0;
-  transition: color 0.2s;
+  gap: 2px;
+  padding: 6px 0 4px;
+  transition: color 0.15s;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+  justify-content: center;
 }
 
 .mobile-bottom-nav .bottom-nav-item i {
   font-size: 20px;
-  color: #666;
-  transition: color 0.2s;
+  color: #8e8e93;
+  transition: color 0.15s, transform 0.2s;
 }
 
 .mobile-bottom-nav .bottom-nav-item span {
   line-height: 1;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 .mobile-bottom-nav .bottom-nav-item.active i,
@@ -3679,22 +3799,44 @@ body.rtl .main-footer .container {
   color: var(--primary);
 }
 
+.mobile-bottom-nav .bottom-nav-item.active i {
+  transform: scale(1.05);
+}
+
+.mobile-bottom-nav .bottom-nav-item:active {
+  opacity: 0.7;
+}
+
+/* Active indicator line */
+.mobile-bottom-nav .bottom-nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 0 0 2px 2px;
+}
+
 .mobile-bottom-nav .bottom-nav-item .nav-badge-bottom {
   position: absolute;
-  top: -2px;
+  top: 2px;
   right: 50%;
-  transform: translateX(14px);
-  background: var(--primary);
-  color: #000;
+  transform: translateX(16px);
+  background: #ff3b30;
+  color: #fff;
   font-size: 9px;
-  font-weight: bold;
+  font-weight: 700;
   min-width: 16px;
   height: 16px;
-  border-radius: 50%;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 3px;
+  padding: 0 4px;
+  box-shadow: 0 1px 3px rgba(255, 59, 48, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -3708,6 +3850,12 @@ body.rtl .main-footer .container {
 }
 
 /* Horizontal Scroll Product Sections (Amazon-style) */
+/* Smooth scrolling for the whole page */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .hscroll-mobile .products-grid-main {
   display: grid;
 }
