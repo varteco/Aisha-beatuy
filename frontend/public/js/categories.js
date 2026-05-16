@@ -123,7 +123,10 @@ function showLoggedOutState() {
 
 function updateCartCount() {
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
-  document.getElementById('cart-count').textContent = count;
+  const cartCountEl = document.getElementById('cart-count');
+  const bottomCartCountEl = document.getElementById('bottom-cart-count');
+  if (cartCountEl) cartCountEl.textContent = count;
+  if (bottomCartCountEl) bottomCartCountEl.textContent = count;
 }
 
 function addToCart(id, name, price, image, size) {

@@ -288,7 +288,9 @@ function addToCart(id, name, price, image, size) {
 function updateCartCount() {
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
   const cartCountEl = document.getElementById('cart-count');
+  const bottomCartCountEl = document.getElementById('bottom-cart-count');
   if (cartCountEl) cartCountEl.textContent = count;
+  if (bottomCartCountEl) bottomCartCountEl.textContent = count;
 }
 
 function displayCart() {

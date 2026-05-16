@@ -707,9 +707,9 @@
       <i class="fas fa-heart"></i>
       <span>Wishlist</span>
     </a>
-    <a href="cart-login.html" class="bottom-nav-item" id="bottom-account-link">
+    <a href="#" class="bottom-nav-item" id="bottom-account-link" onclick="event.preventDefault();location.href=localStorage.getItem('customerToken')?'profile.html':'cart-login.html'">
       <i class="fas fa-user"></i>
-      <span>Account</span>
+      <span>My Account</span>
     </a>
   </nav>
   <div id="forgot-password-modal" class="modal">
@@ -733,5 +733,31 @@
   </div>
 
 <script src="js/amazon-enhance.js"></script>
+<script>
+function toggleMobileMenu() {
+  var mobileNav = document.getElementById('mobileNav');
+  var overlay = document.getElementById('mobileNavOverlay');
+  if (mobileNav) {
+    mobileNav.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
+    document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+  }
+}
+function setActiveBottomNav() {
+  var path = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.bottom-nav-item').forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (link.id === 'bottom-account-link') {
+      link.classList.add('active');
+    } else if ((path === 'cart.html' && (href === '/cart.html' || href === 'cart.html')) ||
+        (path === 'wishlist.html' && (href === '/wishlist.html' || href === 'wishlist.html')) ||
+        ((path === 'shop' || path === 'shop.html') && (href === '/shop' || href === 'shop.html' || href === 'shop')) ||
+        ((path === '' || path === 'index.html') && (!href || href === '/' || href === 'index.html'))) {
+      link.classList.add('active');
+    }
+  });
+}
+setActiveBottomNav();
+</script>
 </body>
 </html>

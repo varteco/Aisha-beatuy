@@ -2467,7 +2467,7 @@ body.rtl .main-footer .container {
   padding: 10px 12px;
   cursor: pointer;
   font-size: 22px;
-  color: var(--black);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2493,6 +2493,10 @@ body.rtl .main-footer .container {
 .mobile-top-row .mobile-logo-link img {
   height: 32px;
   display: block;
+}
+
+.mobile-top-row .mobile-top-spacer {
+  flex: 1;
 }
 
 /* Mobile Nav - Slide from left (Amazon-style) */
@@ -2538,9 +2542,9 @@ body.rtl .main-footer .container {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 215, 0, 0.1);
   border: none;
-  color: var(--white);
+  color: var(--primary);
   font-size: 24px;
   cursor: pointer;
   width: 44px;
@@ -2553,7 +2557,7 @@ body.rtl .main-footer .container {
 }
 
 .mobile-nav-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 215, 0, 0.2);
 }
 
 .mobile-nav-header {
@@ -2687,6 +2691,7 @@ body.rtl .main-footer .container {
   .main-nav .nav-left {
     display: none;
   }
+
 }
 
 .mobile-nav-links {
@@ -3814,10 +3819,11 @@ body.rtl .main-footer .container {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
-  height: 2px;
+  width: 28px;
+  height: 3px;
   background: var(--primary);
-  border-radius: 0 0 2px 2px;
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
 }
 
 .mobile-bottom-nav .bottom-nav-item .nav-badge-bottom {

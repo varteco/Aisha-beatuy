@@ -560,9 +560,11 @@
 </head>
 <body>
   <div class="mobile-top-row">
-  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
-  <a href="/" class="mobile-logo-link"><img src="images/LOGO.png" alt="Aisha Beauty"></a>
-</div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <a href="/" class="mobile-logo-link"><img src="images/LOGO.png" alt="Aisha Beauty"></a>
+  </div>
 
   <!-- Mobile Navigation -->
   <!-- Mobile Nav Overlay -->
@@ -700,9 +702,9 @@
       <i class="fas fa-heart"></i>
       <span>Wishlist</span>
     </a>
-    <a href="cart-login.html" class="bottom-nav-item" id="bottom-account-link">
+    <a href="#" class="bottom-nav-item" id="bottom-account-link" onclick="event.preventDefault();location.href=localStorage.getItem('customerToken')?'profile.html':'cart-login.html'">
       <i class="fas fa-user"></i>
-      <span>Account</span>
+      <span>My Account</span>
     </a>
   </nav>
 
@@ -1036,6 +1038,19 @@
                 await renderCart();
             }
         }
+        function setActiveBottomNav() {
+            var path = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.bottom-nav-item').forEach(function(link) {
+                var href = link.getAttribute('href');
+                if ((path === 'cart.html' && (href === '/cart.html' || href === 'cart.html')) ||
+                    link.id === 'bottom-account-link') {
+                    link.classList.add('active');
+                } else if (path === '' || path === 'index.html') {
+                    if (!href || href === '/' || href === 'index.html') link.classList.add('active');
+                }
+            });
+        }
+        setActiveBottomNav();
     </script>
 <script src="js/amazon-enhance.js"></script>
 </body>

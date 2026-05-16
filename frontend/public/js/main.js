@@ -26,6 +26,7 @@ function showToast(message) {
     loadFlashSaleProducts();
     updateCartCount();
     updateWishlistCount();
+    setActiveBottomNav();
   });
 
   document.addEventListener('click', function(e) {
@@ -498,6 +499,29 @@ function getWishlist() {
 function saveWishlist(list) {
   localStorage.setItem('wishlist', JSON.stringify(list));
   updateWishlistCount();
+}
+
+function setActiveBottomNav() {
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  const links = document.querySelectorAll('.bottom-nav-item');
+  const map = {
+    '': 'home', 'index.html': 'home',
+    'shop': 'shop', 'shop.html': 'shop',
+    'cart.html': 'cart',
+    'wishlist.html': 'wishlist'
+  };
+  const active = map[path] || 'account';
+  links.forEach(link => {
+    const href = link.getAttribute('href');
+    const isAccount = link.id === 'bottom-account-link';
+    if ((active === 'home' && (!href || href === '/' || href === 'index.html')) ||
+        (active === 'shop' && (href === '/shop' || href === 'shop.html' || href === 'shop')) ||
+        (active === 'cart' && (href === '/cart.html' || href === 'cart.html')) ||
+        (active === 'wishlist' && (href === '/wishlist.html' || href === 'wishlist.html')) ||
+        (active === 'account' && isAccount)) {
+      link.classList.add('active');
+    }
+  });
 }
 
 function updateWishlistCount() {
