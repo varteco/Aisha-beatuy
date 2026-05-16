@@ -12,6 +12,7 @@
     * { box-sizing: border-box; }
 
     .tracking-page { max-width: 800px; margin: 0 auto; padding: 24px 20px 40px; }
+    .navbar-spacer { display: none; }
 
     .breadcrumb { font-size: 13px; color: #555; margin-bottom: 15px; }
     .breadcrumb a { color: #0066c0; text-decoration: none; }
@@ -63,12 +64,62 @@
     .load-error h2 { color: #111; margin: 0 0 8px; font-size: 20px; }
     .load-error p { color: #666; margin: 0 0 16px; }
 
-    @media (max-width: 600px) {
-      .progress-track { flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 768px) {
+      body { padding-bottom: 56px; }
+      .tracking-page { padding: 16px 14px 80px; }
+      .page-title { font-size: 20px; }
+      .order-info-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .progress-track { flex-direction: column; gap: 0; padding: 0; }
       .progress-track::before { display: none; }
-      .progress-step { flex-direction: row; gap: 10px; width: 100%; }
-      .progress-dot { width: 28px; height: 28px; font-size: 12px; margin-bottom: 0; }
-      .progress-label { text-align: left; max-width: none; }
+      .progress-step { flex-direction: row; gap: 12px; width: 100%; padding: 10px 0; border-left: 3px solid #ddd; padding-left: 16px; margin-left: 14px; position: relative; }
+      .progress-step.completed { border-left-color: #067d62; }
+      .progress-step.active { border-left-color: var(--primary); }
+      .progress-dot { width: 28px; height: 28px; font-size: 11px; margin-bottom: 0; flex-shrink: 0; position: absolute; left: -17px; top: 10px; }
+      .progress-label { text-align: left; max-width: none; font-size: 13px; }
+      .progress-date { text-align: left; font-size: 11px; }
+      .product-card-small img { width: 50px; height: 50px; }
+      .timeline-item { gap: 10px; padding: 10px 0; }
+      .timeline-icon { width: 28px; height: 28px; font-size: 12px; }
+    }
+    @media (max-width: 576px) {
+      .tracking-page { padding: 12px 10px 70px; }
+      .page-title { font-size: 18px; }
+      .order-info-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .order-info-item label { font-size: 11px; }
+      .order-info-item span { font-size: 13px; }
+      .track-card { padding: 16px; }
+      .progress-step { padding: 8px 0; padding-left: 14px; margin-left: 12px; }
+      .progress-dot { width: 24px; height: 24px; font-size: 10px; left: -15px; top: 8px; }
+      .progress-label { font-size: 12px; }
+      .product-card-small { gap: 10px; padding: 10px 0; }
+      .product-card-small img { width: 44px; height: 44px; }
+      .product-card-small .info .name { font-size: 13px; }
+      .timeline-title { font-size: 13px; }
+      .timeline-desc { font-size: 12px; }
+    }
+    @media (max-width: 480px) {
+      .order-info-grid { grid-template-columns: 1fr; gap: 6px; }
+      .order-info-item { display: flex; gap: 6px; align-items: center; }
+      .order-info-item label { margin-bottom: 0; font-size: 11px; flex-shrink: 0; width: 80px; }
+      .order-info-item span { font-size: 13px; }
+      .progress-dot { width: 22px; height: 22px; font-size: 9px; left: -14px; }
+    }
+    @media (max-width: 396px) {
+      .tracking-page { padding: 10px 8px 70px; }
+      .track-card { padding: 12px; }
+      .page-title { font-size: 16px; margin-bottom: 12px; }
+      .breadcrumb { font-size: 11px; }
+      .progress-step { padding: 6px 0; padding-left: 12px; margin-left: 10px; gap: 8px; }
+      .progress-dot { width: 20px; height: 20px; font-size: 8px; left: -12px; top: 6px; }
+      .progress-label { font-size: 11px; }
+      .progress-date { font-size: 10px; }
+      .product-card-small img { width: 40px; height: 40px; }
+      .product-card-small .info .name { font-size: 12px; }
+      .product-card-small .info .price { font-size: 12px; }
+      .timeline-icon { width: 24px; height: 24px; font-size: 10px; }
+      .timeline-title { font-size: 12px; }
+      .timeline-desc { font-size: 11px; }
+      .timeline-time { font-size: 10px; }
     }
   .location-display { color: #ccc; font-size: 13px; text-decoration: none; margin-right: 10px; }
   .location-display:hover { color: #FFD700; }
@@ -197,7 +248,7 @@
           <a href="#" onclick="event.preventDefault(); openLocationModal()"><i class="fas fa-map-marker-alt"></i> <span class="location-name">Sudan</span></a>
         </div>
         <div class="ship-notice" style="font-size:12px;color:#aaa;"></div>
-        <p><p>&copy; 2024copy; 2024 Aisha Beauty. All rights reserved.</p>
+        <p>&copy; 2024 Aisha Beauty. All rights reserved.</p>
       </div>
     </div>
   </footer>
