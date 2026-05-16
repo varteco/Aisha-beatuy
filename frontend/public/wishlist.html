@@ -65,19 +65,23 @@ document.addEventListener("DOMContentLoaded", function() {
   .detect-btn { display: block; width: 100%; padding: 8px; margin: 10px 0; background: rgba(255,215,0,0.1); border: 1px dashed #FFD700; border-radius: 6px; color: #FFD700; font-size: 13px; cursor: pointer; text-align: center; }
   .detect-btn:hover { background: rgba(255,215,0,0.2); }
   .detect-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  @media (max-width: 768px) {
+    .wishlist-page { padding-bottom: 70px; }
+    #recommendations { padding-bottom: 10px; }
+  }
   @media (max-width: 576px) {
-    .wishlist-page { padding: 15px 10px; }
+    .wishlist-page { padding: 15px 10px 70px; }
     .wishlist-page h1 { font-size: 20px; }
     .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .wishlist-item img { height: 140px; }
+    .wishlist-item img { height: 140px; max-width: 100%; }
     .wishlist-item .info { padding: 10px; }
-    .wishlist-item .info h3 { font-size: 13px; }
+    .wishlist-item .info h3 { font-size: 13px; word-break: break-word; }
     .wishlist-item .info .price { font-size: 15px; margin-bottom: 8px; }
     .wishlist-item .info .actions button { padding: 8px; font-size: 11px; }
     .rec-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .rec-card img { height: 120px; }
+    .rec-card img { height: 120px; max-width: 100%; }
     .rec-card .rec-info { padding: 8px; }
-    .rec-card .rec-info h4 { font-size: 12px; }
+    .rec-card .rec-info h4 { font-size: 12px; word-break: break-word; }
     .rec-card .rec-info .rec-price { font-size: 13px; }
     .section-title { font-size: 16px; margin: 24px 0 12px; }
     .empty-wishlist { padding: 40px 15px; }
