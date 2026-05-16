@@ -1967,25 +1967,19 @@ body.rtl .main-footer .container {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .top-header-left,
-  .top-header-right {
-    font-size: 11px;
-  }
-
-  .top-header a {
-    margin-right: 8px;
-  }
-
   .search-suggestions {
     display: none;
   }
 }
 
-@media (max-width: 768px) {
+/* Hide top-header on all tablets & phones */
+@media (max-width: 1024px) {
   .top-header {
-    display: none;
+    display: none !important;
   }
+}
 
+@media (max-width: 768px) {
   .header-main {
     flex-direction: column;
     gap: 15px;
@@ -2622,7 +2616,7 @@ body.rtl .main-footer .container {
   }
 }
 
-/* Mobile: show mobile nav */
+/* Mobile: show mobile nav, hide main-nav logo (duplicated in mobile-top-row) */
 @media (max-width: 768px) {
   .mobile-top-row {
     display: flex;
@@ -2633,6 +2627,10 @@ body.rtl .main-footer .container {
   }
 
   .nav-links-main {
+    display: none;
+  }
+
+  .main-nav .nav-left {
     display: none;
   }
 }
@@ -2704,43 +2702,6 @@ body.rtl .main-footer .container {
     display: block;
     box-sizing: border-box;
   }
-
-  /* Top Header */
-  .top-header {
-    font-size: 10px;
-    padding: 6px 0;
-    display: block;
-    width: 100%;
-    overflow: visible;
-  }
-
-  .top-header .container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .top-header-left,
-  .top-header-right {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex-wrap: wrap;
-  }
-
-  .lang-btn {
-    padding: 6px 12px;
-    font-size: 10px;
-  }
-
-  .top-header-left a:nth-child(1),
-  .top-header-left a:nth-child(2),
-  .top-header-left a:nth-child(3) {
-    display: none;
-  }
-
 
   /* Main Header */
   .main-header {
@@ -3368,29 +3329,10 @@ body.rtl .main-footer .container {
     height: 50px;
   }
 
-  .top-header {
-    font-size: 11px;
-    padding: 7px 0;
-  }
-
-  .top-header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .top-header-left a,
-  .top-header-right a {
-    margin-right: 8px;
-    margin-left: 8px;
-  }
-
   .lang-btn {
     padding: 6px 12px;
     font-size: 11px;
   }
-
 }
 
 /* Sort Select */
@@ -4024,18 +3966,6 @@ body.rtl .main-footer .container {
 
   .logo img {
     height: 40px;
-  }
-
-  .top-header {
-    font-size: 9px;
-    padding: 4px 0;
-  }
-
-  .top-header-left a,
-  .top-header-right a {
-    margin-right: 4px;
-    margin-left: 4px;
-    font-size: 9px;
   }
 
   .lang-btn {
