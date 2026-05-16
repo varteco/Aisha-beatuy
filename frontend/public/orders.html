@@ -81,7 +81,71 @@
       .order-card-header { flex-direction: column; align-items: flex-start; }
       .order-header-left { gap: 12px; }
       .order-item { flex-direction: column; }
-      .order-item-img { width: 100%; max-width: 120px; }
+      .order-item-img { width: 100%; max-width: 100px; }
+      .order-item-details { min-width: unset; }
+      .order-header-links { width: 100%; }
+    }
+    @media (max-width: 576px) {
+      .orders-page { padding: 8px 8px 60px; }
+      .page-title { font-size: 22px; }
+      .orders-search-bar { flex-direction: column; }
+      .orders-search-bar input { width: 100%; }
+      .orders-search-bar button { width: 100%; }
+      .orders-tabs { overflow-x: auto; gap: 0; }
+      .orders-tab { padding: 8px 12px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+      .order-card-header { padding: 10px 12px; }
+      .order-header-left { gap: 8px; width: 100%; }
+      .order-header-item { flex: 1; min-width: 0; }
+      .order-header-item label { font-size: 11px; }
+      .order-header-item span { font-size: 12px; }
+      .order-header-links { flex-wrap: wrap; gap: 8px; }
+      .order-header-links a { font-size: 12px; }
+      .order-card-body { padding: 12px; }
+      .order-item { padding: 10px 0; }
+      .order-item-img { width: 80px; height: 80px; }
+      .order-item-name { font-size: 15px; }
+      .order-item-name-ar { font-size: 12px; }
+      .order-item-actions { flex-direction: column; }
+      .order-item-actions .btn-amz { width: 100%; justify-content: center; font-size: 12px; padding: 8px 12px; }
+      .order-delivery-banner { font-size: 13px; padding: 8px 10px; }
+      .empty-orders { padding: 40px 16px; }
+      .empty-orders h2 { font-size: 18px; }
+    }
+    @media (max-width: 430px) {
+      .orders-page { padding: 6px 6px 56px; }
+      .page-title { font-size: 20px; margin-bottom: 10px; }
+      .orders-tab { padding: 6px 10px; font-size: 12px; }
+      .order-card { margin-bottom: 10px; }
+      .order-card-header { padding: 8px 10px; }
+      .order-header-item label { font-size: 10px; }
+      .order-header-item span { font-size: 11px; }
+      .order-card-body { padding: 10px; }
+      .order-item-name { font-size: 14px; }
+      .order-item-qty { font-size: 12px; }
+      .order-item-status { font-size: 12px; }
+      .order-item-return { font-size: 12px; }
+      .order-item-price { font-size: 13px; }
+      .order-item-actions .btn-amz { padding: 7px 10px; font-size: 11px; }
+      .order-delivery-banner { font-size: 12px; padding: 6px 8px; }
+    }
+    @media (max-width: 396px) {
+      .orders-page { padding: 4px 4px 52px; }
+      .page-title { font-size: 18px; }
+      .orders-tab { padding: 5px 8px; font-size: 11px; }
+      .order-card-header { padding: 6px 8px; }
+      .order-header-item label { font-size: 9px; }
+      .order-header-item span { font-size: 10px; }
+      .order-card-body { padding: 8px; }
+      .order-item-img { width: 60px; height: 60px; }
+      .order-item-name { font-size: 13px; }
+      .order-item-actions .btn-amz { font-size: 10px; padding: 6px 8px; }
+    }
+    @media (max-width: 380px) {
+      .orders-page { padding: 4px 4px 44px; }
+      .page-title { font-size: 16px; }
+      .orders-tab { padding: 4px 6px; font-size: 10px; }
+      .order-item-img { width: 50px; height: 50px; }
+      .order-item-name { font-size: 12px; }
     }
   .location-display { color: #ccc; font-size: 13px; text-decoration: none; margin-right: 10px; }
   .location-display:hover { color: #FFD700; }
@@ -225,7 +289,7 @@
           <a href="#" onclick="event.preventDefault(); openLocationModal()"><i class="fas fa-map-marker-alt"></i> <span class="location-name">Sudan</span></a>
         </div>
         <div class="ship-notice" style="font-size:12px;color:#aaa;"></div>
-        <p><p>&copy; 2024copy; 2024 Aisha Beauty. All rights reserved.</p>
+        <p>&copy; 2024 Aisha Beauty. All rights reserved.</p>
       </div>
     </div>
   </footer>
