@@ -528,6 +528,8 @@ function updateWishlistCount() {
   const list = getWishlist();
   const el = document.getElementById('wishlist-count');
   if (el) el.textContent = list.length;
+  const bottomEl = document.getElementById('bottom-wishlist-count');
+  if (bottomEl) bottomEl.textContent = list.length;
 }
 
 function isInWishlist(productId) {

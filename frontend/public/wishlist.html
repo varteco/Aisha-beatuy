@@ -66,8 +66,27 @@ document.addEventListener("DOMContentLoaded", function() {
   .detect-btn:hover { background: rgba(255,215,0,0.2); }
   .detect-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   @media (max-width: 576px) {
-    .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .rec-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .wishlist-page { padding: 15px 10px; }
+    .wishlist-page h1 { font-size: 20px; }
+    .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .wishlist-item img { height: 140px; }
+    .wishlist-item .info { padding: 10px; }
+    .wishlist-item .info h3 { font-size: 13px; }
+    .wishlist-item .info .price { font-size: 15px; margin-bottom: 8px; }
+    .wishlist-item .info .actions button { padding: 8px; font-size: 11px; }
+    .rec-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .rec-card img { height: 120px; }
+    .rec-card .rec-info { padding: 8px; }
+    .rec-card .rec-info h4 { font-size: 12px; }
+    .rec-card .rec-info .rec-price { font-size: 13px; }
+    .section-title { font-size: 16px; margin: 24px 0 12px; }
+    .empty-wishlist { padding: 40px 15px; }
+    .empty-wishlist i { font-size: 40px; }
+  }
+  @media (max-width: 380px) {
+    .wishlist-grid { gap: 6px; }
+    .wishlist-item img { height: 110px; }
+    .rec-card img { height: 100px; }
   }
 </style>
 </head>
@@ -349,6 +368,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <a href="/wishlist.html" class="bottom-nav-item">
       <i class="fas fa-heart"></i>
       <span>Wishlist</span>
+      <span class="nav-badge-bottom" id="bottom-wishlist-count">0</span>
     </a>
     <a href="#" class="bottom-nav-item" id="bottom-account-link" onclick="event.preventDefault();location.href=localStorage.getItem('customerToken')?'profile.html':'cart-login.html'">
       <i class="fas fa-user"></i>
