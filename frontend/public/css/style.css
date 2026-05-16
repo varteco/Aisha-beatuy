@@ -4016,6 +4016,52 @@ body.rtl .main-footer .container {
   }
 }
 
+/* Standard 6.1-inch phones (390-396px - iPhone 14/15, Galaxy S24, Pixel 8) */
+@media (max-width: 396px) {
+  .hscroll-mobile .products-grid-main .product-card {
+    flex: 0 0 140px;
+  }
+  .hscroll-mobile .products-grid-main .product-card img {
+    height: 140px;
+  }
+
+  .categories-grid-main .category-box {
+    flex: 0 0 105px;
+  }
+
+  .product-card img {
+    height: 140px;
+  }
+  .product-card .product-info {
+    min-height: 145px;
+    padding: 8px;
+  }
+  .product-card h3 {
+    font-size: 12px;
+  }
+  .product-card .price {
+    font-size: 14px;
+  }
+
+  .section-header-main h2 {
+    font-size: 17px;
+  }
+
+  .banner-content h1 {
+    font-size: 19px;
+  }
+
+  .mobile-bottom-nav .bottom-nav-item i {
+    font-size: 17px;
+  }
+  .mobile-bottom-nav .bottom-nav-item {
+    font-size: 9px;
+  }
+  body {
+    padding-bottom: 48px;
+  }
+}
+
 /* Very small phones (380px and below - iPhone SE, older Androids) */
 @media (max-width: 380px) {
   .container {
